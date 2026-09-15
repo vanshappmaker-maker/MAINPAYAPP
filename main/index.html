@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZapPay is Under Maintenance | We'll Be Back Soon</title>
+<meta name="description" content="ZapPay is currently undergoing scheduled maintenance to improve your experience. We'll be back online shortly."/>
+<meta name="robots" content="noindex, follow"/>
+<meta property="og:title" content="ZapPay is Under Maintenance | We'll Be Back Soon"/>
+<meta property="og:description" content="ZapPay is currently undergoing scheduled maintenance to improve your experience. We'll be back online shortly."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<link rel="apple-touch-icon" href="/favicon.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+<style>
+:root{
+  --zp-primary:#2563EB; --zp-primary-light:#EFF6FF;
+  --zp-amber:#B45309; --zp-amber-light:#FFFBEB; --zp-amber-dark:#78350F;
+  --zp-text:#111827; --zp-text-muted:#6B7280; --zp-border:#E5E7EB; --zp-bg:#F9FAFB; --zp-white:#FFFFFF;
+  --zp-radius:14px; --zp-shadow:0 1px 3px rgba(0,0,0,.08); --zp-shadow-lg:0 20px 50px rgba(17,24,39,.12);
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--zp-bg);color:var(--zp-text);margin:0;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+/* Ambient backdrop — quiet, not distracting */
+.mnt-backdrop{position:fixed;inset:0;overflow:hidden;z-index:0;background:
+  radial-gradient(900px 500px at 15% -10%, #FEF3E2 0%, transparent 60%),
+  radial-gradient(700px 500px at 110% 20%, var(--zp-primary-light) 0%, transparent 55%),
+  var(--zp-bg);}
+
+.mnt-wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:48px 20px 64px;min-height:100vh;}
+
+.mnt-brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px;}
+.mnt-brand img{width:34px;height:34px;border-radius:9px;}
+.mnt-brand span{font-weight:800;font-size:19px;letter-spacing:-.01em;}
+
+/* Signature element: a live "working on it" status pill with a genuine
+   pulse animation — this is the one moment of motion on the page. */
+.mnt-status{display:inline-flex;align-items:center;gap:8px;background:var(--zp-white);border:1px solid var(--zp-border);border-radius:99px;padding:7px 16px 7px 12px;font-size:12.5px;font-weight:600;color:var(--zp-amber-dark);box-shadow:var(--zp-shadow);margin:0 auto 22px;width:fit-content;}
+.mnt-pulse-dot{position:relative;width:8px;height:8px;border-radius:50%;background:#F59E0B;flex-shrink:0;}
+.mnt-pulse-dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:2px solid #F59E0B;animation:mntPulse 1.8s cubic-bezier(.4,0,.6,1) infinite;}
+@keyframes mntPulse{0%{transform:scale(.5);opacity:.9;}100%{transform:scale(1.8);opacity:0;}}
+@media (prefers-reduced-motion: reduce){.mnt-pulse-dot::after{animation:none;opacity:.4;}}
+
+.mnt-card{background:var(--zp-white);border:1px solid var(--zp-border);border-radius:20px;box-shadow:var(--zp-shadow-lg);overflow:hidden;}
+.mnt-hero{background:linear-gradient(135deg,#78350F,#B45309 60%,#D97706);padding:40px 32px 34px;text-align:center;position:relative;overflow:hidden;}
+.mnt-hero::before{content:'';position:absolute;width:220px;height:220px;background:rgba(255,255,255,.06);border-radius:50%;top:-90px;left:-60px;}
+.mnt-hero::after{content:'';position:absolute;width:140px;height:140px;background:rgba(255,255,255,.05);border-radius:50%;bottom:-50px;right:-30px;}
+.mnt-hero-icon{position:relative;z-index:1;width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;margin:0 auto 16px;}
+.mnt-hero h1{position:relative;z-index:1;color:#fff;font-size:24px;font-weight:800;margin:0 0 8px;letter-spacing:-.01em;}
+.mnt-hero p{position:relative;z-index:1;color:rgba(255,255,255,.85);font-size:13.5px;margin:0;max-width:420px;margin-inline:auto;}
+
+.mnt-body{padding:30px 32px 34px;}
+.mnt-section-label{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--zp-text-muted);margin-bottom:12px;}
+
+.mnt-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+@media (max-width:480px){.mnt-choice-grid{grid-template-columns:1fr;}}
+.mnt-choice{border:1.5px solid var(--zp-border);border-radius:var(--zp-radius);padding:16px;}
+.mnt-choice-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px;}
+.mnt-choice h4{font-size:13.5px;font-weight:700;margin:0 0 4px;}
+.mnt-choice p{font-size:12px;color:var(--zp-text-muted);margin:0 0 10px;}
+.mnt-choice a.mnt-link-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--zp-primary);text-decoration:none;}
+.mnt-choice a.mnt-link-btn:hover{text-decoration:underline;}
+
+.mnt-why{background:var(--zp-bg);border-radius:var(--zp-radius);padding:18px 18px 6px;margin-bottom:8px;}
+.mnt-why-row{display:flex;gap:11px;align-items:flex-start;padding-bottom:14px;}
+.mnt-why-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:1px;}
+.mnt-why-row strong{font-size:13px;display:block;margin-bottom:1px;}
+.mnt-why-row span{font-size:12px;color:var(--zp-text-muted);}
+
+.mnt-contact-box{border:1.5px dashed var(--zp-border);border-radius:var(--zp-radius);padding:16px;margin-top:22px;display:none;}
+.mnt-contact-box.show{display:block;}
+.mnt-contact-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.mnt-contact-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--zp-text);background:var(--zp-white);border:1px solid var(--zp-border);border-radius:99px;padding:6px 12px;text-decoration:none;transition:border-color .15s;}
+.mnt-contact-chip:hover{border-color:var(--zp-primary);color:var(--zp-primary);}
+
+.mnt-footer{text-align:center;margin-top:26px;font-size:11.5px;color:var(--zp-text-muted);}
+.mnt-footer a{color:var(--zp-text-muted);text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<div class="mnt-backdrop"></div>
+<div class="mnt-wrap">
+
+  <div class="mnt-brand">
+    <img src="https://res.cloudinary.com/dihj6dmbb/image/upload/v1782028733/quickurl/20260621132708_1782028720083.png" alt="ZapPay"/>
+    <span id="mntSiteName">ZapPay</span>
+  </div>
+
+  <div style="text-align:center">
+    <div class="mnt-status"><span class="mnt-pulse-dot"></span>Work in progress</div>
+  </div>
+
+  <div class="mnt-card">
+    <div class="mnt-hero">
+      <div class="mnt-hero-icon"><i class="bi bi-tools"></i></div>
+      <h1>We're making things better</h1>
+      <p>The platform is temporarily offline while we finish up some work behind the scenes. Your wallet balance, payment links, and data are all safe.</p>
+    </div>
+
+    <div class="mnt-body">
+      <div class="mnt-section-label">What should I do?</div>
+      <div class="mnt-choice-grid">
+        <div class="mnt-choice">
+          <div class="mnt-choice-icon" style="background:var(--zp-primary-light);color:var(--zp-primary)"><i class="bi bi-hourglass-split"></i></div>
+          <h4>Wait it out</h4>
+          <p>Most maintenance windows are short. Close this tab and check back in a little while — no action needed on your end.</p>
+        </div>
+        <div class="mnt-choice">
+          <div class="mnt-choice-icon" style="background:var(--zp-amber-light);color:var(--zp-amber)"><i class="bi bi-chat-dots"></i></div>
+          <h4>Talk to us</h4>
+          <p>Urgent, or been a while? Reach the site owner directly using the contact options below.</p>
+          <a class="mnt-link-btn" href="#mntContact" onclick="document.getElementById('mntContactBox').classList.add('show')">Show contact options <i class="bi bi-arrow-down"></i></a>
+        </div>
+      </div>
+
+      <div class="mnt-section-label">Why does this happen?</div>
+      <div class="mnt-why">
+        <div class="mnt-why-row">
+          <div class="mnt-why-icon" style="background:var(--zp-primary-light);color:var(--zp-primary)"><i class="bi bi-stars"></i></div>
+          <div><strong>New features being added</strong><span>We occasionally take the platform offline briefly to safely roll out new functionality.</span></div>
+        </div>
+        <div class="mnt-why-row">
+          <div class="mnt-why-icon" style="background:#FEF2F2;color:#DC2626"><i class="bi bi-bug"></i></div>
+          <div><strong>Bug &amp; error fixes</strong><span>Sometimes an issue needs a fix applied server-side, which briefly pauses live traffic.</span></div>
+        </div>
+        <div class="mnt-why-row">
+          <div class="mnt-why-icon" style="background:var(--zp-amber-light);color:var(--zp-amber)"><i class="bi bi-shield-check"></i></div>
+          <div><strong>Routine upkeep</strong><span>Regular maintenance keeps payments, withdrawals, and your wallet running reliably.</span></div>
+        </div>
+      </div>
+
+      <div class="mnt-contact-box" id="mntContactBox">
+        <div class="mnt-section-label" style="margin-bottom:6px" id="mntContact">Contact the site owner</div>
+        <p style="font-size:12.5px;color:var(--zp-text-muted);margin:0">Reach out on any of these — someone will get back to you.</p>
+        <div class="mnt-contact-links" id="mntContactLinks">
+          <span class="mnt-contact-chip"><i class="bi bi-arrow-repeat"></i> Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mnt-footer">This page refreshes automatically once the platform is back — no need to keep checking manually.</div>
+</div>
+
+<script>
+// Same backend URL as index.html — kept in sync manually since this page
+// is opened as its own tab and doesn't inherit globals from the opener.
+const API_URL = "https://paymentbackend-ruby.vercel.app";
+
+async function loadContactInfo() {
+  const linksEl = document.getElementById('mntContactLinks');
+  try {
+    const res = await fetch(`${API_URL}/api/config`, { cache: 'no-store' }).then(r => r.json());
+    if (!res?.success) throw new Error('config fetch failed');
+    document.getElementById('mntSiteName').textContent = res.data.siteName || 'ZapPay';
+    document.title = `${res.data.siteName || 'ZapPay'} — Under Maintenance`;
+
+    const icons = { telegram:'bi-telegram', instagram:'bi-instagram', youtube:'bi-youtube', whatsapp:'bi-whatsapp' };
+    const social = res.data.socialLinks || {};
+    const chips = Object.entries(social)
+      .filter(([, v]) => v?.enabled && v?.url)
+      .map(([key, v]) => `<a class="mnt-contact-chip" href="${v.url}" target="_blank" rel="noopener"><i class="bi ${icons[key]||'bi-link-45deg'}"></i>${key.charAt(0).toUpperCase()+key.slice(1)}</a>`);
+
+    if (res.data.supportEmail) {
+      chips.push(`<a class="mnt-contact-chip" href="mailto:${res.data.supportEmail}"><i class="bi bi-envelope"></i>${res.data.supportEmail}</a>`);
+    }
+    linksEl.innerHTML = chips.length ? chips.join('') : `<span class="mnt-contact-chip"><i class="bi bi-info-circle"></i>No contact info configured yet</span>`;
+
+    // Once maintenance is actually turned off, offer a quick way back in
+    // rather than leaving the person stuck on an info page.
+    if (!res.data.maintenanceMode) {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:var(--zp-primary-light);border:1px solid #BFDBFE;border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#1D4ED8';
+      banner.innerHTML = `<i class="bi bi-check-circle-fill"></i>We're back online! <a href="https://panel.zappay.shop/" style="color:#1D4ED8;text-decoration:underline;margin-left:auto">Return to ZapPay →</a>`;
+      document.querySelector('.mnt-card').before(banner);
+    }
+  } catch (e) {
+    linksEl.innerHTML = `<span class="mnt-contact-chip"><i class="bi bi-exclamation-circle"></i>Contact info unavailable right now</span>`;
+  }
+}
+loadContactInfo();
+
+// Lightly re-check every 30s so the "we're back online" banner can appear
+// without the person needing to manually refresh.
+setInterval(loadContactInfo, 30000);
+</script>
+</body>
+</html>

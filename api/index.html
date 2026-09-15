@@ -1,0 +1,3515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ZapAPI — Developer Documentation | ZapPay</title>
+<meta name="description" content="Integrate ZapPay's UPI payment gateway into your website or app. Create orders, verify payments, and handle errors — HTML/JS, PHP and Java, with full error reference.">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lexend:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  /* surfaces */
+  --void:        #06070B;
+  --bg:          #0A0B11;
+  --bg-soft:     #0D0E16;
+  --surface:     #12131C;
+  --surface-2:   #171825;
+  --surface-hi:  #1D1F2E;
+  --border:      #23253699;
+  --border-soft: #1A1B27;
+  --border-hi:   #34364A;
+
+  /* text */
+  --ink:         #F1F2F6;
+  --ink-dim:     #A6A8BD;
+  --ink-faint:   #6E7086;
+  --ink-ghost:   #45465A;
+
+  /* brand — indigo → violet → magenta */
+  --v1:          #6366F1;
+  --v2:          #8B5CF6;
+  --v3:          #C026D3;
+  --brand:       #8B5CF6;
+  --brand-ink:   #C4B5FD;
+  --brand-soft:  #8B5CF61A;
+  --brand-border:#8B5CF64D;
+  --grad:        linear-gradient(135deg, var(--v1), var(--v2) 55%, var(--v3));
+  --grad-text:   linear-gradient(90deg, #A5B4FC, #C4B5FD 45%, #F0ABFC);
+
+  /* semantic */
+  --good:        #34D399;
+  --good-soft:   #34D3991A;
+  --good-border: #34D3994D;
+  --warn:        #FBBF24;
+  --warn-soft:   #FBBF241A;
+  --warn-border: #FBBF244D;
+  --bad:         #FB7185;
+  --bad-soft:    #FB71851A;
+  --bad-border:  #FB71854D;
+  --info:        #38BDF8;
+  --info-soft:   #38BDF81A;
+  --info-border: #38BDF84D;
+
+  /* code */
+  --code-bg:     #0B0C13;
+  --code-border: #1C1D2B;
+  --code-ink:    #DDE1F0;
+
+  /* geometry */
+  --radius-sm:   9px;
+  --radius:      14px;
+  --radius-lg:   20px;
+  --radius-xl:   26px;
+  --shell-w:     1360px;
+  --content-w:   760px;
+
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.02) inset, 0 20px 50px -25px rgba(0,0,0,0.7);
+  --shadow-pop:  0 30px 80px -20px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  --shadow-glow: 0 0 0 1px var(--brand-border), 0 8px 30px -8px rgba(139,92,246,0.45);
+
+  --ease: cubic-bezier(.16,.8,.24,1);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+::selection{background:#8B5CF64D; color:#fff;}
+body{
+  margin:0;
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.6;
+  font-size:15px;
+  overflow-x:hidden;
+}
+a{color:var(--brand-ink); text-decoration:none;}
+code, pre, .mono{font-family:'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;}
+h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#26283A; border-radius:99px; border:2px solid var(--bg);}
+::-webkit-scrollbar-thumb:hover{background:#34364A;}
+:focus-visible{outline:2px solid var(--v2); outline-offset:2px; border-radius:4px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND
+   ============================================================ */
+.ambient{
+  position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+.ambient::before{
+  content:''; position:absolute; top:-20%; left:50%; width:1400px; height:900px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(99,102,241,0.16), rgba(139,92,246,0.07) 40%, transparent 70%);
+  filter:blur(10px);
+}
+.ambient::after{
+  content:''; position:absolute; bottom:-30%; right:-10%; width:900px; height:900px;
+  background:radial-gradient(ellipse at center, rgba(192,38,211,0.10), transparent 65%);
+}
+.grain{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.025; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar{
+  position:sticky; top:0; z-index:60;
+  display:flex; align-items:center; gap:14px;
+  height:64px; padding:0 18px;
+  background:rgba(8,9,13,0.75);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border-bottom:1px solid var(--border-soft);
+}
+.drawer-btn{
+  display:flex; align-items:center; justify-content:center;
+  width:38px; height:38px; flex-shrink:0;
+  background:var(--surface); border:1px solid var(--border-hi); border-radius:10px;
+  color:var(--ink-dim); font-size:16px; cursor:pointer;
+  transition:all .15s var(--ease);
+}
+.drawer-btn:hover{color:var(--ink); border-color:#4A4D66; background:var(--surface-2);}
+.menu-wrap{position:relative; flex-shrink:0;}
+.menu-wrap.open .drawer-btn{color:#fff; border-color:var(--v2); background:var(--brand-soft);}
+.dropdown-menu{
+  position:absolute; top:calc(100% + 10px); left:0; z-index:70;
+  width:288px; padding:8px;
+  background:var(--surface); border:1px solid var(--border-hi); border-radius:16px;
+  box-shadow:var(--shadow-pop);
+  opacity:0; visibility:hidden; transform:translateY(-6px) scale(0.98);
+  transition:opacity .16s var(--ease), transform .16s var(--ease), visibility .16s;
+  transform-origin:top left;
+}
+.menu-wrap.open .dropdown-menu{opacity:1; visibility:visible; transform:translateY(0) scale(1);}
+.dropdown-item{
+  display:flex; align-items:center; gap:11px; width:100%;
+  padding:10px 10px; border:none; background:none; border-radius:11px;
+  cursor:pointer; text-align:left; transition:background .12s var(--ease);
+}
+.dropdown-item:hover{background:var(--surface-2);}
+.dropdown-item + .dropdown-item{margin-top:1px;}
+.di-icon{
+  flex-shrink:0; width:32px; height:32px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center; font-size:14px;
+  background:var(--surface-2); color:var(--ink-dim); border:1px solid var(--border-hi);
+}
+.di-icon.builtin{background:var(--brand-soft); color:var(--brand-ink); border-color:var(--brand-border);}
+.di-text{flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;}
+.di-text strong{font-size:13px; font-weight:700; color:var(--ink);}
+.di-text span{font-size:11px; color:var(--ink-ghost); line-height:1.3;}
+.di-chev{font-size:12px; color:var(--ink-ghost); flex-shrink:0;}
+.di-soon{
+  flex-shrink:0; font-size:9.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--ink-ghost); background:var(--surface-hi); border:1px solid var(--border-hi);
+  padding:3px 7px; border-radius:999px;
+}
+.brand-mark{
+  display:flex; align-items:center; gap:10px; flex-shrink:0; min-width:0;
+}
+.brand-glyph{
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  background:var(--grad);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:#fff; overflow:hidden;
+  box-shadow:0 4px 16px -4px rgba(139,92,246,0.6);
+}
+.brand-glyph img{width:100%; height:100%; object-fit:cover; display:block;}
+.brand-text{display:flex; flex-direction:column; line-height:1.2; min-width:0;}
+.brand-text strong{font-size:15px; font-weight:800; letter-spacing:-0.01em; white-space:nowrap;}
+.brand-text span{font-size:11px; color:var(--ink-faint); font-weight:600; letter-spacing:.02em;}
+.topbar-spacer{flex:1;}
+.topbar-actions{display:flex; align-items:center; gap:8px;}
+.status-chip{
+  display:flex; align-items:center; gap:7px;
+  padding:7px 12px; border-radius:999px;
+  background:var(--good-soft); border:1px solid var(--good-border);
+  font-size:12px; font-weight:700; color:var(--good);
+  white-space:nowrap;
+}
+.status-chip .dot{width:6px; height:6px; border-radius:50%; background:var(--good); box-shadow:0 0 0 3px rgba(52,211,153,0.25); animation:pulse-dot 2s infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1;} 50%{opacity:.4;}}
+.toc-btn-mobile{
+  display:none; align-items:center; gap:6px;
+  padding:8px 13px; background:var(--surface); border:1px solid var(--border-hi); border-radius:999px;
+  font-size:12.5px; font-weight:700; color:var(--ink); cursor:pointer;
+}
+
+/* ============================================================
+   MOBILE TOC BOTTOM SHEET
+   ============================================================ */
+.toc-overlay{
+  position:fixed; inset:0; z-index:90;
+  background:rgba(4,4,8,0.68); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  display:flex; align-items:flex-end; justify-content:center;
+  opacity:0; visibility:hidden; transition:opacity .22s var(--ease), visibility .22s;
+}
+.toc-overlay.open{opacity:1; visibility:visible;}
+.toc-sheet{
+  width:100%; max-width:560px; max-height:78vh; overflow-y:auto;
+  background:var(--bg-soft); border:1px solid var(--border-hi); border-bottom:none;
+  border-radius:22px 22px 0 0;
+  padding:10px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+  box-shadow:0 -20px 60px -20px rgba(0,0,0,0.7);
+  transform:translateY(100%); transition:transform .28s var(--ease);
+}
+.toc-overlay.open .toc-sheet{transform:translateY(0);}
+.toc-handle{width:38px; height:4px; border-radius:99px; background:var(--border-hi); margin:6px auto 16px;}
+.toc-sheet h3{font-size:16px; font-weight:800; color:var(--ink); margin:0 0 14px; padding:0 2px;}
+.toc-item{
+  display:flex; align-items:center; gap:13px;
+  padding:12px 10px; border-radius:12px; cursor:pointer;
+  font-size:14.5px; font-weight:600; color:var(--ink-dim);
+  transition:background .12s var(--ease);
+}
+.toc-item:active{background:var(--surface-2);}
+.toc-item + .toc-item{margin-top:2px;}
+.toc-num{
+  flex-shrink:0; width:26px; height:26px; border-radius:8px;
+  background:var(--surface-2); border:1px solid var(--border-hi); color:var(--ink-faint);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800; font-family:'JetBrains Mono',monospace;
+}
+.toc-item.ai{
+  margin-top:10px; padding-top:14px; border-top:1px solid var(--border-soft); border-radius:12px;
+  color:var(--brand-ink); font-weight:700;
+}
+.toc-item.ai .toc-num{background:var(--grad); color:#fff; border:none; font-size:13px;}
+
+/* ============================================================
+   SHELL LAYOUT — sidebar / content / right rail
+   ============================================================ */
+.shell{
+  position:relative; z-index:1;
+  max-width:var(--shell-w); margin:0 auto;
+  display:grid;
+  grid-template-columns:248px minmax(0,1fr) 268px;
+  gap:0;
+  align-items:start;
+}
+.sidebar{
+  position:sticky; top:64px; height:calc(100vh - 64px);
+  overflow-y:auto; padding:24px 14px 40px;
+  border-right:1px solid var(--border-soft);
+}
+.side-group{margin-bottom:22px;}
+.side-label{
+  font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-ghost); padding:0 10px; margin-bottom:8px;
+}
+.side-link{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px; border-radius:9px;
+  font-size:13.5px; font-weight:600; color:var(--ink-dim);
+  cursor:pointer; transition:all .12s var(--ease);
+}
+.side-link i{font-size:14px; width:16px; text-align:center; flex-shrink:0; color:var(--ink-ghost);}
+.side-link:hover{background:var(--surface); color:var(--ink);}
+.side-link:hover i{color:var(--ink-dim);}
+.side-link.active{background:var(--brand-soft); color:var(--brand-ink);}
+.side-link.active i{color:var(--brand-ink);}
+.side-link.num-active{position:relative;}
+.side-link.num-active::before{
+  content:''; position:absolute; left:-14px; top:50%; transform:translateY(-50%);
+  width:3px; height:16px; border-radius:99px; background:var(--grad);
+}
+
+.content-col{
+  min-width:0; padding:0 28px;
+  border-right:1px solid var(--border-soft);
+}
+
+.rail{
+  position:sticky; top:64px; height:calc(100vh - 64px);
+  overflow-y:auto; padding:24px 16px 40px 20px;
+}
+.rail-card{
+  background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius);
+  padding:16px; margin-bottom:14px;
+}
+.rail-card h4{
+  font-size:11px; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-faint); margin:0 0 12px;
+}
+.rail-toc-item{
+  display:block; padding:6px 0; font-size:13px; font-weight:600; color:var(--ink-dim);
+  cursor:pointer; border-left:2px solid transparent; padding-left:10px; margin-left:-1px;
+  transition:all .12s var(--ease);
+}
+.rail-toc-item:hover{color:var(--ink);}
+.rail-toc-item.active{color:var(--brand-ink); border-left-color:var(--v2);}
+.rail-toc-sub{padding-left:22px; font-size:12px; color:var(--ink-faint); font-weight:500;}
+.rail-toc-sub:hover{color:var(--ink-dim);}
+.rail-cta{
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  width:100%; padding:10px; margin-top:4px;
+  background:var(--grad); color:#fff; border:none; border-radius:10px;
+  font-size:12.5px; font-weight:700; cursor:pointer;
+  box-shadow:0 6px 20px -8px rgba(139,92,246,0.6);
+}
+
+@media (max-width:1180px){
+  .rail{display:none;}
+  .shell{grid-template-columns:230px minmax(0,1fr);}
+}
+@media (max-width:860px){
+  .sidebar{display:none;}
+  .shell{grid-template-columns:minmax(0,1fr); display:block;}
+  .content-col{border-right:none; padding:0 14px;}
+  .toc-btn-mobile{display:flex;}
+  .brand-text span{display:none;}
+  .status-chip span.chip-text{display:none;}
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{padding:36px 0 30px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:11.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--brand-ink); background:var(--brand-soft); border:1px solid var(--brand-border);
+  padding:6px 12px; border-radius:999px; margin-bottom:18px;
+}
+.eyebrow i{font-size:11px;}
+.hero h1{
+  font-size:38px; font-weight:800; margin:0 0 14px; line-height:1.12;
+  color:var(--ink);
+}
+.hero h1 .accent{
+  background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero p{font-size:16px; color:var(--ink-dim); margin:0 0 26px; max-width:58ch; line-height:1.65;}
+.hero-actions{display:flex; gap:10px; flex-wrap:wrap;}
+.btn-primary{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 20px; background:var(--grad); color:#fff; border:none; border-radius:11px;
+  font-size:14px; font-weight:700; cursor:pointer;
+  box-shadow:0 10px 30px -10px rgba(139,92,246,0.55);
+  transition:transform .15s var(--ease), box-shadow .15s var(--ease);
+}
+.btn-primary:hover{transform:translateY(-1px); box-shadow:0 14px 34px -8px rgba(139,92,246,0.65);}
+.btn-primary:active{transform:translateY(0);}
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 18px; background:var(--surface); color:var(--ink); border:1px solid var(--border-hi); border-radius:11px;
+  font-size:14px; font-weight:700; cursor:pointer;
+  transition:all .15s var(--ease);
+}
+.btn-ghost:hover{background:var(--surface-2); border-color:#4A4D66;}
+
+/* feature pills row */
+.feature-row{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:28px;}
+.feature-pill{
+  background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius);
+  padding:16px; transition:border-color .2s var(--ease), transform .2s var(--ease);
+}
+.feature-pill:hover{border-color:var(--border-hi); transform:translateY(-2px);}
+.feature-pill .fp-icon{
+  width:32px; height:32px; border-radius:9px; margin-bottom:11px;
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+  background:var(--brand-soft); color:var(--brand-ink);
+}
+.feature-pill strong{display:block; font-size:13.5px; font-weight:700; margin-bottom:4px;}
+.feature-pill span{font-size:12px; color:var(--ink-faint); line-height:1.5; display:block;}
+
+@media (max-width:640px){
+  .hero h1{font-size:28px;}
+  .feature-row{grid-template-columns:1fr;}
+}
+
+/* ============================================================
+   SECTION / DOC CARD SYSTEM
+   ============================================================ */
+.sec{scroll-margin-top:80px; padding:38px 0; border-bottom:1px solid var(--border-soft);}
+.sec:last-of-type{border-bottom:none;}
+.sec-head{display:flex; align-items:center; gap:13px; margin-bottom:18px;}
+.sec-num{
+  flex-shrink:0; width:30px; height:30px; border-radius:9px;
+  background:var(--surface-2); border:1px solid var(--border-hi); color:var(--brand-ink);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12.5px; font-weight:800; font-family:'JetBrains Mono',monospace;
+}
+.sec-head h2{font-size:21px; font-weight:700; margin:0; color:var(--ink);}
+.sec-kicker{font-size:11.5px; color:var(--ink-ghost); font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin:-8px 0 16px 43px;}
+.sec-body{color:var(--ink-dim); font-size:14.5px;}
+.sec-body p{margin:0 0 14px; line-height:1.7;}
+.sec-body h3{font-size:14.5px; font-weight:700; margin:24px 0 10px; color:var(--ink);}
+.sec-body h3:first-child{margin-top:0;}
+.sec-body ul, .sec-body ol{padding-left:20px; margin:0 0 14px; line-height:1.75;}
+.sec-body li{margin-bottom:7px;}
+.sec-body li::marker{color:var(--ink-ghost);}
+.sec-body strong{font-weight:700; color:var(--ink);}
+.sec-body code{
+  background:var(--surface-2); border:1px solid var(--border-hi); color:#E5C9FF;
+  padding:2px 6px; border-radius:5px; font-size:12.5px;
+}
+.sec-body a{border-bottom:1px solid var(--brand-border); transition:border-color .15s;}
+.sec-body a:hover{border-color:var(--brand-ink);}
+
+/* ===== Callouts ===== */
+.callout{
+  display:flex; gap:11px; align-items:flex-start;
+  padding:14px 15px; border-radius:12px; margin:16px 0;
+  font-size:13.5px; border:1px solid transparent; line-height:1.6;
+}
+.callout i{font-size:16px; margin-top:2px; flex-shrink:0;}
+.callout.warning{background:var(--warn-soft); border-color:var(--warn-border); color:#FDE199;}
+.callout.warning i{color:var(--warn);}
+.callout.danger{background:var(--bad-soft); border-color:var(--bad-border); color:#FFC3CC;}
+.callout.danger i{color:var(--bad);}
+.callout.info{background:var(--info-soft); border-color:var(--info-border); color:#BAE6FD;}
+.callout.info i{color:var(--info);}
+.callout.good{background:var(--good-soft); border-color:var(--good-border); color:#A7F3D0;}
+.callout.good i{color:var(--good);}
+.callout strong{color:inherit;}
+.callout code{background:rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.12); color:inherit;}
+
+/* ===== Method + endpoint ===== */
+.endpoint{
+  display:flex; align-items:center; gap:11px; margin:16px 0 6px; flex-wrap:wrap;
+  padding:11px 14px; background:var(--code-bg); border:1px solid var(--code-border); border-radius:10px;
+}
+.method{
+  font-size:11px; font-weight:800; letter-spacing:.03em;
+  padding:4px 10px; border-radius:6px; flex-shrink:0; font-family:'JetBrains Mono',monospace;
+}
+.method.get{background:#0C3B2E; color:#5EEAD4;}
+.method.post{background:#1E2A5E; color:#93C5FD;}
+.endpoint-path{font-size:13px; font-weight:600; color:var(--code-ink); word-break:break-all; font-family:'JetBrains Mono',monospace;}
+
+/* ===== Param table ===== */
+.table-wrap{overflow-x:auto; margin:14px 0 18px; border:1px solid var(--border-soft); border-radius:12px;}
+.param-table{width:100%; border-collapse:collapse; font-size:13px; min-width:520px;}
+.param-table th{
+  text-align:left; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink-ghost); padding:11px 14px; background:var(--surface); border-bottom:1px solid var(--border-hi);
+}
+.param-table td{padding:12px 14px; border-bottom:1px solid var(--border-soft); vertical-align:top; color:var(--ink-dim); line-height:1.6;}
+.param-table tr:last-child td{border-bottom:none;}
+.param-table tbody tr:hover{background:#ffffff05;}
+.param-table code{background:var(--surface-2); border:1px solid var(--border-hi); padding:2px 6px; border-radius:5px; font-size:12px; color:#E5C9FF;}
+.req-yes{color:var(--bad); font-weight:700; font-size:11.5px;}
+.req-no{color:var(--ink-ghost); font-size:11.5px;}
+
+/* ===== Code blocks ===== */
+.code-block{
+  position:relative; background:var(--code-bg); border:1px solid var(--code-border); border-radius:12px;
+  margin:14px 0; overflow:hidden;
+}
+.code-block-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 13px; border-bottom:1px solid var(--code-border); background:#0D0E17;
+}
+.code-block-label{font-size:11.5px; color:var(--ink-faint); font-weight:600; font-family:'JetBrains Mono',monospace;}
+.copy-btn{
+  display:flex; align-items:center; gap:5px;
+  background:var(--surface-2); border:1px solid var(--border-hi); border-radius:7px;
+  color:var(--ink-dim); font-size:11.5px; font-weight:600;
+  padding:5px 10px; cursor:pointer; flex-shrink:0;
+  transition:all .15s var(--ease);
+}
+.copy-btn:hover{background:var(--surface-hi); color:var(--ink); border-color:#4A4D66;}
+.copy-btn.copied{background:var(--good-soft); border-color:var(--good-border); color:var(--good);}
+.code-block pre{
+  margin:0; padding:15px; overflow-x:auto;
+  font-size:12.5px; line-height:1.7; color:var(--code-ink);
+}
+.code-block code{font-size:inherit; background:none; border:none; padding:0; color:inherit; font-family:'JetBrains Mono',monospace;}
+.tok-key{color:#93C5FD;}
+.tok-str{color:#86EFAC;}
+.tok-num{color:#FCA5A5;}
+.tok-com{color:#6B7089; font-style:italic;}
+.tok-kw{color:#D8B4FE;}
+.tok-fn{color:#FDE68A;}
+.tok-punct{color:#7D8099;}
+
+/* ===== Language tabs ===== */
+.lang-tabs{display:flex; gap:5px; margin:16px 0 6px; padding:5px; background:var(--surface); border:1px solid var(--border-soft); border-radius:12px; overflow-x:auto;}
+.lang-tab{
+  display:flex; align-items:center; gap:7px;
+  padding:9px 15px; font-size:13px; font-weight:700; color:var(--ink-faint);
+  background:none; border:none; border-radius:9px;
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+  transition:all .15s var(--ease);
+}
+.lang-tab:hover{color:var(--ink-dim);}
+.lang-tab.active{color:#fff; background:var(--grad); box-shadow:0 4px 14px -4px rgba(139,92,246,0.6);}
+.lang-pane{display:none;}
+.lang-pane.active{display:block; animation:fadeIn .25s var(--ease);}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+.lang-copy-btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:13px 16px; margin-top:16px;
+  background:var(--surface); color:var(--ink); border:1px solid var(--border-hi); border-radius:12px;
+  font-size:13.5px; font-weight:700; cursor:pointer;
+  transition:all .15s var(--ease);
+}
+.lang-copy-btn:hover{background:var(--surface-2); border-color:var(--v2); color:#fff;}
+.lang-copy-btn.copied{background:var(--good-soft); color:var(--good); border-color:var(--good-border);}
+
+/* ============================================================
+   ERROR REFERENCE CARDS
+   ============================================================ */
+.err-filter{display:flex; gap:7px; margin:16px 0 20px; flex-wrap:wrap;}
+.err-chip{
+  padding:7px 13px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer;
+  background:var(--surface); border:1px solid var(--border-hi); color:var(--ink-dim);
+  transition:all .15s var(--ease);
+}
+.err-chip:hover{border-color:#4A4D66; color:var(--ink);}
+.err-chip.active{background:var(--grad); color:#fff; border-color:transparent;}
+
+.err-card{
+  border:1px solid var(--border-soft); border-radius:14px; margin-bottom:14px; overflow:hidden;
+  background:var(--surface); transition:border-color .2s var(--ease);
+}
+.err-card[data-cat]{}
+.err-card:hover{border-color:var(--border-hi);}
+.err-card-head{
+  display:flex; align-items:center; gap:12px; padding:15px 16px; cursor:pointer;
+  user-select:none;
+}
+.err-code{
+  flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
+  padding:5px 9px; border-radius:7px; min-width:42px; text-align:center;
+}
+.err-code.c401{background:#3A1E1E; color:#FCA5A5;}
+.err-code.c403{background:#3A1E1E; color:#FCA5A5;}
+.err-code.c400{background:#3A2E14; color:#FCD34D;}
+.err-code.c404{background:#1E2A3A; color:#7DD3FC;}
+.err-code.c429{background:#2E1E3A; color:#D8B4FE;}
+.err-code.c503{background:#2E1E3A; color:#D8B4FE;}
+.err-name{flex:1; min-width:0;}
+.err-name strong{display:block; font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:2px;}
+.err-name span{font-size:11.5px; color:var(--ink-ghost); font-family:'JetBrains Mono',monospace;}
+.err-chev{color:var(--ink-ghost); font-size:14px; transition:transform .2s var(--ease); flex-shrink:0;}
+.err-card.open .err-chev{transform:rotate(180deg);}
+.err-body{
+  max-height:0; overflow:hidden; transition:max-height .3s var(--ease);
+}
+.err-card.open .err-body{max-height:600px;}
+.err-body-inner{padding:0 16px 18px; border-top:1px solid var(--border-soft); margin-top:2px;}
+.err-block{padding-top:14px;}
+.err-block-label{
+  display:flex; align-items:center; gap:6px;
+  font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
+  margin-bottom:6px;
+}
+.err-block-label.why{color:var(--warn);}
+.err-block-label.fix{color:var(--good);}
+.err-block p{margin:0 0 10px; font-size:13px; color:var(--ink-dim); line-height:1.65;}
+.err-block p:last-child{margin-bottom:0;}
+.err-payload{
+  background:var(--code-bg); border:1px solid var(--code-border); border-radius:9px;
+  padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--code-ink);
+  margin:8px 0 12px; overflow-x:auto; line-height:1.6;
+}
+
+/* ============================================================
+   AI COPY CARD
+   ============================================================ */
+.ai-card{
+  position:relative; overflow:hidden;
+  border-radius:var(--radius-xl); margin:34px 0 18px;
+  padding:2px; background:var(--grad); isolation:isolate;
+}
+.ai-card-inner{
+  background:#0A0A14; border-radius:24px; padding:34px 30px;
+  position:relative; overflow:hidden;
+}
+.ai-card-inner::before{
+  content:''; position:absolute; inset:0; z-index:0;
+  background:radial-gradient(circle at 15% -10%, rgba(139,92,246,0.35), transparent 55%),
+             radial-gradient(circle at 100% 120%, rgba(192,38,211,0.2), transparent 50%);
+  pointer-events:none;
+}
+.ai-badge{
+  position:relative; display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  color:#D8C6FF; background:rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.35);
+  padding:6px 12px; border-radius:999px; margin-bottom:16px;
+}
+.ai-card-inner h2{position:relative; color:#fff; font-size:26px; font-weight:800; margin:0 0 11px;}
+.ai-card-inner p{position:relative; color:#9FA1B8; font-size:14.5px; margin:0 0 22px; max-width:54ch; line-height:1.65;}
+.ai-copy-btn{
+  position:relative;
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  width:100%; max-width:380px; padding:15px 20px;
+  background:#fff; color:#15161F;
+  border:none; border-radius:13px;
+  font-size:14.5px; font-weight:800; cursor:pointer;
+  box-shadow:0 12px 32px -8px rgba(139,92,246,0.5);
+  transition:transform .15s var(--ease);
+}
+.ai-copy-btn:hover{transform:translateY(-1px);}
+.ai-copy-btn:active{transform:translateY(0) scale(0.99);}
+.ai-card-foot{position:relative; display:flex; gap:18px; margin-top:18px; flex-wrap:wrap;}
+.ai-card-foot span{display:flex; align-items:center; gap:6px; font-size:12px; color:#8385A0; font-weight:600;}
+.ai-card-foot i{color:var(--good); font-size:12px;}
+
+.footer{
+  text-align:center; padding:34px 16px 30px; font-size:12.5px; color:var(--ink-ghost); line-height:1.8;
+}
+.footer a{color:var(--ink-faint); text-decoration:underline;}
+
+@media (max-width:640px){
+  .ai-card-inner{padding:26px 20px;}
+  .ai-card-inner h2{font-size:21px;}
+}
+
+/* ============================================================
+   MODAL — Copy docs (4 options)
+   ============================================================ */
+.modal-overlay{
+  position:fixed; inset:0; z-index:100;
+  background:rgba(4,4,8,0.72); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition:opacity .2s var(--ease);
+}
+.modal-overlay.open{opacity:1; pointer-events:auto;}
+.modal-box{
+  width:100%; max-width:460px; max-height:88vh; overflow-y:auto;
+  background:var(--surface); border:1px solid var(--border-hi); border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-pop);
+  transform:scale(0.94) translateY(10px); transition:transform .25s var(--ease);
+}
+.modal-overlay.open .modal-box{transform:scale(1) translateY(0);}
+.modal-head{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  padding:22px 22px 6px;
+}
+.modal-head h3{font-size:18px; font-weight:800; margin:0 0 6px; color:var(--ink);}
+.modal-head p{font-size:13px; color:var(--ink-faint); margin:0; line-height:1.55;}
+.modal-close{
+  flex-shrink:0; width:30px; height:30px; border-radius:9px;
+  background:var(--surface-2); border:1px solid var(--border-hi); color:var(--ink-dim);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px;
+  transition:all .15s var(--ease);
+}
+.modal-close:hover{background:var(--surface-hi); color:#fff;}
+.modal-options{padding:14px 22px 22px; display:flex; flex-direction:column; gap:9px;}
+.copy-option{
+  display:flex; align-items:center; gap:13px; width:100%;
+  padding:13px 14px; background:var(--surface-2); border:1px solid var(--border-hi); border-radius:13px;
+  cursor:pointer; text-align:left; transition:all .15s var(--ease);
+}
+.copy-option:hover{background:var(--surface-hi); border-color:#4A4D66; transform:translateX(2px);}
+.copy-option.copied{background:var(--good-soft); border-color:var(--good-border);}
+.co-icon{
+  flex-shrink:0; width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:17px; color:#fff;
+}
+.co-icon.all{background:var(--grad);}
+.co-icon.html{background:linear-gradient(135deg,#F97316,#EA580C);}
+.co-icon.php{background:linear-gradient(135deg,#818CF8,#6366F1);}
+.co-icon.java{background:linear-gradient(135deg,#F87171,#DC2626);}
+.co-icon.kotlin{background:linear-gradient(135deg,#C084FC,#9333EA);}
+.co-icon.node{background:linear-gradient(135deg,#4ADE80,#16A34A);}
+.co-icon.js{background:linear-gradient(135deg,#FDE047,#CA8A04);}
+.co-icon.python{background:linear-gradient(135deg,#60A5FA,#2563EB);}
+.co-text{flex:1; min-width:0;}
+.co-text strong{display:block; font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:2px;}
+.co-text span{font-size:11.5px; color:var(--ink-ghost); line-height:1.4; display:block;}
+.co-status{flex-shrink:0; font-size:16px; color:var(--ink-ghost); transition:color .15s;}
+.copy-option.copied .co-status{color:var(--good);}
+
+/* ===== Coming Soon popup ===== */
+.soon-box{max-width:360px;}
+.soon-inner{padding:30px 26px 26px; text-align:center;}
+.soon-icon{
+  width:56px; height:56px; margin:0 auto 18px; border-radius:16px;
+  background:var(--brand-soft); border:1px solid var(--brand-border); color:var(--brand-ink);
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+}
+.soon-inner h3{font-size:17px; font-weight:800; color:var(--ink); margin:0 0 8px;}
+.soon-inner p{font-size:13px; color:var(--ink-faint); line-height:1.6; margin:0 0 22px;}
+.soon-inner .btn-primary{width:100%; justify-content:center;}
+.soon-close-x{
+  position:absolute; top:14px; right:14px;
+  width:28px; height:28px; border-radius:8px;
+  background:var(--surface-2); border:1px solid var(--border-hi); color:var(--ink-dim);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px;
+}
+.soon-close-x:hover{background:var(--surface-hi); color:#fff;}
+
+/* ============================================================
+   DRAWER — Built-in Prompts (left slide-in)
+   ============================================================ */
+.drawer-overlay{
+  position:fixed; inset:0; z-index:110;
+  background:rgba(4,4,8,0.65); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  opacity:0; pointer-events:none; transition:opacity .25s var(--ease);
+}
+.drawer-overlay.open{opacity:1; pointer-events:auto;}
+.drawer-panel{
+  position:fixed; top:0; left:0; bottom:0; z-index:111;
+  width:100%; max-width:460px;
+  background:var(--bg-soft); border-right:1px solid var(--border-hi);
+  box-shadow:40px 0 80px -30px rgba(0,0,0,0.6);
+  transform:translateX(-100%); transition:transform .3s var(--ease);
+  display:flex; flex-direction:column;
+}
+.drawer-overlay.open .drawer-panel{transform:translateX(0);}
+.drawer-head{
+  display:flex; align-items:center; gap:12px; padding:20px 20px 18px;
+  border-bottom:1px solid var(--border-soft); flex-shrink:0;
+}
+.drawer-head-icon{
+  width:36px; height:36px; border-radius:10px; background:var(--grad);
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; flex-shrink:0;
+}
+.drawer-head-text{flex:1; min-width:0;}
+.drawer-head-text strong{display:block; font-size:15px; font-weight:800; color:var(--ink);}
+.drawer-head-text span{font-size:11.5px; color:var(--ink-ghost);}
+.drawer-body{flex:1; overflow-y:auto; padding:18px 20px 30px;}
+.drawer-intro{font-size:13px; color:var(--ink-dim); line-height:1.65; margin:0 0 20px;}
+.drawer-intro strong{color:var(--ink);}
+
+.prompt-card{
+  border:1px solid var(--border-soft); border-radius:16px; margin-bottom:14px; overflow:hidden;
+  background:var(--surface); transition:border-color .2s var(--ease);
+}
+.prompt-card:hover{border-color:var(--border-hi);}
+.prompt-card-head{display:flex; align-items:center; gap:11px; padding:14px 15px;}
+.pc-icon{
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff;
+}
+.pc-icon.html{background:linear-gradient(135deg,#F97316,#EA580C);}
+.pc-icon.php{background:linear-gradient(135deg,#818CF8,#6366F1);}
+.pc-icon.java{background:linear-gradient(135deg,#F87171,#DC2626);}
+.pc-icon.kotlin{background:linear-gradient(135deg,#C084FC,#9333EA);}
+.pc-icon.node{background:linear-gradient(135deg,#4ADE80,#16A34A);}
+.pc-icon.js{background:linear-gradient(135deg,#FDE047,#CA8A04);}
+.pc-icon.python{background:linear-gradient(135deg,#60A5FA,#2563EB);}
+.pc-text{flex:1; min-width:0;}
+.pc-text strong{display:block; font-size:13.5px; font-weight:700; color:var(--ink);}
+.pc-text span{font-size:11.5px; color:var(--ink-ghost);}
+.prompt-card-body{padding:0 15px 15px;}
+.prompt-card-body p{font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin:0 0 12px;}
+.prompt-preview{
+  background:var(--code-bg); border:1px solid var(--code-border); border-radius:10px;
+  padding:11px 12px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink-ghost);
+  max-height:74px; overflow:hidden; position:relative; margin-bottom:12px; line-height:1.6;
+}
+.prompt-preview::after{
+  content:''; position:absolute; bottom:0; left:0; right:0; height:32px;
+  background:linear-gradient(transparent, var(--code-bg));
+}
+.pc-actions{display:flex; gap:8px;}
+.pc-btn{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:9px 10px; border-radius:9px; font-size:12px; font-weight:700; cursor:pointer;
+  border:1px solid var(--border-hi); background:var(--surface-2); color:var(--ink-dim);
+  transition:all .15s var(--ease);
+}
+.pc-btn:hover{background:var(--surface-hi); color:var(--ink);}
+.pc-btn.primary{background:var(--grad); color:#fff; border-color:transparent;}
+.pc-btn.primary:hover{filter:brightness(1.08);}
+.pc-btn.copied{background:var(--good-soft); border-color:var(--good-border); color:var(--good);}
+
+.drawer-foot{padding:16px 20px; border-top:1px solid var(--border-soft); flex-shrink:0;}
+.drawer-foot-note{
+  display:flex; gap:9px; align-items:flex-start; font-size:11.5px; color:var(--ink-ghost); line-height:1.6;
+}
+.drawer-foot-note i{color:var(--info); font-size:14px; margin-top:1px; flex-shrink:0;}
+
+@media (max-width:520px){
+  .drawer-panel{max-width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<!-- ===== Topbar ===== -->
+<div class="topbar">
+  <div class="menu-wrap" id="menuWrap">
+    <button class="drawer-btn" id="drawerOpenBtn" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" title="Menu">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="dropdown-menu" id="dropdownMenu" role="menu">
+      <button class="dropdown-item" role="menuitem" onclick="closeDropdown(); openPromptDrawer();">
+        <span class="di-icon builtin"><i class="bi bi-stars"></i></span>
+        <span class="di-text"><strong>Built-in Prompts</strong><span>AI integration prompts, ready to copy</span></span>
+        <i class="bi bi-chevron-right di-chev"></i>
+      </button>
+      <button class="dropdown-item" role="menuitem" onclick="closeDropdown(); openSoon('Projects');">
+        <span class="di-icon"><i class="bi bi-folder2"></i></span>
+        <span class="di-text"><strong>Projects</strong><span>Organize integrations by project</span></span>
+        <span class="di-soon">Soon</span>
+      </button>
+      <button class="dropdown-item" role="menuitem" onclick="closeDropdown(); openSoon('Plug-in');">
+        <span class="di-icon"><i class="bi bi-plug"></i></span>
+        <span class="di-text"><strong>Plug-in</strong><span>Extend ZapAPI with plug-ins</span></span>
+        <span class="di-soon">Soon</span>
+      </button>
+      <button class="dropdown-item" role="menuitem" onclick="closeDropdown(); openSoon('Dependency / Library');">
+        <span class="di-icon"><i class="bi bi-box-seam"></i></span>
+        <span class="di-text"><strong>Dependency / Library</strong><span>Official SDKs & packages</span></span>
+        <span class="di-soon">Soon</span>
+      </button>
+    </div>
+  </div>
+  <div class="brand-mark">
+    <div class="brand-glyph"><img src="/favicon.png" alt="ZapPay" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=&quot;bi bi-lightning-charge-fill&quot;></i>';"></div>
+    <div class="brand-text">
+      <strong>ZapAPI</strong>
+      <span>Developer Documentation</span>
+    </div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-actions">
+    <div class="status-chip"><span class="dot"></span><span class="chip-text">All systems operational</span></div>
+    <button class="toc-btn-mobile" id="tocOpenBtn"><i class="bi bi-list-ul"></i> Contents</button>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar" id="sidebarNav">
+    <div class="side-group">
+      <div class="side-label">Documentation</div>
+      <div class="side-link active num-active" data-target="sec-overview" onclick="jumpTo('sec-overview')"><i class="bi bi-house-door"></i> Overview</div>
+      <div class="side-link" data-target="sec-key" onclick="jumpTo('sec-key')"><i class="bi bi-key"></i> Getting your key</div>
+      <div class="side-link" data-target="sec-reference" onclick="jumpTo('sec-reference')"><i class="bi bi-braces"></i> API reference</div>
+      <div class="side-link" data-target="sec-integration" onclick="jumpTo('sec-integration')"><i class="bi bi-code-slash"></i> Integration guide</div>
+      <div class="side-link" data-target="sec-errors" onclick="jumpTo('sec-errors')"><i class="bi bi-bug"></i> Error reference</div>
+      <div class="side-link" data-target="sec-testmode" onclick="jumpTo('sec-testmode')"><i class="bi bi-toggle2-on"></i> Test & Live mode</div>
+      <div class="side-link" data-target="sec-practices" onclick="jumpTo('sec-practices')"><i class="bi bi-shield-check"></i> Best practices</div>
+    </div>
+    <div class="side-group">
+      <div class="side-label">Tools</div>
+      <div class="side-link" onclick="openPromptDrawer()"><i class="bi bi-stars"></i> AI prompts</div>
+      <div class="side-link" onclick="openCopyModal()"><i class="bi bi-clipboard-plus"></i> Copy all docs</div>
+      <div class="side-link" onclick="jumpTo('sec-ai')"><i class="bi bi-arrow-down-circle"></i> Jump to export</div>
+    </div>
+  </aside>
+
+  <!-- ===== Main content ===== -->
+  <main class="content-col" id="mainContent">
+
+    <!-- ===== Hero ===== -->
+    <div class="hero" id="sec-overview">
+      <div class="eyebrow"><i class="bi bi-lightning-charge-fill"></i> API Integration</div>
+      <h1>ZapPay <span class="accent">API Integration</span></h1>
+      <p>Accept UPI payments with three API calls. Create a payment order, send your customer to pay, and confirm the result server-side — built for developers shipping fast.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="jumpTo('sec-reference')"><i class="bi bi-code-slash"></i> View API Reference</button>
+        <button class="btn-ghost" onclick="openPromptDrawer()"><i class="bi bi-stars"></i> AI Integration Prompts</button>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-pill">
+          <div class="fp-icon"><i class="bi bi-shield-check"></i></div>
+          <strong>Secure & Reliable</strong>
+          <span>Key-based auth with per-account scoping and rate limiting</span>
+        </div>
+        <div class="feature-pill">
+          <div class="fp-icon"><i class="bi bi-lightning-charge"></i></div>
+          <strong>Easy Integration</strong>
+          <span>Simple REST endpoints with copy-paste ready examples</span>
+        </div>
+        <div class="feature-pill">
+          <div class="fp-icon"><i class="bi bi-braces-asterisk"></i></div>
+          <strong>Developer Friendly</strong>
+          <span>Real error causes, real fixes — not generic status codes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 1 — OVERVIEW -->
+    <!-- ============================================================ -->
+    <section class="sec" id="sec-key">
+      <div class="sec-head"><div class="sec-num">01</div><h2>Overview & getting your key</h2></div>
+      <div class="sec-body">
+        <p>Every ZapPay account has exactly <strong>one ZapAPI key</strong> — a 32-character secret that authenticates every request you make to ZapAPI. It's the only credential you need.</p>
+
+        <h3>Where to find it</h3>
+        <ol>
+          <li>Log in to your ZapPay dashboard.</li>
+          <li>Go to <strong>Developer Portal → Zap API</strong>.</li>
+          <li>Your key is generated automatically on first visit and shown there — copy it from that screen.</li>
+        </ol>
+
+        <h3>Treat it like a password</h3>
+        <ul>
+          <li>Never expose it in client-side code that ships to end users — the one exception is the JS widget flow (Section 3), where the key runs from your own page directly against ZapPay's API, not a third party's.</li>
+          <li>Never commit it to a public repository.</li>
+          <li>If it leaks, regenerate it immediately from your dashboard. The old key stops working the instant you do — there's no grace period, so update every integration first if you can.</li>
+        </ul>
+
+        <div class="callout info">
+          <i class="bi bi-info-circle-fill"></i>
+          <div>ZapAPI has two parts: a simple REST API (Section 2) for creating orders and checking their status, and an optional JS widget (Section 3) that wraps the REST API in a ready-made popup checkout.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2 — API REFERENCE -->
+    <!-- ============================================================ -->
+    <section class="sec" id="sec-reference">
+      <div class="sec-head"><div class="sec-num">02</div><h2>API reference</h2></div>
+      <div class="sec-body">
+
+        <h3>Base URL</h3>
+        <div class="code-block">
+          <div class="code-block-head">
+            <span class="code-block-label">Base URL</span>
+            <button class="copy-btn" onclick="copyPlain(this, 'https://paymentbackend-ruby.vercel.app')"><i class="bi bi-clipboard"></i> Copy</button>
+          </div>
+          <pre><code>https://paymentbackend-ruby.vercel.app</code></pre>
+        </div>
+
+        <h3>Authentication</h3>
+        <p>Every request must include your ZapAPI key, passed one of two ways — the API accepts either:</p>
+        <ul>
+          <li>As a field named <code>zap_api</code> in the JSON request body, <strong>or</strong></li>
+          <li>As a request header: <code>X-ZapAPI-Key</code></li>
+        </ul>
+
+        <div class="table-wrap">
+          <table class="param-table">
+            <tr><th>Situation</th><th>Response</th></tr>
+            <tr><td>Key missing entirely</td><td><code>401</code> — Missing ZapAPI key...</td></tr>
+            <tr><td>Key is invalid</td><td><code>401</code> — Invalid ZapAPI key</td></tr>
+            <tr><td>Account is suspended</td><td><code>403</code> — This account has been suspended.</td></tr>
+          </table>
+        </div>
+
+        <h3>Rate limit</h3>
+        <p><strong>60 requests per 15 minutes</strong>, bucketed per ZapAPI key (falls back to your IP address if no key is found on the request).</p>
+
+        <!-- Endpoint 1 -->
+        <h3 style="margin-top:30px;">Create order</h3>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <span class="endpoint-path">/api/developer/create-order</span>
+        </div>
+        <p>Creates a new UPI payment order and returns a <code>payment_url</code> to send your customer to. Requires header <code>Content-Type: application/json</code>.</p>
+
+        <div class="table-wrap">
+          <table class="param-table">
+            <tr><th>Field</th><th>Required</th><th>Type</th><th>Notes</th></tr>
+            <tr>
+              <td><code>zap_api</code></td><td><span class="req-yes">Yes*</span></td><td>string</td>
+              <td>*Only if not using the <code>X-ZapAPI-Key</code> header instead.</td>
+            </tr>
+            <tr>
+              <td><code>amount</code></td><td><span class="req-yes">Yes</span></td><td>number</td>
+              <td>₹1 to ₹5,000. Must be a plain number — <code>499</code>, not <code>"₹499"</code> or <code>"4,999"</code>.</td>
+            </tr>
+            <tr>
+              <td><code>title</code></td><td><span class="req-no">No</span></td><td>string</td>
+              <td>Max 100 chars. Shown as the payment remark. Defaults to <code>"ZapPay Payment"</code>.</td>
+            </tr>
+            <tr>
+              <td><code>customer_mobile</code></td><td><span class="req-no">No</span></td><td>string</td>
+              <td>10 digits, optionally prefixed with <code>91</code> / <code>+91</code> / a leading <code>0</code> — no spaces or dashes. Prefills the customer's UPI app.</td>
+            </tr>
+            <tr>
+              <td><code>redirect_url</code></td><td><span class="req-no">No</span></td><td>string</td>
+              <td>Where the customer lands after paying. ZapPay appends <code>?zp_order=&lt;id&gt;&amp;zp_result=success|failed</code>. Ignored if <code>useEmbedded: true</code>.</td>
+            </tr>
+            <tr>
+              <td><code>useEmbedded</code></td><td><span class="req-no">No</span></td><td>boolean</td>
+              <td>Set <code>true</code> for the JS widget / in-app popup flow. No server redirect URL is generated in that case.</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <i class="bi bi-shield-exclamation"></i>
+          <div><strong>#1 real cause of "Validation failed":</strong> sending <code>amount</code> as a formatted price string instead of a clean number. Strip currency symbols and commas — <code>Number(String(price).replace(/[^0-9.]/g,''))</code> — before calling create-order. See the full Error Reference below for every failure mode.</div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-head"><span class="code-block-label">200 — order created</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+          <pre><code>{
+  "success": true,
+  "message": "Order created",
+  "data": {
+    "order_id": "ZP1782...ABCD",
+    "payment_url": "https://pay.zapupi.com/...",
+    "amount": 100,
+    "mode": "live"
+  }
+}</code></pre>
+        </div>
+
+        <!-- Endpoint 2 -->
+        <h3 style="margin-top:30px;">Get order status</h3>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="endpoint-path">/api/developer/order-status/:orderId</span>
+        </div>
+        <p>Returns the current status of an order. No request body — <code>orderId</code> is a path parameter (the <code>order_id</code> returned by create-order). Requires the <code>X-ZapAPI-Key</code> header.</p>
+        <p>Orders are scoped to the calling key's owner — you can never fetch another merchant's order, even by guessing its ID.</p>
+
+        <div class="code-block">
+          <div class="code-block-head"><span class="code-block-label">200 — status fetched</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+          <pre><code>{
+  "success": true,
+  "message": "Status fetched",
+  "data": {
+    "order_id": "ZP1782...ABCD",
+    "status": "success",
+    "amount": 100
+  }
+}</code></pre>
+        </div>
+        <p><code>status</code> is always exactly one of: <code>"pending"</code> · <code>"success"</code> · <code>"failed"</code>.</p>
+
+        <div class="callout danger">
+          <i class="bi bi-shield-exclamation"></i>
+          <div><strong>The single most important rule in this document:</strong> a customer landing back on your <code>redirect_url</code>, or a client-side JS callback firing, is <strong>never proof of payment</strong> on its own. Both can be spoofed, retried, or interrupted. Always call <strong>order-status</strong> from your server and check <code>status === "success"</code> before marking anything as paid.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3 — INTEGRATION GUIDE -->
+    <!-- ============================================================ -->
+    <section class="sec" id="sec-integration">
+      <div class="sec-head"><div class="sec-num">03</div><h2>Integration guide</h2></div>
+      <div class="sec-body">
+        <p>Pick your stack. Each example is complete and runnable — swap in your ZapAPI key and you're live.</p>
+
+        <div class="lang-tabs">
+          <button class="lang-tab active" onclick="switchLang('html')"><i class="bi bi-filetype-html"></i> HTML / JS</button>
+          <button class="lang-tab" onclick="switchLang('php')"><i class="bi bi-filetype-php"></i> PHP</button>
+          <button class="lang-tab" onclick="switchLang('java')"><i class="bi bi-cup-hot"></i> Java (Android)</button>
+          <button class="lang-tab" onclick="switchLang('kotlin')"><i class="bi bi-android2"></i> Kotlin (Android)</button>
+          <button class="lang-tab" onclick="switchLang('node')"><i class="bi bi-filetype-js"></i> Node.js</button>
+          <button class="lang-tab" onclick="switchLang('js')"><i class="bi bi-filetype-js"></i> JavaScript</button>
+          <button class="lang-tab" onclick="switchLang('python')"><i class="bi bi-filetype-py"></i> Python</button>
+        </div>
+
+        <!-- ---------- HTML/JS pane ---------- -->
+        <div class="lang-pane active" id="pane-html">
+          <p>Drop in the widget script, set your callbacks, and call <code>createOrder</code>. The widget handles opening the payment popup and polling for you.</p>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">index.html</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>&lt;script src="https://zappay.shop/zappay-pay.js"&gt;&lt;/script&gt;
+
+&lt;button onclick="payNow()"&gt;Pay ₹100&lt;/button&gt;
+
+&lt;script&gt;
+  ZapPay.setCallbacks({
+    onSuccess: (order) => {
+      // order = { order_id, amount }
+      console.log('Payment successful:', order.order_id);
+      // TODO: confirm server-side via order-status before fulfilling
+    },
+    onFailed: (order) => {
+      // order = { order_id, amount } OR { error } on network/validation failure
+      console.log('Payment failed:', order);
+    },
+    onTimeout: (order) => {
+      // order = { order_id, amount }
+      // Fires after ~2 minutes of polling, or if the popup was closed
+      console.log('Payment timed out:', order);
+    }
+  });
+
+  function payNow() {
+    ZapPay.createOrder({
+      zap_api: 'YOUR_ZAPAPI_KEY',
+      amount: 100,
+      title: 'Order #123',        // optional
+      customer_mobile: '9999999999' // optional
+    });
+  }
+&lt;/script&gt;</code></pre>
+          </div>
+
+          <div class="callout info">
+            <i class="bi bi-info-circle-fill"></i>
+            <div>Internally, <code>createOrder</code> always sends <code>useEmbedded: true</code> and opens <code>payment_url</code> in a 430×700 popup (falling back to a same-tab redirect if the popup is blocked). It then polls order-status every 2.5s, up to 48 times (~2 minutes), and fires your callbacks automatically.</div>
+          </div>
+
+          <div class="callout warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div><strong>Widget fails silently on bad input.</strong> On a missing <code>zap_api</code> or <code>amount</code>, it only logs <code>console.error</code> — no callback fires. Verify <code>typeof ZapPay !== 'undefined'</code> before calling it, and test the real click end-to-end.</div>
+          </div>
+
+          <button class="lang-copy-btn" onclick="copyLangDocs('html', this)"><i class="bi bi-clipboard-plus"></i> Copy full HTML/JS integration guide</button>
+        </div>
+
+        <!-- ---------- PHP pane ---------- -->
+        <div class="lang-pane" id="pane-php">
+          <p>Two scripts: one to create the order server-side and redirect the customer, and one to handle their return and confirm payment before trusting it.</p>
+
+          <div class="callout warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div><strong>A redirect back to your site is a fresh page load, not a resumed session.</strong> Any client-side state your checkout page had (a filled-in form, a cart, scroll position) is gone the moment the customer's browser leaves for <code>payment_url</code> — <code>redirect_url</code> only carries a URL, not JavaScript memory. If you need something from before checkout to still be there afterwards, save it (server-side session, or a client-side store keyed by an id you attach to <code>redirect_url</code> yourself) <em>before</em> redirecting, and restore it on return using that id. The example below does this with a PHP session.</div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">create-order.php</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>&lt;?php
+session_start();
+
+// Save whatever this page knows before the customer leaves for checkout —
+// a redirect is a full page navigation, so nothing in this script's memory
+// (or a plain HTML form's values) survives it on its own. A PHP session
+// does, because it's tied to the customer's browser via a cookie, not to
+// this one request.
+$_SESSION['customer_name']  = $_POST['name']  ?? '';
+$_SESSION['customer_phone'] = $_POST['phone'] ?? '';
+
+$ch = curl_init('https://paymentbackend-ruby.vercel.app/api/developer/create-order');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    'zap_api'      =&gt; 'YOUR_ZAPAPI_KEY',
+    'amount'       =&gt; 100,
+    'title'        =&gt; 'Order #123',
+    'redirect_url' =&gt; 'https://yourstore.com/payment-return.php'
+]));
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$result = json_decode($response, true);
+
+if ($result['success']) {
+    // Send the customer to complete payment
+    header('Location: ' . $result['data']['payment_url']);
+    exit;
+} else {
+    // Handle error — see Error Reference below for all possible messages
+    echo 'Could not start payment: ' . $result['message'];
+}</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">payment-return.php</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>&lt;?php
+session_start();
+// $_GET['zp_order'] and $_GET['zp_result'] are appended by ZapPay automatically.
+// IMPORTANT: zp_result in the query string must NEVER be trusted alone —
+// it can be spoofed. Always confirm via order-status server-side.
+
+$orderId = $_GET['zp_order'] ?? null;
+
+if (!$orderId) {
+    die('Missing order id.');
+}
+
+$ch = curl_init("https://paymentbackend-ruby.vercel.app/api/developer/order-status/{$orderId}");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'X-ZapAPI-Key: YOUR_ZAPAPI_KEY'
+]);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$result = json_decode($response, true);
+
+// Read back what create-order.php saved before the customer left — this
+// is what makes the page feel like it "remembered" them, instead of
+// showing a blank confirmation with no name/phone reference.
+$customerName  = $_SESSION['customer_name']  ?? null;
+$customerPhone = $_SESSION['customer_phone'] ?? null;
+
+if ($result['success'] && $result['data']['status'] === 'success') {
+    // Verified server-side — safe to fulfill the order now
+    echo 'Payment confirmed for order ' . $result['data']['order_id'];
+    if ($customerName) {
+        echo ' — thanks, ' . htmlspecialchars($customerName) . '!';
+    }
+    // This session's job is done — clear it so a later visit doesn't
+    // show stale customer details.
+    unset($_SESSION['customer_name'], $_SESSION['customer_phone']);
+} elseif ($result['success'] && $result['data']['status'] === 'pending') {
+    echo 'Payment still pending — check again shortly.';
+} else {
+    echo 'Payment failed or order not found.';
+}</code></pre>
+          </div>
+
+          <button class="lang-copy-btn" onclick="copyLangDocs('php', this)"><i class="bi bi-clipboard-plus"></i> Copy full PHP integration guide</button>
+        </div>
+
+        <!-- ---------- Java pane ---------- -->
+        <div class="lang-pane" id="pane-java">
+          <p>OkHttp example: create the order, open <code>payment_url</code> in a Chrome Custom Tab, then poll order-status until it resolves.</p>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">ZapPayClient.java</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>OkHttpClient client = new OkHttpClient();
+String ZAP_API_KEY = "YOUR_ZAPAPI_KEY";
+String BASE_URL = "https://paymentbackend-ruby.vercel.app";
+
+// 1. Create the order
+public void createOrder(double amount, String title, OrderCallback callback) {
+    JSONObject body = new JSONObject();
+    try {
+        body.put("zap_api", ZAP_API_KEY);
+        body.put("amount", amount);
+        body.put("title", title);
+        body.put("useEmbedded", true);
+    } catch (JSONException e) {
+        callback.onError(e.getMessage());
+        return;
+    }
+
+    RequestBody requestBody = RequestBody.create(
+        body.toString(), MediaType.parse("application/json"));
+
+    Request request = new Request.Builder()
+        .url(BASE_URL + "/api/developer/create-order")
+        .post(requestBody)
+        .build();
+
+    client.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            callback.onError(e.getMessage());
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                if (json.getBoolean("success")) {
+                    JSONObject data = json.getJSONObject("data");
+                    String orderId = data.getString("order_id");
+                    String paymentUrl = data.getString("payment_url");
+
+                    // 2. Open payment_url in a Chrome Custom Tab
+                    openCustomTab(paymentUrl);
+
+                    // 3. Start polling for the result
+                    pollOrderStatus(orderId, callback);
+                } else {
+                    callback.onError(json.getString("message"));
+                }
+            } catch (JSONException e) {
+                callback.onError(e.getMessage());
+            }
+        }
+    });
+}
+
+void openCustomTab(String url) {
+    CustomTabsIntent intent = new CustomTabsIntent.Builder().build();
+    intent.launchUrl(context, Uri.parse(url));
+}
+
+// Poll order-status every ~2.5s until it resolves
+Handler handler = new Handler(Looper.getMainLooper());
+
+public void pollOrderStatus(String orderId, OrderCallback callback) {
+    Request request = new Request.Builder()
+        .url(BASE_URL + "/api/developer/order-status/" + orderId)
+        .header("X-ZapAPI-Key", ZAP_API_KEY)
+        .get()
+        .build();
+
+    client.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            callback.onError(e.getMessage());
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                if (json.getBoolean("success")) {
+                    String status = json.getJSONObject("data").getString("status");
+
+                    if (status.equals("success")) {
+                        callback.onSuccess(json.getJSONObject("data"));
+                    } else if (status.equals("failed")) {
+                        callback.onFailed(json.getJSONObject("data"));
+                    } else {
+                        // still "pending" — poll again in 2.5s
+                        handler.postDelayed(() ->
+                            pollOrderStatus(orderId, callback), 2500);
+                    }
+                } else {
+                    callback.onError(json.getString("message"));
+                }
+            } catch (JSONException e) {
+                callback.onError(e.getMessage());
+            }
+        }
+    });
+}
+
+public interface OrderCallback {
+    void onSuccess(JSONObject data);
+    void onFailed(JSONObject data);
+    void onError(String message);
+}</code></pre>
+          </div>
+
+          <div class="callout danger">
+            <i class="bi bi-shield-exclamation"></i>
+            <div>Only mark the purchase as fulfilled inside <code>onSuccess</code>, once <code>pollOrderStatus</code> has confirmed <code>status == "success"</code> from your own server-to-server call — never on the basis of the Custom Tab simply closing.</div>
+          </div>
+
+          <button class="lang-copy-btn" onclick="copyLangDocs('java', this)"><i class="bi bi-clipboard-plus"></i> Copy full Java (Android) integration guide</button>
+        </div>
+
+        <!-- ---------- Kotlin pane ---------- -->
+        <div class="lang-pane" id="pane-kotlin">
+          <p>Coroutine-based OkHttp example: create the order, open <code>payment_url</code> in a Chrome Custom Tab, then suspend-poll order-status until it resolves.</p>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">ZapPayClient.kt</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>class ZapPayClient(private val context: Context) {
+    private val client = OkHttpClient()
+    private val zapApiKey = "YOUR_ZAPAPI_KEY"
+    private val baseUrl = "https://paymentbackend-ruby.vercel.app"
+    private val JSON = "application/json; charset=utf-8".toMediaType()
+
+    data class OrderResult(val orderId: String, val status: String, val amount: Double)
+
+    suspend fun createOrder(amount: Double, title: String): OrderResult = withContext(Dispatchers.IO) {
+        val body = JSONObject().apply {
+            put("zap_api", zapApiKey)
+            put("amount", amount)
+            put("title", title)
+            put("useEmbedded", true)
+        }
+        val request = Request.Builder()
+            .url("$baseUrl/api/developer/create-order")
+            .post(body.toString().toRequestBody(JSON))
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            val json = JSONObject(response.body!!.string())
+            if (!json.getBoolean("success")) throw Exception(json.getString("message"))
+            val data = json.getJSONObject("data")
+            openCustomTab(data.getString("payment_url"))
+            pollOrderStatus(data.getString("order_id"))
+        }
+    }
+
+    private fun openCustomTab(url: String) {
+        CustomTabsIntent.Builder().build().launchUrl(context, Uri.parse(url))
+    }
+
+    suspend fun pollOrderStatus(orderId: String): OrderResult = withContext(Dispatchers.IO) {
+        while (true) {
+            val request = Request.Builder()
+                .url("$baseUrl/api/developer/order-status/$orderId")
+                .header("X-ZapAPI-Key", zapApiKey)
+                .get().build()
+
+            client.newCall(request).execute().use { response ->
+                val json = JSONObject(response.body!!.string())
+                if (!json.getBoolean("success")) throw Exception(json.getString("message"))
+                val data = json.getJSONObject("data")
+                val status = data.getString("status")
+                if (status == "success" || status == "failed") {
+                    return@withContext OrderResult(orderId, status, data.getDouble("amount"))
+                }
+            }
+            delay(2500)
+        }
+        @Suppress("UNREACHABLE_CODE")
+        throw IllegalStateException()
+    }
+}
+
+// Usage (from a coroutine scope, e.g. viewModelScope):
+// val result = zapPayClient.createOrder(100.0, "Order #123")
+// if (result.status == "success") { /* fulfill */ }</code></pre>
+          </div>
+
+          <div class="callout danger">
+            <i class="bi bi-shield-exclamation"></i>
+            <div>Only fulfill once <code>pollOrderStatus</code> itself returns <code>status == "success"</code> — that's the actual server-to-server confirmation, not just the Custom Tab closing.</div>
+          </div>
+
+          <button class="lang-copy-btn" onclick="copyLangDocs('kotlin', this)"><i class="bi bi-clipboard-plus"></i> Copy full Kotlin (Android) integration guide</button>
+        </div>
+
+        <!-- ---------- Node.js pane ---------- -->
+        <div class="lang-pane" id="pane-node">
+          <p>Express example: one route creates the order server-side and redirects the customer, another handles their return and confirms payment before trusting it.</p>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">routes/checkout.js</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>const express = require('express');
+const router = express.Router();
+
+const ZAP_API_KEY = process.env.ZAP_API_KEY;
+const BASE_URL = 'https://paymentbackend-ruby.vercel.app';
+
+router.post('/create-order', async (req, res) => {
+    const response = await fetch(`${BASE_URL}/api/developer/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            zap_api: ZAP_API_KEY,
+            amount: req.body.amount,
+            title: req.body.title || 'ZapPay Payment',
+            redirect_url: 'https://yourstore.com/payment-return'
+        })
+    });
+    const result = await response.json();
+
+    if (!result.success) {
+        return res.status(400).json({ error: result.message });
+    }
+    res.redirect(result.data.payment_url);
+});
+
+// redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+// zp_result in the query string must NEVER be trusted alone — it can be
+// spoofed. Always confirm via order-status from this server.
+router.get('/payment-return', async (req, res) => {
+    const orderId = req.query.zp_order;
+    if (!orderId) return res.status(400).send('Missing order id.');
+
+    const response = await fetch(`${BASE_URL}/api/developer/order-status/${orderId}`, {
+        headers: { 'X-ZapAPI-Key': ZAP_API_KEY }
+    });
+    const result = await response.json();
+
+    if (result.success && result.data.status === 'success') {
+        res.send(`Payment confirmed for order ${result.data.order_id}`);
+    } else if (result.success && result.data.status === 'pending') {
+        res.send('Payment still pending — check again shortly.');
+    } else {
+        res.status(400).send('Payment failed or order not found.');
+    }
+});
+
+module.exports = router;</code></pre>
+          </div>
+
+          <div class="callout danger">
+            <i class="bi bi-shield-exclamation"></i>
+            <div>Never branch fulfillment logic on <code>req.query.zp_result</code> alone. The only trustworthy signal is a server-to-server order-status call returning <code>status === "success"</code>.</div>
+          </div>
+
+          <button class="lang-copy-btn" onclick="copyLangDocs('node', this)"><i class="bi bi-clipboard-plus"></i> Copy full Node.js integration guide</button>
+        </div>
+
+        <!-- ---------- JavaScript (browser) pane ---------- -->
+        <div class="lang-pane" id="pane-js">
+          <p>The ZapPay widget script, wired up as plain JS for projects without inline <code>&lt;script&gt;</code> tags — a bundled site, a CMS custom-JS block, etc. Same mechanism as the HTML/JS tab.</p>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">checkout.js</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>// &lt;script src="https://zappay.shop/zappay-pay.js"&gt;&lt;\/script&gt; must already be on the page
+
+ZapPay.setCallbacks({
+    onSuccess: function (order) {
+        console.log('Payment successful:', order.order_id);
+        // UI signal only — confirm server-side via order-status before fulfilling.
+        fetch('/api/confirm-order?order_id=' + encodeURIComponent(order.order_id))
+            .then(r => r.json())
+            .then(data => {
+                if (data.confirmed) {
+                    document.getElementById('checkout-status').textContent = 'Payment confirmed!';
+                }
+            });
+    },
+    onFailed: function (order) {
+        document.getElementById('checkout-status').textContent = 'Payment failed.';
+    },
+    onTimeout: function (order) {
+        document.getElementById('checkout-status').textContent = 'Payment timed out.';
+    }
+});
+
+document.getElementById('pay-button').addEventListener('click', function () {
+    ZapPay.createOrder({
+        zap_api: 'YOUR_ZAPAPI_KEY', // for a real site, proxy this through your own
+                                     // server instead of shipping the key client-side
+        amount: 100,
+        title: 'Order #123',
+        customer_mobile: document.getElementById('phone-input').value
+    });
+});
+
+// /api/confirm-order on YOUR server, called above, should itself call:
+// GET https://paymentbackend-ruby.vercel.app/api/developer/order-status/:orderId
+// with header X-ZapAPI-Key: YOUR_ZAPAPI_KEY, and only report confirmed: true
+// when the response's data.status === "success".</code></pre>
+          </div>
+
+          <div class="callout danger">
+            <i class="bi bi-shield-exclamation"></i>
+            <div>Even though <code>onSuccess</code> fired client-side, treat that as a UI signal only. The <code>/api/confirm-order</code> round trip above (a server-side order-status check) is what actually gates fulfillment — never ship goods based on <code>onSuccess</code> alone.</div>
+          </div>
+
+          <button class="lang-copy-btn" onclick="copyLangDocs('js', this)"><i class="bi bi-clipboard-plus"></i> Copy full JavaScript integration guide</button>
+        </div>
+
+        <!-- ---------- Python pane ---------- -->
+        <div class="lang-pane" id="pane-python">
+          <p>Flask + requests example: one route creates the order and redirects the customer, another handles their return and confirms payment independently before trusting it.</p>
+
+          <div class="code-block">
+            <div class="code-block-head"><span class="code-block-label">app.py</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>import os
+import requests
+from flask import Flask, request, redirect, jsonify
+
+app = Flask(__name__)
+
+ZAP_API_KEY = os.environ['ZAP_API_KEY']
+BASE_URL = 'https://paymentbackend-ruby.vercel.app'
+
+@app.route('/create-order', methods=['POST'])
+def create_order():
+    resp = requests.post(f'{BASE_URL}/api/developer/create-order', json={
+        'zap_api': ZAP_API_KEY,
+        'amount': request.json['amount'],
+        'title': request.json.get('title', 'ZapPay Payment'),
+        'redirect_url': 'https://yourstore.com/payment-return'
+    })
+    result = resp.json()
+
+    if not result['success']:
+        return jsonify({'error': result['message']}), 400
+    return redirect(result['data']['payment_url'])
+
+# redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+# zp_result in the query string must NEVER be trusted alone — it can be
+# spoofed. Always confirm via order-status from this server.
+@app.route('/payment-return')
+def payment_return():
+    order_id = request.args.get('zp_order')
+    if not order_id:
+        return 'Missing order id.', 400
+
+    resp = requests.get(
+        f'{BASE_URL}/api/developer/order-status/{order_id}',
+        headers={'X-ZapAPI-Key': ZAP_API_KEY}
+    )
+    result = resp.json()
+
+    if result['success'] and result['data']['status'] == 'success':
+        return f"Payment confirmed for order {result['data']['order_id']}"
+    elif result['success'] and result['data']['status'] == 'pending':
+        return 'Payment still pending — check again shortly.'
+    else:
+        return 'Payment failed or order not found.', 400
+
+if __name__ == '__main__':
+    app.run(port=5000)</code></pre>
+          </div>
+
+          <div class="callout danger">
+            <i class="bi bi-shield-exclamation"></i>
+            <div>Never branch fulfillment logic on <code>request.args.get('zp_result')</code> alone. The only trustworthy signal is a server-to-server order-status call returning <code>status == "success"</code>.</div>
+          </div>
+
+          <button class="lang-copy-btn" onclick="copyLangDocs('python', this)"><i class="bi bi-clipboard-plus"></i> Copy full Python integration guide</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 4 — ERROR REFERENCE -->
+    <!-- ============================================================ -->
+    <section class="sec" id="sec-errors">
+      <div class="sec-head"><div class="sec-num">04</div><h2>Error reference</h2></div>
+      <div class="sec-kicker">Every error this API can return — what it means, why it happens, and exactly how to fix it</div>
+      <div class="sec-body">
+        <p>Tap any error to expand it. Each one lists the <strong>real, verified cause</strong> from the API's own validation and auth code — not a generic guess.</p>
+
+        <div class="err-filter" id="errFilter">
+          <button class="err-chip active" onclick="filterErr('all', this)">All errors</button>
+          <button class="err-chip" onclick="filterErr('auth', this)">Authentication</button>
+          <button class="err-chip" onclick="filterErr('validation', this)">Validation</button>
+          <button class="err-chip" onclick="filterErr('limits', this)">Limits & mode</button>
+        </div>
+
+        <div id="errList">
+
+          <!-- 401 missing key -->
+          <div class="err-card" data-cat="auth" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c401">401</span>
+              <div class="err-name"><strong>Missing ZapAPI key</strong><span>"Missing ZapAPI key..."</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{
+  "success": false,
+  "message": "Missing ZapAPI key. Pass it as \"zap_api\" in the request body or an \"X-ZapAPI-Key\" header."
+}</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>Neither a <code>zap_api</code> field in the JSON body nor an <code>X-ZapAPI-Key</code> header was found on the request. The API checks both locations and only fails if <em>both</em> are empty.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>Add your key to the request. Easiest for server calls: send it as the <code>X-ZapAPI-Key</code> header. For the JS widget, pass <code>zap_api</code> inside the object you give to <code>createOrder()</code>. Double-check the key variable isn't empty/undefined at the point you send it — this is often a config or <code>.env</code> loading issue, not a typo in the field name.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- 401 invalid key -->
+          <div class="err-card" data-cat="auth" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c401">401</span>
+              <div class="err-name"><strong>Invalid ZapAPI key</strong><span>"Invalid ZapAPI key"</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{ "success": false, "message": "Invalid ZapAPI key" }</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>A key was sent, but it doesn't resolve to any account. The three most common causes: you regenerated your key at some point and an old copy is still hardcoded somewhere; you copy-pasted the key with a missing character or extra space; or you're accidentally using a key from a different environment (e.g. a teammate's).</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>Go to <strong>Developer Portal → Zap API</strong> in your dashboard and copy the key shown there fresh — don't retype it by hand. If you regenerated your key recently, make sure every place that uses it (server env vars, JS widget calls, mobile app config) was updated — regenerating invalidates the old one instantly with no grace period.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- 403 suspended -->
+          <div class="err-card" data-cat="auth" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c403">403</span>
+              <div class="err-name"><strong>Account suspended</strong><span>"This account has been suspended."</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{
+  "success": false,
+  "message": "This account has been suspended.",
+  "banned": true
+}</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>Your key is valid and resolves correctly, but the ZapPay account that owns it has been suspended. This check runs on every single ZapAPI request — a suspended account can't create orders or check statuses even with a perfectly valid key.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>This isn't something you can fix in code. Contact ZapPay support to find out why the account was suspended and resolve it — the API will keep returning this on every request until the suspension is lifted on ZapPay's side.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- 400 validation failed -->
+          <div class="err-card" data-cat="validation" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c400">400</span>
+              <div class="err-name"><strong>Validation failed</strong><span>"Validation failed"</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    { "msg": "Amount must be between ₹1 and ₹5,000", "...": "..." }
+  ]
+}</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>The request reached <code>create-order</code> fine, but one of its fields failed validation. In order of real-world frequency:</p>
+                <p><strong>1. <code>amount</code> sent as a formatted string</strong> — e.g. <code>"₹499"</code> or <code>"1,999"</code> instead of a plain number like <code>499</code>. The API requires a clean float between 1 and 5000.</p>
+                <p><strong>2. <code>customer_mobile</code> has spaces, dashes, or brackets</strong> — a value typed by a real user like <code>"+91 98765 43210"</code> fails; it must be exactly 10 digits, optionally preceded by <code>91</code>/<code>+91</code>/a leading <code>0</code>, with nothing else.</p>
+                <p><strong>3. <code>title</code> is over 100 characters.</strong></p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>Sanitize before sending: <code>Number(String(price).replace(/[^0-9.]/g,''))</code> for amount, and strip all non-digits from any user-typed phone number (or omit <code>customer_mobile</code> entirely — it's optional). Log the <code>errors</code> array in dev to see exactly which field failed rather than guessing.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- 400 wallet full -->
+          <div class="err-card" data-cat="limits" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c400">400</span>
+              <div class="err-name"><strong>Wallet full</strong><span>"Your ZapPay wallet is full..."</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{
+  "success": false,
+  "message": "Your ZapPay wallet is full. Upgrade your plan or withdraw first."
+}</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>Your current wallet balance plus this order's amount would exceed your plan's wallet limit. This only applies in <strong>Live Mode</strong> — the check is intentionally skipped for Test Mode orders so testing your integration is never blocked by wallet headroom.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>From your dashboard, either withdraw funds to bring your balance down, or upgrade to a plan with a higher wallet limit. This is an account-level limit, not something a request parameter can override.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- 404 order not found -->
+          <div class="err-card" data-cat="validation" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c404">404</span>
+              <div class="err-name"><strong>Order not found</strong><span>"Order not found"</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{ "success": false, "message": "Order not found" }</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>Returned by <code>order-status</code> when either the <code>orderId</code> in the URL doesn't exist at all, <strong>or</strong> it exists but belongs to a different ZapPay account than the one your key resolves to. Both cases return the identical message on purpose, so a caller can never learn whether an order ID belongs to someone else.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>Confirm you're passing the exact <code>order_id</code> string returned by <code>create-order</code>, unmodified. If you're polling with a hardcoded key during testing, make sure it's the same key that created the order — a mismatched key on a real order looks identical to a typo'd order ID.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- 429 rate limited -->
+          <div class="err-card" data-cat="limits" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c429">429</span>
+              <div class="err-name"><strong>Rate limited</strong><span>"Too many API requests..."</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{ "success": false, "message": "Too many API requests. Please try again later." }</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>You've made more than <strong>60 requests in a 15-minute window</strong> on this key (or IP, if no key was found). This bucket is shared across both <code>create-order</code> and <code>order-status</code> calls made with the same key. A common accidental trigger: polling <code>order-status</code> faster than every 2–3 seconds, or a retry loop with no backoff.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>If you're polling manually, slow down to at least every 2.5 seconds — this is exactly the interval the official JS widget uses internally, and it never hits this limit for a single order. Add exponential backoff to any retry logic. Wait for the 15-minute window to reset; there's no way to lift it early.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- 503 maintenance -->
+          <div class="err-card" data-cat="limits" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c503">503</span>
+              <div class="err-name"><strong>Maintenance mode</strong><span>"Payment system is under maintenance."</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-payload">{ "success": false, "message": "Payment system is under maintenance." }</div>
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>ZapPay itself has temporarily paused new order creation platform-wide. This is unrelated to your account, key, or request — it only ever appears on <code>create-order</code> in Live Mode, never on <code>order-status</code>, and never on Test Mode orders.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>Nothing to change in your code. Retry after a short delay — this is expected to be temporary. If it persists for an extended period, check ZapPay's status page or contact support.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Widget silent failure -->
+          <div class="err-card" data-cat="validation" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c400">JS</span>
+              <div class="err-name"><strong>Widget: nothing happens on click</strong><span>console: "zap_api key is required" / "amount is required"</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>This is <strong>not an API error</strong> — it never reaches the network. The <code>zappay-pay.js</code> widget checks <code>zap_api</code> and <code>amount</code> are present before making any request, and if either is missing, it only logs to the console and returns silently. No callback fires, nothing visibly happens on the page.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>Open the browser console when testing — this failure mode is invisible in the UI by design. Confirm the object passed to <code>ZapPay.createOrder({...})</code> actually contains non-empty <code>zap_api</code> and <code>amount</code> values at the moment it's called, not just in the code that looks correct on paper.</p>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Widget network error -->
+          <div class="err-card" data-cat="validation" onclick="toggleErr(this)">
+            <div class="err-card-head">
+              <span class="err-code c400">JS</span>
+              <div class="err-name"><strong>Widget: "Failed to fetch"</strong><span>onFailed: { error: 'network_error' }</span></div>
+              <i class="bi bi-chevron-down err-chev"></i>
+            </div>
+            <div class="err-body"><div class="err-body-inner">
+              <div class="err-block">
+                <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
+                <p>The widget's backend URL is hardcoded inside <code>zappay-pay.js</code> — it never depends on which domain served the script file, so this is <strong>not a hosting or CORS problem on your end</strong>. It almost always means the page loaded an old or incomplete cached copy of the script.</p>
+              </div>
+              <div class="err-block">
+                <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
+                <p>Re-copy the <code>&lt;script src="https://zappay.shop/zappay-pay.js"&gt;</code> tag fresh from Section 3 and hard-refresh the page (clear cache). If you're loading the script from your own CDN/proxy, confirm it's actually serving the latest file content, not a stale cached copy.</p>
+              </div>
+            </div></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 5 — TEST MODE & LIVE MODE -->
+    <!-- ============================================================ -->
+    <section class="sec" id="sec-testmode">
+      <div class="sec-head"><div class="sec-num">05</div><h2>Test Mode & Live Mode</h2></div>
+      <div class="sec-body">
+        <p>Every ZapPay account has a <strong>Gateway Mode</strong>, switchable any time from <strong>Developer Portal → Zap API</strong>. It applies account-wide — both <code>create-order</code> and every payment link — and defaults to <strong>Live</strong>, so nothing changes for an existing integration until you switch it yourself.</p>
+        <ul>
+          <li><strong>Live Mode</strong> — real UPI checkout, real money, real wallet credit.</li>
+          <li><strong>Test Mode</strong> — <code>create-order</code> returns a <code>payment_url</code> pointing at ZapPay's own simulator instead of a real UPI checkout. Opening it shows a "Test Action" button with three outcomes: <strong>Successfully</strong>, <strong>Failed</strong>, and <strong>Cancelled</strong>. Your wallet is never credited — no money moves.</li>
+        </ul>
+        <p>The important part: <strong>nothing else changes shape.</strong> <code>order-status</code> returns the exact same <code>pending</code> / <code>success</code> / <code>failed</code> values either way, so whatever polling logic you write works against Test Mode without any special-casing.</p>
+        <div class="callout warning">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <div>Leaving Test Mode on is the single most common reason a "live" integration silently stops accepting real payments. If customers report they can't pay, check Developer Portal → Zap API first.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 6 — BEST PRACTICES -->
+    <!-- ============================================================ -->
+    <section class="sec" id="sec-practices">
+      <div class="sec-head"><div class="sec-num">06</div><h2>Best practices & security</h2></div>
+      <div class="sec-body">
+        <ul>
+          <li><strong>Never trust a redirect or client callback alone.</strong> Always call <code>order-status</code> from your server and check <code>status === "success"</code> before fulfilling an order.</li>
+          <li><strong>Keep your ZapAPI key server-side</strong> wherever possible. The JS widget is the one exception — there the key is used from your own page directly against ZapPay's API.</li>
+          <li><strong>One checkout at a time.</strong> Don't call <code>create-order</code> again for the same purchase while a previous order is still <code>pending</code> — check its status first.</li>
+          <li><strong>Regenerate your key immediately</strong> if you suspect it has leaked. The old key is invalidated instantly, with no grace period.</li>
+          <li><strong>Respect the amount limit.</strong> ₹1 to ₹5,000 — validate client-side too, before you ever hit the API.</li>
+          <li><strong>Respect the rate limit.</strong> 60 requests / 15 minutes per key. Poll no more often than every 2–3 seconds.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- AI COPY CARD -->
+    <!-- ============================================================ -->
+    <div class="ai-card" id="sec-ai">
+      <div class="ai-card-inner">
+        <div class="ai-badge"><i class="bi bi-stars"></i> For AI tools & quick export</div>
+        <h2>Copy the full documentation</h2>
+        <p>Grab everything — reference, integration code, and complete error handling — in one paste. Pick exactly what you need: every language, or just one.</p>
+        <button class="ai-copy-btn" onclick="openCopyModal()"><i class="bi bi-clipboard-plus"></i> Copy all docs</button>
+        <div class="ai-card-foot">
+          <span><i class="bi bi-check2"></i> All languages</span>
+          <span><i class="bi bi-check2"></i> Full error reference</span>
+          <span><i class="bi bi-check2"></i> AI-ready format</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      ZapPay · ZapAPI Developer Documentation<br>
+      Need help? <a href="https://zappay.shop/support/">Visit Support</a>
+    </div>
+
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- MOBILE TOC SHEET -->
+  <!-- ============================================================ -->
+  <div class="toc-overlay" id="tocOverlay" onclick="if(event.target===this) closeMobileToc()">
+    <div class="toc-sheet">
+      <div class="toc-handle"></div>
+      <h3>Jump to</h3>
+      <div class="toc-item" onclick="jumpTo('sec-overview')"><span class="toc-num">1</span> Overview</div>
+      <div class="toc-item" onclick="jumpTo('sec-key')"><span class="toc-num">2</span> Getting your key</div>
+      <div class="toc-item" onclick="jumpTo('sec-reference')"><span class="toc-num">3</span> API reference</div>
+      <div class="toc-item" onclick="jumpTo('sec-integration')"><span class="toc-num">4</span> Integration guide</div>
+      <div class="toc-item" onclick="jumpTo('sec-errors')"><span class="toc-num">5</span> Error reference</div>
+      <div class="toc-item" onclick="jumpTo('sec-testmode')"><span class="toc-num">6</span> Test & Live mode</div>
+      <div class="toc-item" onclick="jumpTo('sec-practices')"><span class="toc-num">7</span> Best practices</div>
+      <div class="toc-item ai" onclick="jumpTo('sec-ai')"><span class="toc-num"><i class="bi bi-stars"></i></span> Copy full documentation</div>
+    </div>
+  </div>
+
+</div><!-- /.shell -->
+
+<!-- ============================================================ -->
+<!-- COPY MODAL -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="copyModal" onclick="if(event.target===this) closeCopyModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3>Copy documentation</h3>
+        <p>Choose what to copy. Every option includes full error handling.</p>
+      </div>
+      <button class="modal-close" onclick="closeCopyModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-options">
+      <button class="copy-option" onclick="copyDocsOption('all', this)">
+        <div class="co-icon all"><i class="bi bi-stars"></i></div>
+        <div class="co-text"><strong>Copy All Docs</strong><span>Every language + full API reference + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+      <button class="copy-option" onclick="copyDocsOption('html', this)">
+        <div class="co-icon html"><i class="bi bi-filetype-html"></i></div>
+        <div class="co-text"><strong>Copy HTML Docs</strong><span>HTML/JS widget integration + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+      <button class="copy-option" onclick="copyDocsOption('php', this)">
+        <div class="co-icon php"><i class="bi bi-filetype-php"></i></div>
+        <div class="co-text"><strong>Copy PHP Docs</strong><span>PHP cURL integration + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+      <button class="copy-option" onclick="copyDocsOption('java', this)">
+        <div class="co-icon java"><i class="bi bi-cup-hot"></i></div>
+        <div class="co-text"><strong>Copy Java Docs</strong><span>Android OkHttp integration + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+      <button class="copy-option" onclick="copyDocsOption('kotlin', this)">
+        <div class="co-icon kotlin"><i class="bi bi-android2"></i></div>
+        <div class="co-text"><strong>Copy Kotlin Docs</strong><span>Android OkHttp + coroutines integration + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+      <button class="copy-option" onclick="copyDocsOption('node', this)">
+        <div class="co-icon node"><i class="bi bi-filetype-js"></i></div>
+        <div class="co-text"><strong>Copy Node.js Docs</strong><span>Express server-side integration + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+      <button class="copy-option" onclick="copyDocsOption('js', this)">
+        <div class="co-icon js"><i class="bi bi-filetype-js"></i></div>
+        <div class="co-text"><strong>Copy JavaScript Docs</strong><span>Framework-less widget integration + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+      <button class="copy-option" onclick="copyDocsOption('python', this)">
+        <div class="co-icon python"><i class="bi bi-filetype-py"></i></div>
+        <div class="co-text"><strong>Copy Python Docs</strong><span>Flask server-side integration + error handling</span></div>
+        <i class="bi bi-clipboard co-status"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- COMING SOON POPUP -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="soonModal" onclick="if(event.target===this) closeSoon()">
+  <div class="modal-box soon-box" style="position:relative;">
+    <button class="soon-close-x" onclick="closeSoon()"><i class="bi bi-x-lg"></i></button>
+    <div class="soon-inner">
+      <div class="soon-icon"><i class="bi bi-hourglass-split"></i></div>
+      <h3 id="soonTitle">Coming Soon</h3>
+      <p id="soonDesc">This feature is on the way — we're still building it.</p>
+      <button class="btn-primary" onclick="closeSoon()"><i class="bi bi-check2"></i> Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PROMPT DRAWER — Built-in AI Prompts -->
+<!-- ============================================================ -->
+<div class="drawer-overlay" id="promptDrawerOverlay" onclick="if(event.target===this) closePromptDrawer()">
+  <div class="drawer-panel">
+    <div class="drawer-head">
+      <div class="drawer-head-icon"><i class="bi bi-stars"></i></div>
+      <div class="drawer-head-text">
+        <strong>Built-in Prompts</strong>
+        <span>Give one to any AI — it integrates ZapPay for you</span>
+      </div>
+      <button class="modal-close" onclick="closePromptDrawer()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="drawer-body">
+      <p class="drawer-intro">Upload your existing project to <strong>Claude, ChatGPT, or any AI assistant</strong> along with one of these prompts. The AI will read your code and wire up ZapPay checkout correctly — right endpoints, right validation, right server-side verification — without you writing it by hand. Just replace <code style="background:var(--surface-2); border:1px solid var(--border-hi); padding:1px 5px; border-radius:4px; font-size:11px;">YOUR_ZAPAPI_KEY</code> with your real key first.</p>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head">
+          <div class="pc-icon html"><i class="bi bi-filetype-html"></i></div>
+          <div class="pc-text"><strong>HTML / JavaScript</strong><span>For static sites, storefronts, landing pages</span></div>
+        </div>
+        <div class="prompt-card-body">
+          <p>Integrates the ZapPay widget with popup checkout, callbacks, and mandatory server-side verification guidance.</p>
+          <div class="prompt-preview" id="preview-html-prompt"></div>
+          <div class="pc-actions">
+            <button class="pc-btn primary" onclick="copyPrompt('html', this)"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="pc-btn" onclick="downloadPrompt('html')"><i class="bi bi-download"></i> Download</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head">
+          <div class="pc-icon php"><i class="bi bi-filetype-php"></i></div>
+          <div class="pc-text"><strong>PHP</strong><span>For server-rendered sites, WordPress, custom backends</span></div>
+        </div>
+        <div class="prompt-card-body">
+          <p>Sets up server-side order creation, a redirect landing page, and cURL-based status verification.</p>
+          <div class="prompt-preview" id="preview-php-prompt"></div>
+          <div class="pc-actions">
+            <button class="pc-btn primary" onclick="copyPrompt('php', this)"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="pc-btn" onclick="downloadPrompt('php')"><i class="bi bi-download"></i> Download</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head">
+          <div class="pc-icon java"><i class="bi bi-cup-hot"></i></div>
+          <div class="pc-text"><strong>Java (Android)</strong><span>For native Android apps</span></div>
+        </div>
+        <div class="prompt-card-body">
+          <p>Wires up OkHttp order creation, a Chrome Custom Tab checkout, and status polling with callbacks.</p>
+          <div class="prompt-preview" id="preview-java-prompt"></div>
+          <div class="pc-actions">
+            <button class="pc-btn primary" onclick="copyPrompt('java', this)"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="pc-btn" onclick="downloadPrompt('java')"><i class="bi bi-download"></i> Download</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head">
+          <div class="pc-icon kotlin"><i class="bi bi-android2"></i></div>
+          <div class="pc-text"><strong>Kotlin (Android)</strong><span>For native Android apps using coroutines</span></div>
+        </div>
+        <div class="prompt-card-body">
+          <p>Wires up OkHttp + coroutine order creation, a Chrome Custom Tab checkout, and suspend-based status polling.</p>
+          <div class="prompt-preview" id="preview-kotlin-prompt"></div>
+          <div class="pc-actions">
+            <button class="pc-btn primary" onclick="copyPrompt('kotlin', this)"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="pc-btn" onclick="downloadPrompt('kotlin')"><i class="bi bi-download"></i> Download</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head">
+          <div class="pc-icon node"><i class="bi bi-filetype-js"></i></div>
+          <div class="pc-text"><strong>Node.js</strong><span>For Express and other Node backends</span></div>
+        </div>
+        <div class="prompt-card-body">
+          <p>Sets up server-side order creation, a redirect landing route, and fetch-based status verification.</p>
+          <div class="prompt-preview" id="preview-node-prompt"></div>
+          <div class="pc-actions">
+            <button class="pc-btn primary" onclick="copyPrompt('node', this)"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="pc-btn" onclick="downloadPrompt('node')"><i class="bi bi-download"></i> Download</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head">
+          <div class="pc-icon js"><i class="bi bi-filetype-js"></i></div>
+          <div class="pc-text"><strong>JavaScript</strong><span>For bundled sites or CMS custom-JS blocks (no inline &lt;script&gt;)</span></div>
+        </div>
+        <div class="prompt-card-body">
+          <p>Wires up the ZapPay widget as external/bundled JS — popup checkout, callbacks, and mandatory server-side verification guidance.</p>
+          <div class="prompt-preview" id="preview-js-prompt"></div>
+          <div class="pc-actions">
+            <button class="pc-btn primary" onclick="copyPrompt('js', this)"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="pc-btn" onclick="downloadPrompt('js')"><i class="bi bi-download"></i> Download</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-card-head">
+          <div class="pc-icon python"><i class="bi bi-filetype-py"></i></div>
+          <div class="pc-text"><strong>Python</strong><span>For Flask, Django, FastAPI and other Python backends</span></div>
+        </div>
+        <div class="prompt-card-body">
+          <p>Sets up server-side order creation, a redirect landing route, and requests-based status verification.</p>
+          <div class="prompt-preview" id="preview-python-prompt"></div>
+          <div class="pc-actions">
+            <button class="pc-btn primary" onclick="copyPrompt('python', this)"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="pc-btn" onclick="downloadPrompt('python')"><i class="bi bi-download"></i> Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-foot">
+      <div class="drawer-foot-note"><i class="bi bi-info-circle"></i> Each prompt already contains the full API reference and error handling — the AI doesn't need this page open to use it correctly.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CLIPBOARD HELPERS
+   ============================================================ */
+function writeClipboard(text){
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve, reject)=>{
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok ? resolve() : reject(new Error('execCommand failed'));
+    }catch(err){
+      reject(err);
+    }
+  });
+}
+
+function copyPlain(btn, text){
+  writeClipboard(text).then(()=>{
+    const original = btn.innerHTML;
+    btn.classList.add('copied');
+    btn.innerHTML = '<i class="bi bi-check2"></i> Copied';
+    setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML = original; }, 1600);
+  }).catch(()=>{
+    alert('Could not copy automatically — please select and copy the text manually.');
+  });
+}
+
+/* ============================================================
+   TOC / NAVIGATION
+   ============================================================ */
+function jumpTo(id){
+  closeMobileToc();
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function openMobileToc(){ document.getElementById('tocOverlay').classList.add('open'); }
+function closeMobileToc(){ document.getElementById('tocOverlay').classList.remove('open'); }
+document.getElementById('tocOpenBtn').addEventListener('click', openMobileToc);
+
+const SECTION_IDS = ['sec-overview','sec-key','sec-reference','sec-integration','sec-errors','sec-testmode','sec-practices','sec-ai'];
+function updateScrollSpy(){
+  let current = SECTION_IDS[0];
+  for(const id of SECTION_IDS){
+    const el = document.getElementById(id);
+    if(!el) continue;
+    const rect = el.getBoundingClientRect();
+    if(rect.top <= 120) current = id;
+  }
+  document.querySelectorAll('.side-link[data-target]').forEach(l=>{
+    l.classList.toggle('active', l.dataset.target === current);
+    l.classList.toggle('num-active', l.dataset.target === current);
+  });
+  document.querySelectorAll('.rail-toc-item').forEach(l=>{
+    const match = l.getAttribute('onclick') && l.getAttribute('onclick').includes(current);
+    l.classList.toggle('active', !!match);
+  });
+}
+window.addEventListener('scroll', ()=>{ requestAnimationFrame(updateScrollSpy); }, {passive:true});
+updateScrollSpy();
+
+/* ============================================================
+   LANGUAGE TABS
+   ============================================================ */
+function switchLang(lang){
+  document.querySelectorAll('.lang-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.lang-pane').forEach(p=>p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('pane-'+lang).classList.add('active');
+}
+
+/* ============================================================
+   ERROR REFERENCE — accordion + filter
+   ============================================================ */
+function toggleErr(card){
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open', !wasOpen);
+}
+function filterErr(cat, btn){
+  document.querySelectorAll('.err-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.err-card').forEach(card=>{
+    const show = cat === 'all' || card.dataset.cat === cat;
+    card.style.display = show ? '' : 'none';
+  });
+}
+
+/* ============================================================
+   DRAWER / MODAL open-close
+   ============================================================ */
+function openPromptDrawer(){
+  document.getElementById('promptDrawerOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderPromptPreviews();
+}
+function closePromptDrawer(){
+  document.getElementById('promptDrawerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openCopyModal(){
+  document.getElementById('copyModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCopyModal(){
+  document.getElementById('copyModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ===== Top-left dropdown menu ===== */
+const menuWrap = document.getElementById('menuWrap');
+const drawerOpenBtn = document.getElementById('drawerOpenBtn');
+function toggleDropdown(){
+  menuWrap.classList.contains('open') ? closeDropdown() : openDropdown();
+}
+function openDropdown(){
+  menuWrap.classList.add('open');
+  drawerOpenBtn.setAttribute('aria-expanded', 'true');
+}
+function closeDropdown(){
+  menuWrap.classList.remove('open');
+  drawerOpenBtn.setAttribute('aria-expanded', 'false');
+}
+drawerOpenBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  toggleDropdown();
+});
+document.addEventListener('click', (e)=>{
+  if(menuWrap.classList.contains('open') && !menuWrap.contains(e.target)){
+    closeDropdown();
+  }
+});
+
+/* ===== Coming Soon popup ===== */
+function openSoon(featureName){
+  document.getElementById('soonTitle').textContent = featureName + ' — Coming Soon';
+  document.getElementById('soonDesc').textContent = `We're still building ${featureName}. It'll show up here as soon as it's ready.`;
+  document.getElementById('soonModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSoon(){
+  document.getElementById('soonModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    closeCopyModal();
+    closePromptDrawer();
+    closeMobileToc();
+    closeDropdown();
+    closeSoon();
+  }
+});
+
+/* ============================================================
+   FULL DOCUMENTATION TEXT GENERATORS
+   Single source of truth for the "Copy all docs" modal AND the
+   per-language copy buttons in Section 3, so they can never drift.
+   ============================================================ */
+function introBlock(){
+  return `ZapPay ZapAPI — Integration Reference
+========================================
+
+WHAT THIS IS
+ZapPay is a UPI payment-link platform. ZapAPI is its developer API: create a payment
+order, send your customer to pay via any UPI app, then confirm the result server-side
+before you fulfill the order.
+
+BASE URLS
+- API calls:           https://paymentbackend-ruby.vercel.app
+- Widget script host:   https://zappay.shop
+  (widget tag: <script src="https://zappay.shop/zappay-pay.js"><\/script>)
+
+AUTHENTICATION
+Every request needs your ZapAPI key (one per account, from Dashboard -> Developer
+Portal -> Zap API — a 32-character secret). Pass it either:
+  - as "zap_api" in the JSON request body, OR
+  - as a request header: X-ZapAPI-Key
+
+THE 3-STEP FLOW
+1. Your server/page calls POST /api/developer/create-order -> get back payment_url.
+2. Customer is sent to payment_url (redirect, popup, or WebView) and pays via UPI.
+3. You MUST call GET /api/developer/order-status/:orderId and confirm status === "success"
+   before treating the order as paid.
+
+GOLDEN RULE (most important rule in this document)
+A customer landing back on your redirect_url, or a client-side JS callback firing, is
+NEVER proof of payment by itself — both can be spoofed, retried, or interrupted. Always
+verify via order-status from your own server before fulfilling anything.
+
+GATEWAY MODE — TEST vs LIVE
+Every account has a Gateway Mode toggle (Dashboard -> Developer Portal -> Zap API),
+account-wide, defaulting to Live. In Test Mode, create-order returns a payment_url
+pointing at ZapPay's own simulator (three outcomes: Successfully / Failed / Cancelled)
+instead of a real UPI checkout, and the wallet is never credited. order-status still
+returns the exact same pending/success/failed values, so no integration code needs to
+change between modes.`;
+}
+
+function apiReferenceBlock(){
+  return `API REFERENCE
+=============
+
+Endpoint 1 — Create Order
+POST https://paymentbackend-ruby.vercel.app/api/developer/create-order
+Content-Type: application/json
+
+Body fields:
+  zap_api          string   required unless using X-ZapAPI-Key header. Your ZapAPI key.
+  amount           number   REQUIRED. Rs.1 to Rs.5000. MUST be a clean number (e.g. 499) —
+                             NOT a formatted string like "Rs.499" or "1,999". Strip currency
+                             symbols/commas first: Number(String(price).replace(/[^0-9.]/g,''))
+  title            string   optional. Max 100 chars. Defaults to "ZapPay Payment".
+  customer_mobile  string   optional. If provided, MUST be exactly 10 digits starting with
+                             6/7/8/9, optionally preceded by 91, +91, or a leading 0 — NO
+                             spaces, dashes, or brackets. Strip non-digits or omit entirely.
+  redirect_url     string   optional. Where customer lands after paying. ZapPay appends
+                             "?zp_order=<id>&zp_result=success|failed". Ignored if useEmbedded:true.
+  useEmbedded      boolean  optional. Set true for the JS widget / in-app popup flow.
+
+Success (200):
+{
+  "success": true,
+  "message": "Order created",
+  "data": { "order_id": "ZP1782...ABCD", "payment_url": "https://pay.zapupi.com/...", "amount": 100, "mode": "live" }
+}
+
+Endpoint 2 — Get Order Status
+GET https://paymentbackend-ruby.vercel.app/api/developer/order-status/:orderId
+Header: X-ZapAPI-Key: YOUR_ZAPAPI_KEY
+
+No request body. orderId is a path param (the order_id from create-order). Scoped to the
+calling key's owner — you can never fetch another merchant's order, even by guessing the ID.
+
+Success (200):
+{
+  "success": true,
+  "message": "Status fetched",
+  "data": { "order_id": "ZP1782...ABCD", "status": "success", "amount": 100 }
+}
+status is always exactly one of: "pending" | "success" | "failed".
+
+RATE LIMIT
+60 requests / 15 minutes, bucketed per ZapAPI key (falls back to IP if no key found).`;
+}
+
+function errorReferenceBlock(){
+  return `ERROR REFERENCE — name, cause, and exact fix for every error this API returns
+================================================================================
+
+[401] Missing ZapAPI key
+  Message: "Missing ZapAPI key. Pass it as \\"zap_api\\" in the request body or an \\"X-ZapAPI-Key\\" header."
+  WHY: Neither a zap_api body field nor an X-ZapAPI-Key header was found on the request.
+  FIX: Add your key — X-ZapAPI-Key header for server calls, or zap_api field for the JS widget.
+       Check the key variable isn't empty/undefined at send time.
+
+[401] Invalid ZapAPI key
+  Message: "Invalid ZapAPI key"
+  WHY: A key was sent but doesn't resolve to any account — usually a stale key after
+       regenerating, a copy-paste error, or a key from a different environment.
+  FIX: Copy the key fresh from Developer Portal -> Zap API. If you regenerated recently,
+       update EVERY place that uses the old one — it's invalidated instantly, no grace period.
+
+[403] Account suspended
+  Message: "This account has been suspended." (banned: true)
+  WHY: The key is valid but the account owning it has been suspended. Checked on every request.
+  FIX: Not fixable in code — contact ZapPay support to resolve the suspension.
+
+[400] Validation failed
+  Message: "Validation failed" (+ errors array)
+  WHY (in order of real-world frequency):
+    1. amount sent as a formatted string ("Rs.499", "1,999") instead of a clean number (499).
+    2. customer_mobile has spaces/dashes/brackets — must be exactly 10 digits, optionally
+       prefixed 91/+91/0, nothing else.
+    3. title over 100 characters.
+  FIX: Sanitize before sending — Number(String(price).replace(/[^0-9.]/g,'')) for amount;
+       strip non-digits from any user-typed phone number or omit the field entirely.
+       Log the errors array in dev to see exactly which field failed.
+
+[400] Wallet full
+  Message: "Your ZapPay wallet is full. Upgrade your plan or withdraw first."
+  WHY: Current wallet balance + this amount exceeds your plan's wallet limit. Live Mode only
+       — this check is skipped entirely for Test Mode orders.
+  FIX: Withdraw funds or upgrade your plan from the dashboard. Account-level limit, not
+       something a request parameter can override.
+
+[404] Order not found
+  Message: "Order not found"
+  WHY: Returned by order-status when the orderId doesn't exist, OR belongs to a different
+       account than your key — both return the identical message on purpose.
+  FIX: Confirm you're passing the exact order_id string returned by create-order, unmodified,
+       and that you're polling with the SAME key that created the order.
+
+[429] Rate limited
+  Message: "Too many API requests. Please try again later."
+  WHY: More than 60 requests in a 15-minute window on this key (or IP as fallback). Shared
+       across create-order and order-status calls on the same key.
+  FIX: Poll no faster than every 2.5s (the official widget's own interval — never hits this
+       limit for a single order). Add exponential backoff to retry logic. No early reset.
+
+[503] Maintenance mode
+  Message: "Payment system is under maintenance."
+  WHY: ZapPay has temporarily paused new order creation platform-wide. Unrelated to your
+       account/key. Only on create-order in Live Mode — never on order-status or Test Mode.
+  FIX: Nothing to change in your code. Retry after a short delay.
+
+[JS] Widget: nothing happens on click
+  Console: "ZapPay.js: zap_api key is required" / "amount is required"
+  WHY: NOT an API error — never reaches the network. zappay-pay.js checks zap_api/amount are
+       present before calling; if missing, it only console.errors and returns silently — no
+       callback fires.
+  FIX: Open the browser console when testing (this failure is invisible in the UI by design).
+       Confirm the object passed to ZapPay.createOrder({...}) has non-empty values at call time.
+
+[JS] Widget: "Failed to fetch" / network error
+  Callback: onFailed({ error: 'network_error' })
+  WHY: The widget's backend URL is hardcoded inside zappay-pay.js — independent of which
+       domain serves the script file, so this is NOT a hosting/CORS issue on your end. Almost
+       always an old/incomplete cached copy of the script.
+  FIX: Re-copy the <script src="https://zappay.shop/zappay-pay.js"> tag fresh and hard-refresh
+       (clear cache). If self-hosting/proxying the script, confirm it serves the latest content.`;
+}
+
+function htmlIntegrationBlock(){
+  return `## HTML / JS Integration
+
+WHAT THIS FLOW USES
+Widget script (talks directly to https://paymentbackend-ruby.vercel.app, hardcoded — independent
+of whichever domain serves zappay-pay.js itself). Auth: zap_api key when creating the
+order, X-ZapAPI-Key header internally while polling for status.
+
+HOW THE WIDGET BEHAVES INTERNALLY
+- createOrder() always sends useEmbedded:true and opens payment_url in a 430x700
+  window.open popup. If blocked, falls back to a same-tab redirect.
+- Polls GET /api/developer/order-status/:orderId every 2.5s (up to 48 times, ~2 minutes),
+  firing onSuccess / onFailed / onTimeout, and closes the popup itself.
+- If zap_api or amount is missing, it logs a console error and does not call the API —
+  no callback fires for that specific case (only for network/API failures).
+
+CODE
+
+<script src="https://zappay.shop/zappay-pay.js"><\/script>
+
+<button onclick="payNow()">Pay ₹100</button>
+
+<script>
+  ZapPay.setCallbacks({
+    onSuccess: (order) => {
+      console.log('Payment successful:', order.order_id);
+      // TODO: confirm server-side via order-status before fulfilling
+    },
+    onFailed: (order) => { console.log('Payment failed:', order); },
+    onTimeout: (order) => { console.log('Payment timed out:', order); }
+  });
+
+  function payNow() {
+    ZapPay.createOrder({
+      zap_api: 'YOUR_ZAPAPI_KEY',
+      amount: 100,
+      title: 'Order #123',
+      customer_mobile: '9999999999' // optional
+    });
+  }
+<\/script>
+
+MANDATORY RULE
+Even though onSuccess fired client-side, treat that as a UI signal only. Before you ship
+goods or unlock content, independently call GET /api/developer/order-status/:orderId from
+YOUR server and check status === "success".`;
+}
+
+function phpIntegrationBlock(){
+  return `## PHP Integration
+
+WHAT THIS FLOW USES
+Two scripts: a server-side create-order call (auth via zap_api in the JSON body), and a
+redirect_url landing script that reads $_GET['zp_order'] and independently confirms via
+order-status (auth via X-ZapAPI-Key header) before trusting $_GET['zp_result'].
+
+CODE — create-order.php (server-side, starts the payment)
+
+<?php
+$ch = curl_init('https://paymentbackend-ruby.vercel.app/api/developer/create-order');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    'zap_api'      => 'YOUR_ZAPAPI_KEY',
+    'amount'       => 100,
+    'title'        => 'Order #123',
+    'redirect_url' => 'https://yourstore.com/payment-return.php'
+]));
+
+$response = curl_exec($ch);
+curl_close($ch);
+$result = json_decode($response, true);
+
+if ($result['success']) {
+    header('Location: ' . $result['data']['payment_url']);
+    exit;
+} else {
+    echo 'Could not start payment: ' . $result['message'];
+}
+
+CODE — payment-return.php (redirect_url landing page)
+
+<?php
+// zp_result in the query string must NEVER be trusted alone — it can be spoofed.
+$orderId = $_GET['zp_order'] ?? null;
+if (!$orderId) { die('Missing order id.'); }
+
+$ch = curl_init("https://paymentbackend-ruby.vercel.app/api/developer/order-status/{$orderId}");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-ZapAPI-Key: YOUR_ZAPAPI_KEY']);
+
+$response = curl_exec($ch);
+curl_close($ch);
+$result = json_decode($response, true);
+
+if ($result['success'] && $result['data']['status'] === 'success') {
+    echo 'Payment confirmed for order ' . $result['data']['order_id'];
+} elseif ($result['success'] && $result['data']['status'] === 'pending') {
+    echo 'Payment still pending — check again shortly.';
+} else {
+    echo 'Payment failed or order not found.';
+}
+
+MANDATORY RULE
+Never branch fulfillment logic on $_GET['zp_result'] alone. The only trustworthy signal
+is a server-to-server order-status call returning status === "success".`;
+}
+
+function javaIntegrationBlock(){
+  return `## Java (Android) Integration
+
+WHAT THIS FLOW USES
+OkHttp. Auth: zap_api in the JSON body for create-order; X-ZapAPI-Key header for the
+order-status polling call. payment_url opens in a Chrome Custom Tab, so you poll
+order-status yourself instead of relying on a redirect_url.
+
+CODE — ZapPayClient.java
+
+OkHttpClient client = new OkHttpClient();
+String ZAP_API_KEY = "YOUR_ZAPAPI_KEY";
+String BASE_URL = "https://paymentbackend-ruby.vercel.app";
+
+public void createOrder(double amount, String title, OrderCallback callback) {
+    JSONObject body = new JSONObject();
+    try {
+        body.put("zap_api", ZAP_API_KEY);
+        body.put("amount", amount);
+        body.put("title", title);
+        body.put("useEmbedded", true);
+    } catch (JSONException e) { callback.onError(e.getMessage()); return; }
+
+    RequestBody requestBody = RequestBody.create(body.toString(), MediaType.parse("application/json"));
+    Request request = new Request.Builder().url(BASE_URL + "/api/developer/create-order").post(requestBody).build();
+
+    client.newCall(request).enqueue(new Callback() {
+        @Override public void onFailure(Call call, IOException e) { callback.onError(e.getMessage()); }
+        @Override public void onResponse(Call call, Response response) throws IOException {
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                if (json.getBoolean("success")) {
+                    JSONObject data = json.getJSONObject("data");
+                    openCustomTab(data.getString("payment_url"));
+                    pollOrderStatus(data.getString("order_id"), callback);
+                } else { callback.onError(json.getString("message")); }
+            } catch (JSONException e) { callback.onError(e.getMessage()); }
+        }
+    });
+}
+
+void openCustomTab(String url) {
+    CustomTabsIntent intent = new CustomTabsIntent.Builder().build();
+    intent.launchUrl(context, Uri.parse(url));
+}
+
+Handler handler = new Handler(Looper.getMainLooper());
+
+public void pollOrderStatus(String orderId, OrderCallback callback) {
+    Request request = new Request.Builder()
+        .url(BASE_URL + "/api/developer/order-status/" + orderId)
+        .header("X-ZapAPI-Key", ZAP_API_KEY).get().build();
+
+    client.newCall(request).enqueue(new Callback() {
+        @Override public void onFailure(Call call, IOException e) { callback.onError(e.getMessage()); }
+        @Override public void onResponse(Call call, Response response) throws IOException {
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                if (json.getBoolean("success")) {
+                    String status = json.getJSONObject("data").getString("status");
+                    if (status.equals("success")) { callback.onSuccess(json.getJSONObject("data")); }
+                    else if (status.equals("failed")) { callback.onFailed(json.getJSONObject("data")); }
+                    else { handler.postDelayed(() -> pollOrderStatus(orderId, callback), 2500); }
+                } else { callback.onError(json.getString("message")); }
+            } catch (JSONException e) { callback.onError(e.getMessage()); }
+        }
+    });
+}
+
+public interface OrderCallback {
+    void onSuccess(JSONObject data);
+    void onFailed(JSONObject data);
+    void onError(String message);
+}
+
+MANDATORY RULE
+Only fulfill inside onSuccess, once pollOrderStatus confirms status == "success" from
+your own server-to-server call — never just because the Custom Tab closed.`;
+}
+
+function kotlinIntegrationBlock(){
+  return `## Kotlin (Android) Integration
+
+WHAT THIS FLOW USES
+OkHttp + kotlinx.coroutines. Same shape as the Java flow: zap_api in the JSON body for
+create-order, X-ZapAPI-Key header for order-status. payment_url opens in a Chrome Custom
+Tab; you poll order-status yourself rather than relying on a redirect_url.
+
+CODE — ZapPayClient.kt
+
+class ZapPayClient(private val context: Context) {
+    private val client = OkHttpClient()
+    private val zapApiKey = "YOUR_ZAPAPI_KEY"
+    private val baseUrl = "https://paymentbackend-ruby.vercel.app"
+    private val JSON = "application/json; charset=utf-8".toMediaType()
+
+    data class OrderResult(val orderId: String, val status: String, val amount: Double)
+
+    suspend fun createOrder(amount: Double, title: String): OrderResult = withContext(Dispatchers.IO) {
+        val body = JSONObject().apply {
+            put("zap_api", zapApiKey)
+            put("amount", amount)
+            put("title", title)
+            put("useEmbedded", true)
+        }
+        val request = Request.Builder()
+            .url("\$baseUrl/api/developer/create-order")
+            .post(body.toString().toRequestBody(JSON))
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            val json = JSONObject(response.body!!.string())
+            if (!json.getBoolean("success")) throw Exception(json.getString("message"))
+            val data = json.getJSONObject("data")
+            openCustomTab(data.getString("payment_url"))
+            pollOrderStatus(data.getString("order_id"))
+        }
+    }
+
+    private fun openCustomTab(url: String) {
+        CustomTabsIntent.Builder().build().launchUrl(context, Uri.parse(url))
+    }
+
+    suspend fun pollOrderStatus(orderId: String): OrderResult = withContext(Dispatchers.IO) {
+        while (true) {
+            val request = Request.Builder()
+                .url("\$baseUrl/api/developer/order-status/\$orderId")
+                .header("X-ZapAPI-Key", zapApiKey)
+                .get().build()
+
+            client.newCall(request).execute().use { response ->
+                val json = JSONObject(response.body!!.string())
+                if (!json.getBoolean("success")) throw Exception(json.getString("message"))
+                val data = json.getJSONObject("data")
+                val status = data.getString("status")
+                if (status == "success" || status == "failed") {
+                    return@withContext OrderResult(orderId, status, data.getDouble("amount"))
+                }
+            }
+            delay(2500)
+        }
+        @Suppress("UNREACHABLE_CODE")
+        throw IllegalStateException()
+    }
+}
+
+// Usage (from a coroutine scope, e.g. viewModelScope):
+// val result = zapPayClient.createOrder(100.0, "Order #123")
+// if (result.status == "success") { /* fulfill */ }
+
+MANDATORY RULE
+Only fulfill once pollOrderStatus itself returns status == "success" — that's the actual
+server-to-server confirmation, not just the Custom Tab closing.`;
+}
+
+function nodeIntegrationBlock(){
+  return `## Node.js Integration
+
+WHAT THIS FLOW USES
+Native fetch (Node 18+) or axios — either works, this uses fetch. Two endpoints: an
+Express route that creates the order server-side and redirects the customer, and one
+that handles their return and confirms payment before trusting it.
+
+CODE — routes/checkout.js
+
+const express = require('express');
+const router = express.Router();
+
+const ZAP_API_KEY = process.env.ZAP_API_KEY;
+const BASE_URL = 'https://paymentbackend-ruby.vercel.app';
+
+router.post('/create-order', async (req, res) => {
+    const response = await fetch(\`\${BASE_URL}/api/developer/create-order\`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            zap_api: ZAP_API_KEY,
+            amount: req.body.amount,
+            title: req.body.title || 'ZapPay Payment',
+            redirect_url: 'https://yourstore.com/payment-return'
+        })
+    });
+    const result = await response.json();
+
+    if (!result.success) {
+        return res.status(400).json({ error: result.message });
+    }
+    res.redirect(result.data.payment_url);
+});
+
+// redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+// zp_result in the query string must NEVER be trusted alone — it can be
+// spoofed. Always confirm via order-status from this server.
+router.get('/payment-return', async (req, res) => {
+    const orderId = req.query.zp_order;
+    if (!orderId) return res.status(400).send('Missing order id.');
+
+    const response = await fetch(\`\${BASE_URL}/api/developer/order-status/\${orderId}\`, {
+        headers: { 'X-ZapAPI-Key': ZAP_API_KEY }
+    });
+    const result = await response.json();
+
+    if (result.success && result.data.status === 'success') {
+        res.send(\`Payment confirmed for order \${result.data.order_id}\`);
+    } else if (result.success && result.data.status === 'pending') {
+        res.send('Payment still pending — check again shortly.');
+    } else {
+        res.status(400).send('Payment failed or order not found.');
+    }
+});
+
+module.exports = router;
+
+MANDATORY RULE
+Never branch fulfillment logic on req.query.zp_result alone. The only trustworthy
+signal is a server-to-server order-status call returning status === "success".`;
+}
+
+function jsIntegrationBlock(){
+  return `## JavaScript (Browser, no framework) Integration
+
+WHAT THIS FLOW USES
+The ZapPay widget script — same mechanism as the HTML/JS tab, shown here as plain JS for
+projects wiring it up without inline <script> tags (e.g. a bundled site, a CMS custom-JS
+block). Talks directly to https://paymentbackend-ruby.vercel.app, independent of where
+zappay-pay.js itself is hosted from.
+
+CODE — checkout.js (load after the widget script tag has loaded)
+
+// <script src="https://zappay.shop/zappay-pay.js"><\/script> must already be on the page
+
+ZapPay.setCallbacks({
+    onSuccess: function (order) {
+        console.log('Payment successful:', order.order_id);
+        // UI signal only — confirm server-side via order-status before fulfilling.
+        fetch('/api/confirm-order?order_id=' + encodeURIComponent(order.order_id))
+            .then(r => r.json())
+            .then(data => {
+                if (data.confirmed) {
+                    document.getElementById('checkout-status').textContent = 'Payment confirmed!';
+                }
+            });
+    },
+    onFailed: function (order) {
+        document.getElementById('checkout-status').textContent = 'Payment failed.';
+    },
+    onTimeout: function (order) {
+        document.getElementById('checkout-status').textContent = 'Payment timed out.';
+    }
+});
+
+document.getElementById('pay-button').addEventListener('click', function () {
+    ZapPay.createOrder({
+        zap_api: 'YOUR_ZAPAPI_KEY', // for a real site, proxy this through your own
+                                     // server instead of shipping the key client-side
+        amount: 100,
+        title: 'Order #123',
+        customer_mobile: document.getElementById('phone-input').value
+    });
+});
+
+// /api/confirm-order on YOUR server, called above, should itself call:
+// GET https://paymentbackend-ruby.vercel.app/api/developer/order-status/:orderId
+// with header X-ZapAPI-Key: YOUR_ZAPAPI_KEY, and only report confirmed: true
+// when the response's data.status === "success".
+
+MANDATORY RULE
+Even though onSuccess fired client-side, treat that as a UI signal only. The
+/api/confirm-order round trip above (server-side order-status check) is what actually
+gates fulfillment — never ship goods based on onSuccess alone.`;
+}
+
+function pythonIntegrationBlock(){
+  return `## Python Integration
+
+WHAT THIS FLOW USES
+Flask + requests. Same two-endpoint shape as the other server-side examples: one route
+creates the order and redirects the customer, another handles their return and confirms
+payment independently before trusting it.
+
+CODE — app.py
+
+import os
+import requests
+from flask import Flask, request, redirect, jsonify
+
+app = Flask(__name__)
+
+ZAP_API_KEY = os.environ['ZAP_API_KEY']
+BASE_URL = 'https://paymentbackend-ruby.vercel.app'
+
+@app.route('/create-order', methods=['POST'])
+def create_order():
+    resp = requests.post(f'{BASE_URL}/api/developer/create-order', json={
+        'zap_api': ZAP_API_KEY,
+        'amount': request.json['amount'],
+        'title': request.json.get('title', 'ZapPay Payment'),
+        'redirect_url': 'https://yourstore.com/payment-return'
+    })
+    result = resp.json()
+
+    if not result['success']:
+        return jsonify({'error': result['message']}), 400
+    return redirect(result['data']['payment_url'])
+
+# redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+# zp_result in the query string must NEVER be trusted alone — it can be
+# spoofed. Always confirm via order-status from this server.
+@app.route('/payment-return')
+def payment_return():
+    order_id = request.args.get('zp_order')
+    if not order_id:
+        return 'Missing order id.', 400
+
+    resp = requests.get(
+        f'{BASE_URL}/api/developer/order-status/{order_id}',
+        headers={'X-ZapAPI-Key': ZAP_API_KEY}
+    )
+    result = resp.json()
+
+    if result['success'] and result['data']['status'] == 'success':
+        return f"Payment confirmed for order {result['data']['order_id']}"
+    elif result['success'] and result['data']['status'] == 'pending':
+        return 'Payment still pending — check again shortly.'
+    else:
+        return 'Payment failed or order not found.', 400
+
+if __name__ == '__main__':
+    app.run(port=5000)
+
+MANDATORY RULE
+Never branch fulfillment logic on request.args.get('zp_result') alone. The only
+trustworthy signal is a server-to-server order-status call returning
+status == "success".`;
+}
+
+function bestPracticesBlock(){
+  return `BEST PRACTICES & SECURITY
+==========================
+- Never trust a redirect or client callback alone. Always call order-status from your
+  server and check status === "success" before fulfilling an order.
+- Keep your ZapAPI key server-side wherever possible. The JS widget is the one exception.
+- One checkout at a time. Don't call create-order again while a previous order for the
+  same purchase is still pending.
+- Regenerate your key immediately if you suspect it has leaked — invalidated instantly.
+- Respect the amount limit: Rs.1 to Rs.5,000 — validate client-side too.
+- Respect the rate limit: 60 requests / 15 minutes per key. Poll no faster than every 2-3s.`;
+}
+
+const LANG_LABELS = { html: 'HTML / JS', php: 'PHP', java: 'Java (Android)', kotlin: 'Kotlin (Android)', node: 'Node.js', js: 'JavaScript', python: 'Python' };
+const LANG_BLOCKS = { html: htmlIntegrationBlock, php: phpIntegrationBlock, java: javaIntegrationBlock, kotlin: kotlinIntegrationBlock, node: nodeIntegrationBlock, js: jsIntegrationBlock, python: pythonIntegrationBlock };
+
+function fullLangDoc(lang){
+  return [ introBlock(), '', apiReferenceBlock(), '', LANG_BLOCKS[lang](), '', errorReferenceBlock(), '', bestPracticesBlock() ].join('\n\n');
+}
+function fullAllLangsDoc(){
+  return [
+    introBlock(), '', apiReferenceBlock(),
+    '', htmlIntegrationBlock(), '', phpIntegrationBlock(), '', javaIntegrationBlock(),
+    '', kotlinIntegrationBlock(), '', nodeIntegrationBlock(), '', jsIntegrationBlock(), '', pythonIntegrationBlock(),
+    '', errorReferenceBlock(), '', bestPracticesBlock()
+  ].join('\n\n');
+}
+
+function copyLangDocs(lang, btn){
+  writeClipboard(fullLangDoc(lang)).then(()=>{
+    const original = btn.innerHTML;
+    btn.classList.add('copied');
+    btn.innerHTML = '<i class="bi bi-check2"></i> Copied — ' + LANG_LABELS[lang] + ' docs ready to paste';
+    setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML = original; }, 1800);
+  }).catch(()=>{
+    alert('Could not copy automatically — please select and copy the text manually.');
+  });
+}
+
+/* ============================================================
+   COPY MODAL — 4 options
+   ============================================================ */
+function copyDocsOption(kind, btn){
+  const text = kind === 'all' ? fullAllLangsDoc() : fullLangDoc(kind);
+  writeClipboard(text).then(()=>{
+    document.querySelectorAll('.copy-option').forEach(o=>{
+      o.classList.remove('copied');
+      const icon = o.querySelector('.co-status');
+      if(icon) icon.className = 'bi bi-clipboard co-status';
+    });
+    btn.classList.add('copied');
+    const icon = btn.querySelector('.co-status');
+    if(icon) icon.className = 'bi bi-check2-circle co-status';
+    setTimeout(()=>{
+      closeCopyModal();
+      setTimeout(()=>{
+        btn.classList.remove('copied');
+        if(icon) icon.className = 'bi bi-clipboard co-status';
+      }, 300);
+    }, 700);
+  }).catch(()=>{
+    alert('Could not copy automatically — please select and copy the text manually.');
+  });
+}
+
+/* ============================================================
+   BUILT-IN AI PROMPTS
+   Standalone documents — each is self-contained (includes the
+   API reference and error table inline) so an AI assistant can
+   act on it correctly without this page open.
+   ============================================================ */
+function promptSharedHeader(stack){
+  return `You are integrating the ZapPay UPI payment gateway (ZapAPI) into an existing ${stack} codebase that I am about to give you (or have already given you). Read my existing code first and find the right place to insert this — do NOT create a disconnected demo file and call it done. Wire it into my actual checkout/purchase flow.
+
+If anything below is ambiguous for my specific codebase, ask me ONE clarifying question before writing code. Otherwise proceed and implement the full flow.
+
+=== NON-NEGOTIABLE RULES ===
+1. Never treat a popup closing, a redirect landing, or a client-side callback as proof of payment. The ONLY trustworthy signal is calling GET /api/developer/order-status/:orderId from the SERVER (or your own polling code) and reading status === "success". Build this verification step even if I didn't explicitly ask for it — skipping it ships a payment bug, not a cosmetic one.
+2. Sanitize "amount" before every request — it must be a plain number (499), never a formatted string ("₹499", "1,999"). If I have a price displayed formatted anywhere, strip it: Number(String(price).replace(/[^0-9.]/g, '')).
+3. Sanitize "customer_mobile" if you send it — exactly 10 digits, optionally prefixed 91/+91/a leading 0, no spaces or symbols. If you can't guarantee the format, omit the field — it's optional.
+4. Implement real error handling using the error table below — not a generic try/catch with "something went wrong". Show the user something actionable for at least: validation failure, missing/invalid key, rate limit, and network failure.
+5. Never hardcode YOUR_ZAPAPI_KEY into a file that ships publicly if a server-side option exists in this stack. Prefer server-side env vars / config where the language supports it.
+6. Once you've written the code, re-read points 1-5 against what you actually wrote before telling me it's done. If you're not sure it works, say so and tell me what to test manually.
+
+=== API REFERENCE (verified, authoritative) ===
+Base URL: https://paymentbackend-ruby.vercel.app
+Auth: your ZapAPI key, either as "zap_api" in the JSON body, OR as header "X-ZapAPI-Key". (Get a key: Dashboard -> Developer Portal -> Zap API — it's a 32-character secret.)
+
+POST /api/developer/create-order
+  Content-Type: application/json
+  Body: {
+    zap_api: string          (required unless using the header instead)
+    amount: number           (REQUIRED, ₹1-₹5000, clean number — not a formatted string)
+    title: string            (optional, max 100 chars, defaults to "ZapPay Payment")
+    customer_mobile: string  (optional, exactly 10 digits per the sanitize rule above)
+    redirect_url: string     (optional — ZapPay appends ?zp_order=<id>&zp_result=success|failed)
+    useEmbedded: boolean     (optional — true for popup/widget flow, ignores redirect_url)
+  }
+  Success 200: { success: true, message: "Order created", data: { order_id, payment_url, amount, mode } }
+  Failure 400: { success: false, message: "Validation failed", errors: [...] }
+
+GET /api/developer/order-status/:orderId
+  Header: X-ZapAPI-Key: YOUR_ZAPAPI_KEY
+  Success 200: { success: true, message: "Status fetched", data: { order_id, status, amount } }
+  status is always exactly one of: "pending" | "success" | "failed" — poll if "pending".
+  404 if the order doesn't exist OR belongs to a different account than your key.
+
+Rate limit: 60 requests / 15 minutes per key. If polling manually, poll no faster than every 2.5 seconds.
+
+=== ERROR TABLE — build real handling around these ===
+401 "Missing ZapAPI key..."        -> key wasn't sent at all. Check it's actually in the request.
+401 "Invalid ZapAPI key"           -> key doesn't resolve. Re-copy from dashboard, don't retype.
+403 "This account has been suspended." -> account-level issue, not fixable client-side.
+400 "Validation failed"            -> almost always unsanitized amount or customer_mobile. See rules 2-3 above.
+400 "Your ZapPay wallet is full..."-> merchant's wallet limit hit (Live Mode only). Not user-fixable.
+404 "Order not found"              -> wrong orderId, or querying with a different key than created it.
+429 "Too many API requests..."     -> slow down polling, add backoff.
+503 "Payment system is under maintenance." -> temporary, retry later. create-order (Live Mode) only.
+
+=== GATEWAY MODE (context, not something you configure) ===
+The merchant's account has a Live/Test toggle in their dashboard. In Test Mode, create-order returns a payment_url pointing at a simulator instead of real UPI — but order-status still returns the same pending/success/failed shape, so the code you write needs no special-casing for it.
+`;
+}
+
+function htmlPromptBody(){
+  return promptSharedHeader('HTML/JavaScript') + `
+=== WHAT TO BUILD (HTML/JS — widget flow) ===
+Use the official widget script, which wraps both endpoints and handles the popup + polling for you:
+
+<script src="https://zappay.shop/zappay-pay.js"><\/script>
+
+Then, in my actual checkout code:
+
+<script>
+  ZapPay.setCallbacks({
+    onSuccess: (order) => {
+      // order = { order_id, amount } — client-side signal ONLY.
+      // Call your OWN backend here to independently verify via
+      // GET /api/developer/order-status/:orderId before unlocking anything.
+    },
+    onFailed: (order) => {
+      // order = { order_id, amount } OR { error } — show the user a clear retry message.
+    },
+    onTimeout: (order) => {
+      // Fires after ~2 min of polling, or if the popup was closed early.
+    }
+  });
+
+  function payNow() {
+    ZapPay.createOrder({
+      zap_api: 'YOUR_ZAPAPI_KEY',
+      amount: 499,          // sanitized clean number — see rule 2
+      title: 'Order description',
+      customer_mobile: ''   // optional — see rule 3, omit if not guaranteed clean
+    });
+  }
+<\/script>
+
+WIDGET-SPECIFIC BEHAVIOR TO KNOW:
+- createOrder() always sends useEmbedded:true and opens payment_url in a 430x700 popup, falling back to a same-tab redirect if the popup is blocked.
+- If zap_api or amount is missing when you call createOrder(), the widget only logs a console.error and does NOT call any callback — this is silent by design, so double check your object has real values before calling it, and test with devtools open.
+- "Failed to fetch" from the widget is not a CORS/hosting issue on your end — the backend URL is hardcoded inside the script file. It almost always means a stale cached copy of zappay-pay.js is loaded; have me hard-refresh if I report this.
+
+INTEGRATION STEPS FOR YOU (the AI):
+1. Find my existing "Buy" / "Checkout" / "Pay now" button(s) in the uploaded code.
+2. Add the widget script tag once, near the other script tags.
+3. Replace the button's current behavior (or add new behavior) with a call to ZapPay.createOrder() using the REAL price from my product/cart data — run it through the sanitize rule, don't assume it's already clean.
+4. Implement onSuccess to call my own backend endpoint (create one if I don't have one) that does the order-status verification server-side before showing a "Payment confirmed" state.
+5. Implement onFailed and onTimeout with visible, specific UI feedback — not a silent failure.
+6. Tell me exactly which files you changed and what I need to replace YOUR_ZAPAPI_KEY with.`;
+}
+
+function phpPromptBody(){
+  return promptSharedHeader('PHP') + `
+=== WHAT TO BUILD (PHP — server-side redirect flow) ===
+Two pieces: a script that creates the order and redirects the customer, and a landing script that verifies payment via cURL before trusting anything in the URL.
+
+create-order.php (or wherever my checkout POST currently happens):
+
+<?php
+$ch = curl_init('https://paymentbackend-ruby.vercel.app/api/developer/create-order');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    'zap_api'      => 'YOUR_ZAPAPI_KEY',
+    'amount'       => $sanitizedAmount,   // run through the sanitize rule — never raw $_POST
+    'title'        => $orderDescription,
+    'redirect_url' => 'https://' . $_SERVER['HTTP_HOST'] . '/payment-return.php'
+]));
+$response = curl_exec($ch);
+curl_close($ch);
+$result = json_decode($response, true);
+
+if ($result['success']) {
+    header('Location: ' . $result['data']['payment_url']);
+    exit;
+} else {
+    // Map $result['message'] against the error table above — show something actionable
+    echo 'Could not start payment: ' . htmlspecialchars($result['message']);
+}
+
+payment-return.php (the redirect_url landing page):
+
+<?php
+// $_GET['zp_result'] can be spoofed by anyone editing the URL — NEVER branch on it directly.
+$orderId = $_GET['zp_order'] ?? null;
+if (!$orderId) { die('Missing order id.'); }
+
+$ch = curl_init("https://paymentbackend-ruby.vercel.app/api/developer/order-status/{$orderId}");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-ZapAPI-Key: YOUR_ZAPAPI_KEY']);
+$response = curl_exec($ch);
+curl_close($ch);
+$result = json_decode($response, true);
+
+if ($result['success'] && $result['data']['status'] === 'success') {
+    // ONLY here is it safe to mark the order fulfilled / unlock content / send confirmation
+} elseif ($result['success'] && $result['data']['status'] === 'pending') {
+    // Show a "still processing, refresh shortly" state — do not fulfill yet
+} else {
+    // Failed or not found — show a clear retry/contact-support message
+}
+
+INTEGRATION STEPS FOR YOU (the AI):
+1. Find my existing checkout/order-creation PHP code in the uploaded project.
+2. Insert the create-order call at the point where I currently start payment, using the REAL order amount from my own logic (cart total, product price, etc.) — sanitized per rule 2, never trusting raw $_POST/$_GET directly into amount.
+3. Create or update the redirect_url landing script to independently verify via order-status before doing anything that counts as "fulfilled" (sending a confirmation email, decrementing stock, unlocking a download, etc.).
+4. If I already store orders in a database, show me where to persist order_id and status, and update that status only after a successful order-status check — never from $_GET alone.
+5. Use htmlspecialchars() or equivalent on any API message you echo back to the page.
+6. Tell me exactly which files you changed and what I need to replace YOUR_ZAPAPI_KEY with — ideally pulled from an environment variable or config file rather than hardcoded, if my project already has one.`;
+}
+
+function javaPromptBody(){
+  return promptSharedHeader('Java (Android)') + `
+=== WHAT TO BUILD (Java/Android — OkHttp + Chrome Custom Tab) ===
+Create the order, open payment_url in a Chrome Custom Tab (not a WebView redirect), then poll order-status yourself until it resolves.
+
+OkHttpClient client = new OkHttpClient();
+String ZAP_API_KEY = "YOUR_ZAPAPI_KEY";   // move to BuildConfig / secure storage, not a literal, if my project has a pattern for this
+String BASE_URL = "https://paymentbackend-ruby.vercel.app";
+
+public void createOrder(double amount, String title, OrderCallback callback) {
+    // amount must already be sanitized per rule 2 before this is called
+    JSONObject body = new JSONObject();
+    try {
+        body.put("zap_api", ZAP_API_KEY);
+        body.put("amount", amount);
+        body.put("title", title);
+        body.put("useEmbedded", true);
+    } catch (JSONException e) { callback.onError(e.getMessage()); return; }
+
+    RequestBody requestBody = RequestBody.create(body.toString(), MediaType.parse("application/json"));
+    Request request = new Request.Builder().url(BASE_URL + "/api/developer/create-order").post(requestBody).build();
+
+    client.newCall(request).enqueue(new Callback() {
+        @Override public void onFailure(Call call, IOException e) { callback.onError(e.getMessage()); }
+        @Override public void onResponse(Call call, Response response) throws IOException {
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                if (json.getBoolean("success")) {
+                    JSONObject data = json.getJSONObject("data");
+                    openCustomTab(data.getString("payment_url"));
+                    pollOrderStatus(data.getString("order_id"), callback);
+                } else {
+                    // Map json.getString("message") against the error table above
+                    callback.onError(json.getString("message"));
+                }
+            } catch (JSONException e) { callback.onError(e.getMessage()); }
+        }
+    });
+}
+
+void openCustomTab(String url) {
+    CustomTabsIntent intent = new CustomTabsIntent.Builder().build();
+    intent.launchUrl(context, Uri.parse(url));
+}
+
+Handler handler = new Handler(Looper.getMainLooper());
+
+public void pollOrderStatus(String orderId, OrderCallback callback) {
+    Request request = new Request.Builder()
+        .url(BASE_URL + "/api/developer/order-status/" + orderId)
+        .header("X-ZapAPI-Key", ZAP_API_KEY).get().build();
+
+    client.newCall(request).enqueue(new Callback() {
+        @Override public void onFailure(Call call, IOException e) { callback.onError(e.getMessage()); }
+        @Override public void onResponse(Call call, Response response) throws IOException {
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                if (json.getBoolean("success")) {
+                    String status = json.getJSONObject("data").getString("status");
+                    if (status.equals("success")) { callback.onSuccess(json.getJSONObject("data")); }
+                    else if (status.equals("failed")) { callback.onFailed(json.getJSONObject("data")); }
+                    else { handler.postDelayed(() -> pollOrderStatus(orderId, callback), 2500); } // still pending
+                } else { callback.onError(json.getString("message")); }
+            } catch (JSONException e) { callback.onError(e.getMessage()); }
+        }
+    });
+}
+
+public interface OrderCallback {
+    void onSuccess(JSONObject data);
+    void onFailed(JSONObject data);
+    void onError(String message);
+}
+
+INTEGRATION STEPS FOR YOU (the AI):
+1. Find my existing "Buy" / checkout Activity or Fragment in the uploaded project.
+2. Wire the buy button to call createOrder() with the REAL price from my product/cart data, sanitized per rule 2.
+3. Implement OrderCallback in my checkout screen: onSuccess should update UI to "confirmed" ONLY after this callback fires (it already reflects a server-verified order-status check, per pollOrderStatus above) — do not add any earlier "success" state based on the Custom Tab simply closing.
+4. Implement onFailed and onError with visible, specific UI feedback mapped against the error table above, not a generic "something went wrong" toast.
+5. If my app has a secrets/BuildConfig pattern, move ZAP_API_KEY there instead of a literal string.
+6. Tell me exactly which files you changed and what I need to replace YOUR_ZAPAPI_KEY with.`;
+}
+
+function kotlinPromptBody(){
+  return promptSharedHeader('Kotlin (Android)') + `
+=== WHAT TO BUILD (Kotlin/Android — OkHttp + coroutines + Chrome Custom Tab) ===
+Create the order, open payment_url in a Chrome Custom Tab (not a WebView redirect), then suspend-poll order-status yourself until it resolves.
+
+class ZapPayClient(private val context: Context) {
+    private val client = OkHttpClient()
+    private val zapApiKey = "YOUR_ZAPAPI_KEY"   // move to BuildConfig / secure storage, not a literal, if my project has a pattern for this
+    private val baseUrl = "https://paymentbackend-ruby.vercel.app"
+    private val JSON = "application/json; charset=utf-8".toMediaType()
+
+    data class OrderResult(val orderId: String, val status: String, val amount: Double)
+
+    suspend fun createOrder(amount: Double, title: String): OrderResult = withContext(Dispatchers.IO) {
+        // amount must already be sanitized per rule 2 before this is called
+        val body = JSONObject().apply {
+            put("zap_api", zapApiKey)
+            put("amount", amount)
+            put("title", title)
+            put("useEmbedded", true)
+        }
+        val request = Request.Builder()
+            .url("$baseUrl/api/developer/create-order")
+            .post(body.toString().toRequestBody(JSON))
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            val json = JSONObject(response.body!!.string())
+            if (!json.getBoolean("success")) throw Exception(json.getString("message")) // map against the error table above
+            val data = json.getJSONObject("data")
+            openCustomTab(data.getString("payment_url"))
+            pollOrderStatus(data.getString("order_id"))
+        }
+    }
+
+    private fun openCustomTab(url: String) {
+        CustomTabsIntent.Builder().build().launchUrl(context, Uri.parse(url))
+    }
+
+    suspend fun pollOrderStatus(orderId: String): OrderResult = withContext(Dispatchers.IO) {
+        while (true) {
+            val request = Request.Builder()
+                .url("$baseUrl/api/developer/order-status/$orderId")
+                .header("X-ZapAPI-Key", zapApiKey)
+                .get().build()
+
+            client.newCall(request).execute().use { response ->
+                val json = JSONObject(response.body!!.string())
+                if (!json.getBoolean("success")) throw Exception(json.getString("message"))
+                val data = json.getJSONObject("data")
+                val status = data.getString("status")
+                if (status == "success" || status == "failed") {
+                    return@withContext OrderResult(orderId, status, data.getDouble("amount"))
+                }
+                // else still pending — loop continues after delay below
+            }
+            delay(2500)
+        }
+        @Suppress("UNREACHABLE_CODE")
+        throw IllegalStateException()
+    }
+}
+
+INTEGRATION STEPS FOR YOU (the AI):
+1. Find my existing "Buy" / checkout Activity, Fragment, or Composable in the uploaded project.
+2. Wire the buy button/action to call createOrder() with the REAL price from my product/cart data, sanitized per rule 2 — from a coroutine scope appropriate to my project (viewModelScope, lifecycleScope, etc.).
+3. The result of pollOrderStatus (inside createOrder's suspend chain) already reflects a server-verified order-status check — only update UI to "confirmed" once that result's status == "success". Do not add any earlier "success" state based on the Custom Tab simply closing.
+4. Wrap the call in try/catch and map thrown exceptions' messages against the error table above with visible, specific UI feedback — not a generic "something went wrong" toast.
+5. If my app has a secrets/BuildConfig pattern, move zapApiKey there instead of a literal string.
+6. Tell me exactly which files you changed and what I need to replace YOUR_ZAPAPI_KEY with.`;
+}
+
+function nodePromptBody(){
+  return promptSharedHeader('Node.js') + `
+=== WHAT TO BUILD (Node.js — server-side redirect flow) ===
+Two pieces: a route that creates the order and redirects the customer, and a landing route that verifies payment via a server-to-server call before trusting anything in the URL. Shown here with Express, but adapt to whatever framework my project already uses (Fastify, Koa, a plain http server, etc.) if it differs.
+
+router.post('/create-order', async (req, res) => {
+    const response = await fetch('https://paymentbackend-ruby.vercel.app/api/developer/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            zap_api: process.env.ZAP_API_KEY,
+            amount: sanitizedAmount,   // run through the sanitize rule — never raw req.body straight through
+            title: orderDescription,
+            redirect_url: 'https://yourdomain.com/payment-return'
+        })
+    });
+    const result = await response.json();
+
+    if (!result.success) {
+        // Map result.message against the error table above — show something actionable
+        return res.status(400).json({ error: result.message });
+    }
+    res.redirect(result.data.payment_url);
+});
+
+// redirect_url lands here. req.query.zp_result can be spoofed by anyone
+// editing the URL — NEVER branch fulfillment on it directly.
+router.get('/payment-return', async (req, res) => {
+    const orderId = req.query.zp_order;
+    if (!orderId) return res.status(400).send('Missing order id.');
+
+    const response = await fetch(\`https://paymentbackend-ruby.vercel.app/api/developer/order-status/\${orderId}\`, {
+        headers: { 'X-ZapAPI-Key': process.env.ZAP_API_KEY }
+    });
+    const result = await response.json();
+
+    if (result.success && result.data.status === 'success') {
+        // ONLY here is it safe to mark the order fulfilled / unlock content / send confirmation
+    } else if (result.success && result.data.status === 'pending') {
+        // Show a "still processing, refresh shortly" state — do not fulfill yet
+    } else {
+        // Failed or not found — show a clear retry/contact-support message
+    }
+});
+
+INTEGRATION STEPS FOR YOU (the AI):
+1. Find my existing checkout/order-creation route(s) in the uploaded project.
+2. Insert the create-order call at the point where I currently start payment, using the REAL order amount from my own logic (cart total, product price, etc.) — sanitized per rule 2, never trusting raw req.body/req.query directly into amount.
+3. Create or update the redirect_url landing route to independently verify via order-status before doing anything that counts as "fulfilled" (sending a confirmation email, decrementing stock, unlocking a download, etc.).
+4. If I already store orders in a database, show me where to persist order_id and status, and update that status only after a successful order-status check — never from req.query alone.
+5. Use process.env for ZAP_API_KEY (or my project's existing config/secrets pattern) — never a literal string in a committed file.
+6. Tell me exactly which files you changed and what I need to set ZAP_API_KEY to.`;
+}
+
+function jsPromptBody(){
+  return promptSharedHeader('JavaScript (browser, no framework)') + `
+=== WHAT TO BUILD (plain JavaScript — widget flow, no inline <script> tags) ===
+Use the official widget script (same mechanism as the HTML/JS flow), wired up as external/bundled JS instead of an inline block — appropriate for a bundler, a CMS custom-JS block, or a site where inline scripts aren't used.
+
+Make sure this tag is present once on the page (add it if it isn't already):
+<script src="https://zappay.shop/zappay-pay.js"><\/script>
+
+Then in my checkout.js (or wherever my buy-button logic lives):
+
+ZapPay.setCallbacks({
+    onSuccess: function (order) {
+        // order = { order_id, amount } — client-side signal ONLY.
+        // Call your OWN backend here to independently verify via
+        // GET /api/developer/order-status/:orderId before unlocking anything.
+    },
+    onFailed: function (order) {
+        // order = { order_id, amount } OR { error } — show the user a clear retry message.
+    },
+    onTimeout: function (order) {
+        // Fires after ~2 min of polling, or if the popup was closed early.
+    }
+});
+
+document.getElementById('pay-button').addEventListener('click', function () {
+    ZapPay.createOrder({
+        zap_api: 'YOUR_ZAPAPI_KEY',   // for a real deployment, proxy this through your own
+                                       // server instead of shipping the key client-side
+        amount: sanitizedAmount,      // run through the sanitize rule — see rule 2 above
+        title: 'Order description',
+        customer_mobile: ''           // optional — see rule 3, omit if not guaranteed clean
+    });
+});
+
+WIDGET-SPECIFIC BEHAVIOR TO KNOW:
+- createOrder() always sends useEmbedded:true and opens payment_url in a 430x700 popup, falling back to a same-tab redirect if the popup is blocked.
+- If zap_api or amount is missing when you call createOrder(), the widget only logs a console.error and does NOT call any callback — this is silent by design, so double check your object has real values before calling it, and test with devtools open.
+- "Failed to fetch" from the widget is not a CORS/hosting issue on your end — the backend URL is hardcoded inside the script file. It almost always means a stale cached copy of zappay-pay.js is loaded; have me hard-refresh if I report this.
+
+INTEGRATION STEPS FOR YOU (the AI):
+1. Find my existing "Buy" / "Checkout" / "Pay now" button(s) and their current JS in the uploaded code.
+2. Add the widget script tag once, near the other script tags, if it isn't already present.
+3. Replace the button's current behavior (or add new behavior) with a call to ZapPay.createOrder() using the REAL price from my product/cart data — run it through the sanitize rule, don't assume it's already clean.
+4. Implement onSuccess to call my own backend endpoint (create one if I don't have one) that does the order-status verification server-side before showing a "Payment confirmed" state.
+5. Implement onFailed and onTimeout with visible, specific UI feedback — not a silent failure.
+6. If my project ships this JS as a public bundle, flag that zap_api is visible in it and suggest moving order creation server-side instead.
+7. Tell me exactly which files you changed and what I need to replace YOUR_ZAPAPI_KEY with.`;
+}
+
+function pythonPromptBody(){
+  return promptSharedHeader('Python') + `
+=== WHAT TO BUILD (Python — server-side redirect flow) ===
+Two pieces: a route that creates the order and redirects the customer, and a landing route that verifies payment via a server-to-server call before trusting anything in the URL. Shown here with Flask + requests, but adapt to whatever framework my project already uses (Django, FastAPI, etc.) if it differs.
+
+@app.route('/create-order', methods=['POST'])
+def create_order():
+    resp = requests.post('https://paymentbackend-ruby.vercel.app/api/developer/create-order', json={
+        'zap_api': os.environ['ZAP_API_KEY'],
+        'amount': sanitized_amount,   # run through the sanitize rule — never raw request data straight through
+        'title': order_description,
+        'redirect_url': 'https://yourdomain.com/payment-return'
+    })
+    result = resp.json()
+
+    if not result['success']:
+        # Map result['message'] against the error table above — show something actionable
+        return jsonify({'error': result['message']}), 400
+    return redirect(result['data']['payment_url'])
+
+# redirect_url lands here. request.args.get('zp_result') can be spoofed by
+# anyone editing the URL — NEVER branch fulfillment on it directly.
+@app.route('/payment-return')
+def payment_return():
+    order_id = request.args.get('zp_order')
+    if not order_id:
+        return 'Missing order id.', 400
+
+    resp = requests.get(
+        f"https://paymentbackend-ruby.vercel.app/api/developer/order-status/{order_id}",
+        headers={'X-ZapAPI-Key': os.environ['ZAP_API_KEY']}
+    )
+    result = resp.json()
+
+    if result['success'] and result['data']['status'] == 'success':
+        pass  # ONLY here is it safe to mark the order fulfilled / unlock content / send confirmation
+    elif result['success'] and result['data']['status'] == 'pending':
+        pass  # Show a "still processing, refresh shortly" state — do not fulfill yet
+    else:
+        pass  # Failed or not found — show a clear retry/contact-support message
+
+INTEGRATION STEPS FOR YOU (the AI):
+1. Find my existing checkout/order-creation route(s) in the uploaded project.
+2. Insert the create-order call at the point where I currently start payment, using the REAL order amount from my own logic (cart total, product price, etc.) — sanitized per rule 2, never trusting raw request data directly into amount.
+3. Create or update the redirect_url landing route to independently verify via order-status before doing anything that counts as "fulfilled" (sending a confirmation email, decrementing stock, unlocking a download, etc.).
+4. If I already store orders in a database, show me where to persist order_id and status, and update that status only after a successful order-status check — never from request.args alone.
+5. Use os.environ (or my project's existing config/secrets pattern) for ZAP_API_KEY — never a literal string in a committed file.
+6. Tell me exactly which files you changed and what I need to set ZAP_API_KEY to.`;
+}
+
+const PROMPT_BODIES = { html: htmlPromptBody, php: phpPromptBody, java: javaPromptBody, kotlin: kotlinPromptBody, node: nodePromptBody, js: jsPromptBody, python: pythonPromptBody };
+const PROMPT_FILENAMES = { html: 'zappay-html-integration-prompt.txt', php: 'zappay-php-integration-prompt.txt', java: 'zappay-java-integration-prompt.txt', kotlin: 'zappay-kotlin-integration-prompt.txt', node: 'zappay-node-integration-prompt.txt', js: 'zappay-js-integration-prompt.txt', python: 'zappay-python-integration-prompt.txt' };
+
+function renderPromptPreviews(){
+  Object.keys(PROMPT_BODIES).forEach(lang=>{
+    const el = document.getElementById('preview-'+lang+'-prompt');
+    if(el && !el.dataset.rendered){
+      const text = PROMPT_BODIES[lang]();
+      el.textContent = text.slice(0, 340) + '…';
+      el.dataset.rendered = '1';
+    }
+  });
+}
+
+function copyPrompt(lang, btn){
+  writeClipboard(PROMPT_BODIES[lang]()).then(()=>{
+    const original = btn.innerHTML;
+    btn.classList.add('copied');
+    btn.innerHTML = '<i class="bi bi-check2"></i> Copied';
+    setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML = original; }, 1600);
+  }).catch(()=>{
+    alert('Could not copy automatically — please select and copy the text manually.');
+  });
+}
+
+function downloadPrompt(lang){
+  const text = PROMPT_BODIES[lang]();
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = PROMPT_FILENAMES[lang];
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+</script>
+
+</body>
+</html>
+
+  <!-- ===== Right rail ===== -->
+  <aside class="rail" id="rightRail">
+    <div class="rail-card">
+      <h4>On this page</h4>
+      <span class="rail-toc-item" onclick="jumpTo('sec-overview')">Overview</span>
+      <span class="rail-toc-item" onclick="jumpTo('sec-key')">Getting your key</span>
+      <span class="rail-toc-item" onclick="jumpTo('sec-reference')">API reference</span>
+      <span class="rail-toc-sub" onclick="jumpTo('sec-reference')">Create order</span>
+      <span class="rail-toc-sub" onclick="jumpTo('sec-reference')">Order status</span>
+      <span class="rail-toc-item" onclick="jumpTo('sec-integration')">Integration guide</span>
+      <span class="rail-toc-item" onclick="jumpTo('sec-errors')">Error reference</span>
+      <span class="rail-toc-item" onclick="jumpTo('sec-testmode')">Test & Live mode</span>
+      <span class="rail-toc-item" onclick="jumpTo('sec-practices')">Best practices</span>
+    </div>
+
+    <div class="rail-card">
+      <h4>Authentication</h4>
+      <div class="code-block" style="margin:0 0 12px;">
+        <pre style="padding:11px 12px; font-size:11.5px;"><code>X-ZapAPI-Key:
+YOUR_ZAPAPI_KEY</code></pre>
+      </div>
+      <span class="rail-toc-item" style="padding-left:0;" onclick="jumpTo('sec-key')">Get your API key →</span>
+    </div>
+
+    <div class="rail-card">
+      <h4>Need help?</h4>
+      <div style="font-size:12.5px; color:var(--ink-faint); line-height:1.7; margin-bottom:10px;">Our developer support team is here to help.</div>
+      <span class="rail-toc-item" style="padding-left:0;" onclick="jumpTo('sec-reference')"><i class="bi bi-file-earmark-text" style="margin-right:6px;"></i>API Reference</span>
+      <span class="rail-toc-item" style="padding-left:0;" onclick="jumpTo('sec-errors')"><i class="bi bi-bug" style="margin-right:6px;"></i>Error Reference</span>
+      <a class="rail-toc-item" style="padding-left:0; display:block;" href="https://zappay.shop/support/"><i class="bi bi-life-preserver" style="margin-right:6px;"></i>Visit Support</a>
+      <button class="rail-cta" onclick="openPromptDrawer()"><i class="bi bi-stars"></i> AI prompts</button>
+    </div>
+  </aside>
+
+</div>
+
+</body>
+</html>
+

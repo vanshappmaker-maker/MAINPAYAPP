@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Payment Link | ZapPay</title>
+<meta name="description" content="View and share your ZapPay payment link. Collect UPI payments instantly and securely."/>
+<meta name="robots" content="noindex, follow"/>
+<meta property="og:title" content="Payment Link | ZapPay"/>
+<meta property="og:description" content="View and share your ZapPay payment link. Collect UPI payments instantly and securely."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<link rel="apple-touch-icon" href="/favicon.png"/>
+<meta name="theme-color" content="#2563EB"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+
+<!-- ⚙️ CONFIG -->
+<script>
+  window.API_URL = "https://paymentbackend-ruby.vercel.app";
+</script>
+
+<style>
+/* ============================================================
+   THEME SYSTEM — kept byte-identical to pay.html / preview.html
+   so all three always look consistent with each other.
+================================================================ */
+:root{--ink:#1C1530;--muted:#6B7280;--green:#16A34A;--green-bg:#EEFCF3;--green-text:#15803D;--surface:#fff;--text-secondary:#4B4560;--text-muted:#9C93B5;--page-bg:linear-gradient(160deg,var(--brand-50) 0%,#F7FAFC 60%);}
+[data-theme="default"]{--brand-rgb:37,99,235;--brand-700:#1D4ED8;--brand-600:#2563EB;--brand-500:#3B82F6;--brand-300:#93C5FD;--brand-200:#BFDBFE;--brand-100:#DBEAFE;--brand-50:#EFF6FF;--brand-border:#DBEAFE;--brand-cloud:#E3EDFC;--brand-muted:#8CA0C2;--brand-grad:linear-gradient(135deg,#1D4ED8 0%,#3B82F6 100%);}
+[data-theme="nova"]{--brand-rgb:124,58,237;--brand-700:#6D28D9;--brand-600:#7C3AED;--brand-500:#8B5CF6;--brand-300:#C4B5FD;--brand-200:#DDD6FE;--brand-100:#EDE9FE;--brand-50:#F5F3FF;--brand-border:#E6DEFB;--brand-cloud:#EDE7FB;--brand-muted:#9C93B5;--brand-grad:linear-gradient(135deg,#6D28D9 0%,#8B5CF6 100%);}
+[data-theme="ember"]{--brand-rgb:242,96,12;--brand-700:#C2410C;--brand-600:#F2600C;--brand-500:#FF8A3D;--brand-300:#FDBA8C;--brand-200:#FED7AA;--brand-100:#FFE9D6;--brand-50:#FFF6EE;--brand-border:#FBD7B5;--brand-cloud:#F2E6DA;--brand-muted:#B0A89F;--brand-grad:linear-gradient(135deg,#F2600C 0%,#FF8A3D 100%);}
+[data-theme="emerald"]{--brand-rgb:22,163,74;--brand-700:#15803D;--brand-600:#16A34A;--brand-500:#22C55E;--brand-300:#86EFAC;--brand-200:#BBF7D0;--brand-100:#DCFCE7;--brand-50:#F0FDF4;--brand-border:#BBF0CC;--brand-cloud:#E3F6E9;--brand-muted:#7C9C87;--brand-grad:linear-gradient(135deg,#16A34A 0%,#22C55E 100%);}
+/* ---- PREMIUM (Silver+ only) ---- */
+[data-theme="aurora"]{--brand-rgb:162,28,175;--brand-700:#4C1D95;--brand-600:#A21CAF;--brand-500:#C026D3;--brand-300:#F0ABFC;--brand-200:#F5D0FE;--brand-100:#FAE8FF;--brand-50:#FDF4FF;--brand-border:#F5D0FE;--brand-cloud:#F6E6FA;--brand-muted:#C9A3D6;--brand-grad:linear-gradient(120deg,#4338CA 0%,#A21CAF 55%,#EC4899 100%);}
+[data-theme="obsidian"]{--brand-rgb:201,162,39;--brand-700:#8A6D1A;--brand-600:#C9A227;--brand-500:#E8C874;--brand-300:#F0DDA0;--brand-200:#F5E8C8;--brand-100:#FAF3E0;--brand-50:#FDFAF0;--brand-border:#3A3628;--brand-cloud:#1C1A22;--brand-muted:#8A8598;--brand-grad:linear-gradient(135deg,#8A6D1A 0%,#E8C874 100%);--surface:#15131C;--text-secondary:#D8D3E8;--text-muted:#8A8598;--ink:#F5F3FF;--page-bg:radial-gradient(circle at 30% -10%,#241F2E 0%,#0A090D 60%);}
+[data-theme="obsidian"] .card{box-shadow:0 30px 70px -14px rgba(0,0,0,.6),0 0 0 1px rgba(201,162,39,.25),0 0 40px -8px rgba(201,162,39,.25);}
+
+*{box-sizing:border-box;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:0;min-height:100vh;background:var(--page-bg);color:var(--ink);display:flex;align-items:center;justify-content:center;padding:20px;transition:background .3s;}
+.card{background:var(--surface);border-radius:26px;max-width:420px;width:100%;overflow:hidden;box-shadow:0 30px 60px -14px rgba(var(--brand-rgb),.25),0 6px 18px rgba(var(--brand-rgb),.08);}
+.card-body{padding:34px 26px 28px;text-align:center;}
+
+.zp-spinner{width:36px;height:36px;border:3px solid var(--brand-100);border-top-color:var(--brand-600);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+.err-halo{width:90px;height:90px;border-radius:50%;background:#FEF3C7;margin:0 auto;display:flex;align-items:center;justify-content:center;}
+.err-icon{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 28px -6px rgba(217,119,6,.4);animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.err-icon i{font-size:28px;color:#fff;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.deco-area{position:relative;height:98px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;}
+.deco-area .cloud{position:absolute;color:var(--brand-cloud);}
+.deco{position:absolute;opacity:.8;}
+.deco.dm{width:9px;height:9px;transform:rotate(45deg);border-radius:2px;background:var(--brand-500);}
+.deco.dm.sm{width:6px;height:6px;background:var(--brand-300);}
+.l-halo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:92px;height:92px;border-radius:50%;background:var(--brand-100);}
+.l-icon{position:relative;width:64px;height:64px;border-radius:50%;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 24px -6px rgba(var(--brand-rgb),.4);z-index:1;animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.l-icon i{color:#fff;font-size:26px;}
+@keyframes popScale{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.14);}100%{transform:scale(1);opacity:1;}}
+
+.title-lg{font-size:19px;font-weight:800;margin:8px 0 3px;}
+.subtitle{color:var(--muted);font-size:13.5px;margin-bottom:18px;}
+.label-caps{font-size:11.5px;font-weight:700;color:var(--brand-muted);letter-spacing:.6px;text-transform:uppercase;text-align:left;margin-bottom:8px;}
+.link-box{display:flex;align-items:flex-start;gap:10px;background:var(--brand-50);border:1.5px solid var(--brand-border);border-radius:15px;padding:14px 15px;font-size:13px;text-align:left;word-break:break-all;margin-bottom:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.link-box i{color:var(--brand-600);margin-top:2px;flex-shrink:0;}
+.btn-row{display:flex;gap:8px;margin-bottom:16px;}
+.btn-action{flex:1;border-radius:13px;padding:11px 6px;font-size:12.5px;font-weight:700;border:1.5px solid var(--brand-border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s;color:var(--ink);}
+.btn-action:hover{background:var(--brand-50);}
+.btn-action.primary{background:var(--brand-grad);color:#fff;border:none;box-shadow:0 10px 20px -5px rgba(var(--brand-rgb),.45);}
+.btn-action.copied{background:var(--green-bg);border-color:var(--green);color:var(--green-text);}
+.info-box{display:flex;align-items:flex-start;gap:12px;background:var(--green-bg);border-radius:15px;padding:13px 15px;text-align:left;font-size:13px;color:var(--green-text);font-weight:600;margin-bottom:14px;}
+.info-box .ico{flex-shrink:0;width:27px;height:27px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.order-id{font-size:11.5px;color:var(--text-muted);text-align:center;}
+.order-id b{color:var(--ink);font-family:ui-monospace,monospace;}
+@media (prefers-reduced-motion:reduce){ *{animation-duration:.001ms !important;transition-duration:.001ms !important;} }
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:50;display:none;"></canvas>
+
+<div class="card" id="card">
+  <div class="card-body py-5">
+    <div class="zp-spinner"></div>
+    <p class="text-muted mt-3 mb-0" style="font-size:13px">Verifying your payment...</p>
+  </div>
+</div>
+
+<script>
+// Same derivation math as pay.html — kept identical so a merchant's custom
+// color renders pixel-consistent across Pay → Link.
+function deriveThemeVars(hex) {
+  hex = (hex || '').trim();
+  if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return null;
+  const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h=0, s=0; const l=(max+min)/2;
+  if (max !== min) {
+    const d = max-min;
+    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+    if (max===r) h = ((g-b)/d + (g<b?6:0));
+    else if (max===g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+    h *= 60;
+  }
+  s = Math.min(s*100, 88);
+  const hslToHex = (H,S,L) => {
+    S/=100; L/=100;
+    const k = n => (n + H/30) % 12;
+    const a = S * Math.min(L, 1-L);
+    const f = n => L - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+    const toHex = x => Math.round(x*255).toString(16).padStart(2,'0');
+    return '#'+toHex(f(0))+toHex(f(8))+toHex(f(4));
+  };
+  return {
+    rgb: `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`,
+    700: hslToHex(h,s,30), 600: hex, 500: hslToHex(h,s,58),
+    300: hslToHex(h,s,78), 200: hslToHex(h,s,86), 100: hslToHex(h,s,92), 50: hslToHex(h,s,96),
+  };
+}
+function applyCustomThemeColor(theme, color) {
+  if (!['aurora','obsidian'].includes(theme)) return;
+  const vars = deriveThemeVars(color);
+  if (!vars) return;
+  const root = document.documentElement.style;
+  root.setProperty('--brand-rgb', vars.rgb);
+  root.setProperty('--brand-700', vars[700]);
+  root.setProperty('--brand-600', vars[600]);
+  root.setProperty('--brand-500', vars[500]);
+  root.setProperty('--brand-300', vars[300]);
+  root.setProperty('--brand-200', vars[200]);
+  root.setProperty('--brand-100', vars[100]);
+  root.setProperty('--brand-50', vars[50]);
+  root.setProperty('--brand-border', theme === 'obsidian' ? '#3A3628' : vars[200]);
+  root.setProperty('--brand-grad', `linear-gradient(135deg, ${vars[700]} 0%, ${vars[500]} 100%)`);
+}
+
+function playSuccessChime() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new Ctx();
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = ctx.currentTime + i * 0.09;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.18, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.55);
+    });
+  } catch (e) {}
+}
+
+// Lightweight canvas confetti — no external library needed. Only called for
+// the two premium themes; the free themes keep the plain checkmark pop.
+function launchConfetti(theme) {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx2d = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+
+  const palette = theme === 'obsidian'
+    ? ['#C9A227', '#E8C874', '#F5E8C8', '#FFFFFF']
+    : ['#A21CAF', '#EC4899', '#4338CA', '#F0ABFC', '#FFFFFF'];
+
+  const pieces = Array.from({ length: 90 }, () => ({
+    x: Math.random() * canvas.width,
+    y: -20 - Math.random() * canvas.height * 0.4,
+    size: 5 + Math.random() * 6,
+    color: palette[Math.floor(Math.random() * palette.length)],
+    speedY: 2 + Math.random() * 3,
+    speedX: -1.5 + Math.random() * 3,
+    rotation: Math.random() * 360,
+    rotSpeed: -8 + Math.random() * 16,
+    shape: Math.random() > 0.5 ? 'circle' : 'rect',
+  }));
+
+  let frame = 0;
+  const maxFrames = 220;
+  (function tick() {
+    ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.x += p.speedX; p.y += p.speedY; p.rotation += p.rotSpeed;
+      ctx2d.save();
+      ctx2d.translate(p.x, p.y);
+      ctx2d.rotate(p.rotation * Math.PI / 180);
+      ctx2d.fillStyle = p.color;
+      if (p.shape === 'circle') { ctx2d.beginPath(); ctx2d.arc(0, 0, p.size / 2, 0, Math.PI * 2); ctx2d.fill(); }
+      else { ctx2d.fillRect(-p.size/2, -p.size/4, p.size, p.size/2); }
+      ctx2d.restore();
+    });
+    frame++;
+    if (frame < maxFrames) requestAnimationFrame(tick);
+    else canvas.style.display = 'none';
+  })();
+}
+
+(async function () {
+  // See pay.html for why this must happen before any fetch — otherwise
+  // error states render with every --brand-* CSS variable undefined.
+  document.documentElement.dataset.theme = 'default';
+
+  const params  = new URLSearchParams(window.location.search);
+  const linkId  = (params.get('id') || '').trim();
+  const orderId = (params.get('order') || params.get('order_id') || '').trim();
+  const card = document.getElementById('card');
+
+  function renderError(title, msg) {
+    card.innerHTML = `
+      <div class="card-body text-center py-5">
+        <div class="err-halo"><div class="err-icon"><i class="bi bi-exclamation-triangle-fill"></i></div></div>
+        <h5 class="fw-bold mt-3 mb-2" style="font-size:19px">${title}</h5>
+        <p class="text-muted small mb-0" style="max-width:280px;margin-inline:auto;line-height:1.6">${msg}</p>
+      </div>`;
+  }
+
+  if (!linkId || !orderId) {
+    renderError('Invalid Link', 'This page requires a valid payment reference.');
+    return;
+  }
+
+  // Verify the REAL payment status server-side before showing anything
+  let verified = false;
+  try {
+    const statusRes = await fetch(`${window.API_URL}/api/payment-link/order/${orderId}/status`);
+    const statusData = await statusRes.json();
+    verified = statusData.success && statusData.data.status === 'success';
+  } catch (e) {}
+
+  if (!verified) {
+    renderError('Payment Not Verified', 'We could not verify a successful payment for this order. If you just paid, please wait a moment and check your notifications.');
+    return;
+  }
+
+  let linkData;
+  try {
+    const linkRes = await fetch(`${window.API_URL}/api/payment-link/${linkId}/public`);
+    const json = await linkRes.json();
+    if (!json.success) throw new Error();
+    linkData = json.data;
+  } catch (e) {
+    renderError('Link Not Found', 'Could not load the merchant link for this order.');
+    return;
+  }
+
+  // Apply the merchant's chosen checkout theme before rendering the result.
+  document.documentElement.dataset.theme = linkData.checkoutTheme || 'default';
+  if (linkData.checkoutThemeColor) applyCustomThemeColor(linkData.checkoutTheme, linkData.checkoutThemeColor);
+  const isPremiumTheme = ['aurora', 'obsidian'].includes(linkData.checkoutTheme);
+
+  const redirectUrl = linkData.redirectUrl;
+
+  if (!redirectUrl) {
+    card.innerHTML = `
+      <div class="card-body">
+        <div class="deco-area">
+          <div class="l-halo"></div>
+          <div class="l-icon"><i class="bi bi-check-lg"></i></div>
+        </div>
+        <div class="title-lg">Payment Successful!</div>
+        <div class="subtitle">Thank you for your payment</div>
+        <div class="order-id" style="margin-top:14px">Order ID: <b>${orderId}</b></div>
+      </div>`;
+    if (isPremiumTheme) { launchConfetti(linkData.checkoutTheme); playSuccessChime(); }
+    return;
+  }
+
+  card.innerHTML = `
+    <div class="card-body">
+      <div class="deco-area">
+        <i class="bi bi-cloud-fill cloud" style="top:0;left:10px;font-size:26px;"></i>
+        <i class="bi bi-cloud-fill cloud" style="top:26px;right:16px;font-size:17px;"></i>
+        <span class="deco dm" style="top:-2px;right:50px;"></span>
+        <span class="deco dm sm" style="top:42px;left:40px;"></span>
+        <div class="l-halo"></div>
+        <div class="l-icon"><i class="bi bi-link-45deg"></i></div>
+      </div>
+      <div class="title-lg">Payment Successful!</div>
+      <div class="subtitle">Here's your link</div>
+      <div class="label-caps">Your Link</div>
+      <div class="link-box"><i class="bi bi-link-45deg"></i><span id="yourLinkText">${redirectUrl}</span></div>
+      <div class="btn-row">
+        <button class="btn-action primary" id="openBtn"><i class="bi bi-box-arrow-up-right"></i>Open</button>
+        <button class="btn-action" id="copyBtn"><i class="bi bi-clipboard"></i>Copy</button>
+        <button class="btn-action" id="shareBtn"><i class="bi bi-share"></i>Share</button>
+      </div>
+      <div class="info-box"><span class="ico"><i class="bi bi-shield-fill-check"></i></span><span><b>Save this link!</b> Otherwise you'll need to pay again to get this link.</span></div>
+      <div class="order-id">Order ID: <b>${orderId}</b></div>
+    </div>`;
+
+  document.getElementById('openBtn').addEventListener('click', () => window.open(redirectUrl, '_blank'));
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    navigator.clipboard.writeText(redirectUrl).then(() => {
+      this.innerHTML = '<i class="bi bi-check2"></i>Copied!';
+      this.classList.add('copied');
+      setTimeout(() => { this.innerHTML = '<i class="bi bi-clipboard"></i>Copy'; this.classList.remove('copied'); }, 2000);
+    });
+  });
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    if (navigator.share) { try { await navigator.share({ url: redirectUrl }); } catch (e) {} }
+    else navigator.clipboard.writeText(redirectUrl);
+  });
+
+  if (isPremiumTheme) { launchConfetti(linkData.checkoutTheme); playSuccessChime(); }
+})();
+</script>
+</body>
+</html>

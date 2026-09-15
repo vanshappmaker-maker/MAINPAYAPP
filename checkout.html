@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Secure UPI Checkout | ZapPay</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+:root { --ink: #1C1530; --muted: #6B7280; --green: #16A34A; --surface: #fff; --brand-rgb: 37,99,235; --brand-700: #1D4ED8; --brand-600: #2563EB; --brand-500: #3B82F6; --brand-300: #93C5FD; --brand-200: #BFDBFE; --brand-100: #DBEAFE; --brand-50: #EFF6FF; --brand-border: #DBEAFE; --brand-grad: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%); --danger-grad: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); --warning-grad: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);}
+
+/* Merchant checkout themes — same variable set & values as pay.html/link.html,
+   so a merchant's saved theme now looks the same everywhere their customers
+   see a checkout: Payment Link pages AND this direct/API checkout page. */
+[data-theme="default"]{--brand-rgb:37,99,235;--brand-700:#1D4ED8;--brand-600:#2563EB;--brand-500:#3B82F6;--brand-300:#93C5FD;--brand-200:#BFDBFE;--brand-100:#DBEAFE;--brand-50:#EFF6FF;--brand-border:#DBEAFE;--brand-grad:linear-gradient(135deg,#1D4ED8 0%,#3B82F6 100%);}
+[data-theme="nova"]{--brand-rgb:124,58,237;--brand-700:#6D28D9;--brand-600:#7C3AED;--brand-500:#8B5CF6;--brand-300:#C4B5FD;--brand-200:#DDD6FE;--brand-100:#EDE9FE;--brand-50:#F5F3FF;--brand-border:#E6DEFB;--brand-grad:linear-gradient(135deg,#6D28D9 0%,#8B5CF6 100%);}
+[data-theme="ember"]{--brand-rgb:242,96,12;--brand-700:#C2410C;--brand-600:#F2600C;--brand-500:#FF8A3D;--brand-300:#FDBA8C;--brand-200:#FED7AA;--brand-100:#FFE9D6;--brand-50:#FFF6EE;--brand-border:#FBD7B5;--brand-grad:linear-gradient(135deg,#F2600C 0%,#FF8A3D 100%);}
+[data-theme="emerald"]{--brand-rgb:22,163,74;--brand-700:#15803D;--brand-600:#16A34A;--brand-500:#22C55E;--brand-300:#86EFAC;--brand-200:#BBF7D0;--brand-100:#DCFCE7;--brand-50:#F0FDF4;--brand-border:#BBF0CC;--brand-grad:linear-gradient(135deg,#16A34A 0%,#22C55E 100%);}
+[data-theme="aurora"]{--brand-rgb:162,28,175;--brand-700:#4C1D95;--brand-600:#A21CAF;--brand-500:#C026D3;--brand-300:#F0ABFC;--brand-200:#F5D0FE;--brand-100:#FAE8FF;--brand-50:#FDF4FF;--brand-border:#F5D0FE;--brand-grad:linear-gradient(120deg,#4338CA 0%,#A21CAF 55%,#EC4899 100%);}
+[data-theme="obsidian"]{--brand-rgb:201,162,39;--brand-700:#8A6D1A;--brand-600:#C9A227;--brand-500:#E8C874;--brand-300:#F0DDA0;--brand-200:#F5E8C8;--brand-100:#FAF3E0;--brand-50:#FDFAF0;--brand-border:#3A3628;--brand-grad:linear-gradient(135deg,#8A6D1A 0%,#E8C874 100%);}
+*, *::before, *::after { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background: linear-gradient(160deg, #EFF6FF 0%, #F7FAFC 60%); min-height: 100vh; color: var(--ink); margin: 0; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.pay-card { background: var(--surface); border-radius: 26px; width: 100%; max-width: 420px; overflow: hidden; position: relative; box-shadow: 0 30px 60px -14px rgba(37,99,235,0.28); }
+.top-banner { height: 90px; background: var(--brand-grad); position: relative; display: flex; justify-content: space-between; align-items: flex-start; padding: 16px 20px; color: white; }
+.top-banner svg { position: absolute; bottom: -1px; left: 0; width: 100%; height: 28px; display: block; }
+.btn-cancel { background: rgba(255,255,255,0.2); border: none; width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
+.avatar-wrap { position: absolute; left: 50%; top: 50px; transform: translateX(-50%); width: 64px; height: 64px; border-radius: 50%; background: var(--surface); padding: 4px; box-shadow: 0 10px 22px -4px rgba(37,99,235,0.4); z-index: 5; }
+.avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.card-body { padding: 36px 24px 24px; text-align: center; }
+.order-id { font-size: 11px; color: var(--muted); font-family: monospace; background: var(--brand-50); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 8px; }
+.amount { font-size: 38px; font-weight: 800; letter-spacing: -1px; margin: 0 0 16px; color: var(--ink); }
+.amount .rupee { color: var(--brand-600); font-size: 30px; vertical-align: baseline; }
+.qr-wrapper { background: #F8FAFC; border: 2px dashed #CBD5E1; border-radius: 20px; padding: 12px; width: 190px; height: 190px; margin: 0 auto 14px; }
+.qr-wrapper img { width: 100%; height: 100%; border-radius: 12px; }
+.app-pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.app-pay-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 8px 6px; border: 1.5px solid #E2E8F0; border-radius: 10px; background: #F8FAFC; color: var(--ink); font-size: 11px; font-weight: 600; text-decoration: none; }
+.timer-box { display: inline-flex; align-items: center; gap: 6px; background: #FEF3C7; color: #D97706; padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.status-text { font-size: 12px; color: var(--muted); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 10px; }
+.spinner { width: 14px; height: 14px; border: 2px solid #DBEAFE; border-top-color: var(--brand-600); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.manual-verify-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 10px 12px; text-align: left; margin-bottom: 10px; }
+.manual-form { margin-top: 8px; display: none; }
+.manual-form.open { display: block; }
+.manual-input { width: 100%; padding: 7px 10px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 12px; outline: none; margin-bottom: 6px; }
+.manual-btn { width: 100%; background: var(--brand-600); color: white; border: none; border-radius: 8px; padding: 7px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-check-status { width: 100%; background: #F1F5F9; color: var(--brand-600); border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 24px; text-align: center; }
+.overlay.active { opacity: 1; pointer-events: auto; }
+.s-halo { width: 80px; height: 80px; border-radius: 50%; background: #DBEAFE; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.s-check { width: 56px; height: 56px; border-radius: 50%; background: var(--brand-grad); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; }
+.e-halo { background: #FEE2E2; } .e-check { background: var(--danger-grad); }
+.btn-modal { width: 100%; padding: 11px; border-radius: 12px; font-weight: 600; font-size: 13.5px; cursor: pointer; border: none; background: var(--brand-grad); color: white; }
+.status-details-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px; width: 100%; text-align: left; font-size: 12px; margin-bottom: 16px; }
+.status-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.status-val { font-weight: 700; color: var(--ink); font-family: monospace; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.redirect-btn {
+  display: inline-block;
+  background: #DC2626;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -8px rgba(220,38,38,0.5);
+  margin-top: 12px;
+  min-width: 200px;
+  transition: transform 0.15s;
+}
+.redirect-btn:hover { transform: scale(1.02); }
+.redirect-btn i { margin-right: 8px; }
+.redirect-btn span { font-weight: 800; }
+.verify-loader-wrapper { text-align: center; padding: 10px; }
+.verify-spinner {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 4px solid #DBEAFE;
+  border-top: 4px solid var(--brand-600);
+  border-right: 4px solid var(--brand-600);
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+  box-shadow: 0 0 30px rgba(37,99,235,0.2);
+}
+.verify-loader-wrapper .title { font-size: 16px; font-weight: 700; margin-top: 16px; color: var(--brand-600); }
+.verify-loader-wrapper .sub { font-size: 13px; color: #4B4560; margin-top: 6px; }
+.pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-600);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.2; transform: scale(0.8); }
+}
+.cancel-loader-wrapper { text-align: center; padding: 10px; }
+
+/* ─── Boot Verify Splash ───
+   Shown for ~1s the moment checkout.html loads, before the payment UI
+   is revealed — a premium "verifying" moment rather than an abrupt
+   page render. */
+.boot-verify-overlay {
+  position: absolute; inset: 0; background: var(--surface); z-index: 200;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px; text-align: center; opacity: 1; transition: opacity 0.4s ease;
+  border-radius: 26px;
+}
+.boot-verify-overlay.fade-out { opacity: 0; pointer-events: none; }
+.boot-verify-ring {
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 4px solid #DBEAFE; border-top-color: var(--brand-600);
+  animation: boot-spin 0.85s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+  margin-bottom: 18px;
+}
+@keyframes boot-spin { to { transform: rotate(360deg); } }
+.boot-verify-text {
+  font-size: 15px; font-weight: 700; color: var(--brand-600);
+  letter-spacing: -0.2px;
+}
+.boot-verify-sub {
+  font-size: 12px; color: var(--muted); margin-top: 4px;
+}
+</style>
+</head>
+<body>
+<div class="pay-card">
+    <div class="boot-verify-overlay" id="bootVerifyOverlay">
+        <div class="boot-verify-ring"></div>
+        <div class="boot-verify-text">Verifying Transaction...</div>
+        <div class="boot-verify-sub">Setting up your secure checkout</div>
+    </div>
+    <div class="top-banner"> 
+        <div style="font-size: 14px; font-weight: 700;"><i class="bi bi-shield-lock-fill me-1"></i>Secure UPI Pay</div> 
+        <button class="btn-cancel" id="btnShowCancel"><i class="bi bi-x-lg"></i></button> 
+        <svg viewBox="0 0 600 60" preserveAspectRatio="none"><path d="M0,28 C100,58 200,2 300,24 C400,46 500,4 600,26 L600,60 L0,60 Z" fill="#fff"/></svg> 
+    </div> 
+    <div class="avatar-wrap"><img src="/favicon.png" alt="Logo"/></div>
+    <div class="card-body"> 
+        <div class="order-id" id="lblOrderId">Loading...</div> 
+        <div class="amount"><span class="rupee">₹</span><span id="lblAmount">0.00</span></div>
+        <div class="qr-wrapper"><img id="qrImg" src="" alt="QR Code"></div>
+        <div class="app-pay-grid"> 
+            <a href="#" id="gpayLink" class="app-pay-btn"><i class="bi bi-google text-primary"></i>Google Pay</a> 
+            <a href="#" id="phonepeLink" class="app-pay-btn"><i class="bi bi-phone text-success"></i>PhonePe</a> 
+            <a href="#" id="fampayLink" class="app-pay-btn"><i class="bi bi-lightning-charge text-warning" id="thirdAppIcon"></i><span id="thirdAppLabel">FamPay</span></a> 
+        </div>
+        
+        <div class="manual-verify-box"> 
+            <div id="toggleManual" style="font-size:11.5px; font-weight:700; color:var(--muted); cursor:pointer; display:flex; justify-content:space-between; align-items:center;"> 
+                <span>Already paid? Verify via UTR / Txn ID</span> <i class="bi bi-chevron-down" id="manualChevron"></i> 
+            </div> 
+            <div class="manual-form" id="manualForm"> 
+                <input type="text" id="manualUtrInput" class="manual-input" placeholder="Enter UTR or Txn ID (e.g. FMPIB...)"> 
+                <button class="manual-btn" id="manualVerifyBtn">Verify Now</button> 
+            </div> 
+        </div>
+
+        <div class="timer-box" id="timerBox"><i class="bi bi-hourglass-split"></i> Expires in <span id="timerText">08:00</span></div>
+        <div class="status-text"><div class="spinner"></div><span id="pollingText">Checking status...</span></div>
+        <button class="btn-check-status" id="btnOpenStatusModal"><i class="bi bi-info-circle-fill"></i> Check Transaction Status</button> 
+    </div>
+
+    <!-- Status Modal -->
+    <div class="overlay" id="overlayStatusModal"> 
+        <div class="s-halo" style="width:70px; height:70px; margin-bottom:10px;"><div class="s-check" style="width:48px; height:48px;"><i class="bi bi-activity" style="font-size:20px;"></i></div></div> 
+        <div style="font-size:17px; font-weight:800; margin-bottom:6px;">Live Transaction Status</div> 
+        <div class="status-details-box"> 
+            <div class="status-row"><span>Order ID:</span><span class="status-val" id="popOrderId">-</span></div> 
+            <div class="status-row"><span>Status:</span><span class="status-val" id="popStatus">-</span></div> 
+            <div class="status-row"><span>Amount:</span><span class="status-val" id="popAmount">-</span></div> 
+            <div class="status-row"><span>UTR / Txn ID:</span><span class="status-val" id="popUtr">-</span></div> 
+        </div> 
+        <button class="btn-modal" style="background:#F1F5F9; color:#1C1530;" id="btnCloseStatusModal">Close</button> 
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div class="overlay" id="overlayCancelConfirm"> 
+        <div class="s-halo e-halo"><div class="s-check e-check"><i class="bi bi-exclamation-triangle"></i></div></div> 
+        <div style="font-size:19px; font-weight:800; margin-bottom:6px;">Cancel Payment?</div> 
+        <div style="font-size:13px; color:#4B4560; margin-bottom:4px;">Are you sure you want to cancel this payment of <strong id="cancelModalAmount">₹0.00</strong>?</div>
+        <div style="font-size:11px; color:#9C93B5; margin-bottom:18px;">Order ID: <span id="cancelModalOrderId">-</span></div>
+        <div style="display:flex; gap:10px; width:100%;"> 
+            <button class="btn-modal" style="background:#F3F4F6; color:#1C1530;" id="btnResume">Continue</button> 
+            <button class="btn-modal" style="background:var(--danger-grad);" id="btnConfirmCancel">Cancel Order</button> 
+        </div> 
+    </div>
+
+    <!-- Cancel Loading Overlay -->
+    <div class="overlay" id="cancelLoadingOverlay">
+        <div class="cancel-loader-wrapper">
+            <div class="verify-spinner"></div>
+            <div class="title" style="font-size:16px; font-weight:700; margin-top:16px; color:#DC2626;">Cancelling Payment...</div>
+            <div class="sub" style="font-size:13px; color:#4B4560; margin-top:6px;">Please wait, we are processing your cancellation.</div>
+            <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+                <span class="pulse-dot" style="animation-delay:0s; background:#DC2626;"></span>
+                <span class="pulse-dot" style="animation-delay:0.2s; background:#DC2626;"></span>
+                <span class="pulse-dot" style="animation-delay:0.4s; background:#DC2626;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="overlay" id="overlaySuccess"> 
+        <div class="s-halo"><div class="s-check"><i class="bi bi-check-lg"></i></div></div> 
+        <div style="font-size:19px; font-weight:800; margin-bottom:6px;">Payment Successful! 🎉</div> 
+        <div style="font-size:13px; color:#4B4560; margin-bottom:8px;" id="successDesc">Verified successfully! Redirecting...</div>
+        <div style="margin-top:8px;">
+            <button class="redirect-btn" id="redirectBtn">
+                <i class="bi bi-arrow-right-circle-fill"></i> Redirect in <span id="countdownDisplay">5</span>s
+            </button>
+        </div>
+        <!-- Only shown when the checkout link was created without &redirect_url=
+             — visible here (not just console) so the merchant notices it
+             immediately instead of wondering why the destination page came
+             back "reset". A referrer-based redirect always lands on a fresh
+             page load, so any client-side state (form values, cart, scroll
+             position) the merchant's page had is gone by design — passing
+             redirect_url with whatever the merchant's page needs to restore
+             that state (e.g. a cart/session id) is the fix on their side. -->
+        <div id="redirectUrlWarning" style="display:none; margin-top:14px; font-size:11px; color:#8a6d00; background:#fff8dc; border:1px solid #f0d97a; border-radius:8px; padding:8px 12px; text-align:left; line-height:1.4;">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Integration notice:</strong> This checkout link was created without <code>&amp;redirect_url=</code>. Falling back to the referring page — any state that page had (form data, cart, scroll) will not be preserved after redirect, since this is a fresh page load, not a return to the same session. Add <code>&amp;redirect_url=&lt;your-page&gt;</code> to the checkout link to control this explicitly.
+        </div>
+    </div>
+</div>
+
+<script>
+// ─── Boot Verify Splash ──────────────────────────────────────────
+// Shows the premium "Verifying Transaction..." overlay for ~1s on load,
+// then fades it out — runs immediately so it isn't delayed by anything
+// else on the page.
+setTimeout(() => {
+    const bootOverlay = document.getElementById('bootVerifyOverlay');
+    if (bootOverlay) {
+        bootOverlay.classList.add('fade-out');
+        setTimeout(() => bootOverlay.remove(), 400);
+    }
+}, 1000);
+
+// Backend base — used to SYNC a confirmed payment into the real order
+// Backend base — verification now goes through our own per-user-aware
+// routes (public-order-status / verify-manual) instead of a shared
+// hardcoded mailbox credential. See the poll loop and manual-verify
+// handler further down.
+const API_BASE = 'https://paymentbackend-ruby.vercel.app';
+
+const urlParams = new URLSearchParams(window.location.search);
+const orderId = urlParams.get('order_id');
+const amount = urlParams.get('amount');
+const upiId = urlParams.get('upi') || 'sovitprasad@fam';
+const redirectUrlParam = urlParams.get('redirect_url');
+
+// ─── Merchant checkout theme ──────────────────────────────────────
+// Same mechanism as pay.html/link.html: apply the merchant's saved
+// theme (data-theme, matching the [data-theme="..."] blocks above) and,
+// for the two custom-color premium themes, derive a full brand-color
+// scale from their one saved hex color. Applied immediately (before any
+// network call) so there's no flash of the default blue before this
+// resolves.
+document.documentElement.dataset.theme = urlParams.get('theme') || 'default';
+
+function deriveThemeVars(hex) {
+    hex = (hex || '').trim();
+    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return null;
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    let h=0, s=0; const l=(max+min)/2;
+    if (max !== min) {
+        const d = max-min;
+        s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+        if (max===r) h = ((g-b)/d + (g<b?6:0));
+        else if (max===g) h = (b-r)/d + 2;
+        else h = (r-g)/d + 4;
+        h *= 60;
+    }
+    s = Math.min(s*100, 88);
+    const hslToHex = (H,S,L) => {
+        S/=100; L/=100;
+        const k = n => (n + H/30) % 12;
+        const a = S * Math.min(L, 1-L);
+        const f = n => L - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+        const toHex = x => Math.round(x*255).toString(16).padStart(2,'0');
+        return '#'+toHex(f(0))+toHex(f(8))+toHex(f(4));
+    };
+    return {
+        rgb: `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`,
+        700: hslToHex(h,s,30), 600: hex, 500: hslToHex(h,s,58),
+        300: hslToHex(h,s,78), 200: hslToHex(h,s,86), 100: hslToHex(h,s,92), 50: hslToHex(h,s,96),
+    };
+}
+
+function applyCustomThemeColor(theme, color) {
+    if (!['aurora','obsidian'].includes(theme)) return;
+    const vars = deriveThemeVars(color);
+    if (!vars) return;
+    const root = document.documentElement.style;
+    root.setProperty('--brand-rgb', vars.rgb);
+    root.setProperty('--brand-700', vars[700]);
+    root.setProperty('--brand-600', vars[600]);
+    root.setProperty('--brand-500', vars[500]);
+    root.setProperty('--brand-300', vars[300]);
+    root.setProperty('--brand-200', vars[200]);
+    root.setProperty('--brand-100', vars[100]);
+    root.setProperty('--brand-50', vars[50]);
+    root.setProperty('--brand-border', theme === 'obsidian' ? '#3A3628' : vars[200]);
+    root.setProperty('--brand-grad', `linear-gradient(135deg, ${vars[700]} 0%, ${vars[500]} 100%)`);
+}
+
+const checkoutThemeColor = urlParams.get('color');
+if (checkoutThemeColor) applyCustomThemeColor(document.documentElement.dataset.theme, checkoutThemeColor);
+
+// Jis website/domain se user aaya tha, wahi redirect target hoga.
+// redirect_url query param hi sabse reliable source hai — merchant server jab
+// user ko yahan (checkout page par) bhejta hai tab wo apna URL is param mein
+// pass karega. document.referrer par depend nahi kar sakte kyunki agar merchant
+// server-side redirect (302) se yahan bheje to referrer khaali reh jaata hai.
+function getRedirectTarget() {
+    if (redirectUrlParam) return redirectUrlParam;
+    if (document.referrer) return document.referrer;
+    console.warn('ZapPay: redirect_url param nahi mila aur referrer bhi khaali hai — merchant domain par wapas nahi ja paayenge. Checkout link banate waqt &redirect_url=<aapki-site-url> zaroor add karein.');
+    return '/';
+}
+
+// order_id ko target URL mein khud jod dete hain (agar pehle se na ho) —
+// merchant ko is baat ki fikar nahi karni padti ki unka apna redirect_url
+// pehle se ? wala hai ya nahi; sahi separator (? ya &) khud chun lete hain.
+function appendOrderIdToTarget(target) {
+    if (!orderId || target.includes('order_id=')) return target;
+    return target.includes('?')
+        ? target + '&order_id=' + encodeURIComponent(orderId)
+        : target + '?order_id=' + encodeURIComponent(orderId);
+}
+
+// Redirect ka asli execution — teen environments handle karta hai:
+//  1. Iframe ke andar embedded (jaise widget/useEmbedded flow): parent
+//     page ko poora navigate karna galat hoga (sirf iframe hi jaayega,
+//     poora tab nahi) — isliye parent ko postMessage se batate hain,
+//     wahi decide karega age kya karna hai.
+//  2. Normal top-level browser tab: yahi sabse common case hai.
+//     .replace() use karte hain .href ki jagah — isse checkout page
+//     browser history mein entry nahi chhodta, matlab "Back" dabane se
+//     customer seedha merchant ke pehle wale page par jaata hai, is
+//     checkout page par wapas nahi aata (jo galti se dobara payment
+//     trigger karne se bachata hai).
+function doRedirect(status) {
+    const target = appendOrderIdToTarget(getRedirectTarget());
+    const inIframe = (window.parent && window.parent !== window);
+
+    if (inIframe) {
+        window.parent.postMessage(
+            { __zappay: true, type: status, orderId: orderId },
+            '*'
+        );
+        return;
+    }
+
+    window.location.replace(target);
+}
+
+let pollInterval = null;
+let countdownTimer = null;
+let isPaymentComplete = false;
+
+// Unique Timer Key per order so refresh won't reset the timer
+const TIMER_KEY = `zappay_timer_${orderId || 'default'}`;
+let savedStartTime = localStorage.getItem(TIMER_KEY);
+const totalDuration = 8 * 60; // 8 minutes
+
+if (!savedStartTime) { 
+    savedStartTime = Date.now(); 
+    localStorage.setItem(TIMER_KEY, savedStartTime); 
+}
+
+function getRemainingSeconds() { 
+    const elapsed = Math.floor((Date.now() - parseInt(savedStartTime)) / 1000); 
+    return Math.max(0, totalDuration - elapsed); 
+}
+
+let timeLeft = getRemainingSeconds();
+
+// Success hone par premium popup + 5-sec auto redirect + manual redirect button
+function handleSuccess() {
+    const overlaySuccess = document.getElementById('overlaySuccess');
+    const successDesc = document.getElementById('successDesc');
+    const countdownDisplay = document.getElementById('countdownDisplay');
+    const redirectBtn = document.getElementById('redirectBtn');
+
+    overlaySuccess.classList.add('active');
+    successDesc.textContent = 'Payment verified! You will be redirected shortly.';
+
+    // Show the integration notice only when redirect_url wasn't actually
+    // provided — not just whenever a redirect happens.
+    if (!redirectUrlParam) {
+        document.getElementById('redirectUrlWarning').style.display = 'block';
+    }
+
+    // Manual click par turant redirect
+    redirectBtn.onclick = function () {
+        doRedirect('success');
+    };
+
+    let seconds = 5;
+    countdownDisplay.textContent = seconds;
+    const countdownInterval = setInterval(() => {
+        seconds--;
+        countdownDisplay.textContent = seconds;
+        if (seconds <= 0) {
+            clearInterval(countdownInterval);
+            redirectBtn.innerHTML = '<i class="bi bi-arrow-right-circle-fill"></i> Redirect Now';
+            doRedirect('success');
+        }
+    }, 1000);
+}
+
+function startTimer() {
+    const timerText = document.getElementById('timerText');
+    countdownTimer = setInterval(() => {
+        timeLeft = getRemainingSeconds();
+        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let s = (timeLeft % 60).toString().padStart(2, '0');
+        timerText.textContent = `${m}:${s}`;
+        
+        if (timeLeft <= 60) {
+            document.getElementById('timerBox').style.background = '#FEE2E2';
+            document.getElementById('timerBox').style.color = '#DC2626';
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(countdownTimer);
+            clearInterval(pollInterval);
+            localStorage.removeItem(TIMER_KEY);
+            // Session expire hone par bhi order ko backend mein 'timeout'
+            // mark karte hain — pehle yeh sirf alert() + history.back()
+            // tha, order hamesha 'pending' hi reh jaata tha aur merchant
+            // ko koi webhook nahi milta tha is case mein.
+            fetch(`${API_BASE}/api/developer/cancel-order`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, reason: 'timeout' })
+            }).catch(() => {});
+            alert('Session Expired. Payment timeout.');
+            window.history.back();
+        }
+    }, 1000);
+}
+
+if (!orderId || !amount) {
+    document.querySelector('.card-body').innerHTML = '<h4 style="color:red; margin-top:40px;">Invalid Request</h4><p style="color:gray;">Missing order_id or amount parameters in URL.</p>';
+} else {
+    document.getElementById('lblOrderId').textContent = 'ID: ' + orderId;
+    document.getElementById('lblAmount').textContent = parseFloat(amount).toFixed(2);
+    const fmtAmt = parseFloat(amount).toFixed(2);
+    const upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=ZapPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
+    
+    document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
+    document.getElementById('gpayLink').href = `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=ZapPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
+    document.getElementById('phonepeLink').href = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=ZapPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
+    document.getElementById('fampayLink').href = upiUri;
+
+    // The third quick-pay button defaults to "FamPay" — for a
+    // Paytm-routed order (method=paytm, set by the backend when this
+    // checkout link was built) it's genuinely a Paytm UPI ID underneath,
+    // so the label should say that instead of showing "FamPay" for a
+    // payment that has nothing to do with FamPay.
+    const paymentMethodParam = urlParams.get('method');
+    if (paymentMethodParam === 'paytm') {
+        document.getElementById('thirdAppLabel').textContent = 'Paytm';
+        const icon = document.getElementById('thirdAppIcon');
+        icon.className = 'bi bi-wallet2 text-info';
+    }
+
+    if (timeLeft <= 0) {
+        // Page load hi par timer already expire mil gaya (customer ne page
+        // refresh kiya ya wapas khola bahut der baad) — yahan bhi order ko
+        // timeout mark karna zaroori hai, warna yeh 'pending' hi reh jaata.
+        fetch(`${API_BASE}/api/developer/cancel-order`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId, reason: 'timeout' })
+        }).catch(() => {});
+        alert('Session Expired.');
+        window.history.back();
+    } else {
+        startTimer();
+    }
+
+    // Auto-Verify Polling Loop
+    // Calls our own backend's public-order-status route — it looks up
+    // THIS order's owner and verifies against THAT merchant's own
+    // connected FamPay inbox (fampayService.verifyPayment), never a
+    // single shared/hardcoded credential. Also updates the DB itself on
+    // a match, so no separate sync call is needed here.
+    pollInterval = setInterval(async () => {
+        if(isPaymentComplete) return;
+        try {
+            const verifyUrl = `${API_BASE}/api/developer/public-order-status/${encodeURIComponent(orderId)}`;
+            const res = await fetch(verifyUrl, { cache: 'no-store' });
+            if(res.ok) {
+                const data = await res.json();
+                if(data.success && data.data && data.data.status === 'success') {
+                    isPaymentComplete = true;
+                    clearInterval(pollInterval);
+                    clearInterval(countdownTimer);
+                    localStorage.removeItem(TIMER_KEY);
+                    handleSuccess();
+                }
+            }
+        } catch(e) {}
+    }, 2000);
+}
+
+// Manual UTR Accordion Toggle
+document.getElementById('toggleManual').addEventListener('click', () => {
+    document.getElementById('manualForm').classList.toggle('open');
+});
+
+// Manual UTR Verify Button
+// Calls our own backend, which resolves this order's own owner and
+// verifies the typed UTR/txn id against THAT merchant's connected
+// inbox — never a shared/hardcoded credential.
+document.getElementById('manualVerifyBtn').addEventListener('click', async () => {
+    const val = document.getElementById('manualUtrInput').value.trim();
+    if(!val) { alert('Please enter UTR or Transaction ID'); return; }
+    
+    const btn = document.getElementById('manualVerifyBtn');
+    btn.disabled = true;
+    btn.textContent = 'Verifying...';
+
+    try {
+        const res = await fetch(`${API_BASE}/api/sms/verify-manual`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId, utr: val })
+        });
+        const data = await res.json();
+        
+        if(data.success) {
+            isPaymentComplete = true;
+            clearInterval(pollInterval);
+            clearInterval(countdownTimer);
+            localStorage.removeItem(TIMER_KEY);
+            handleSuccess();
+        } else {
+            alert(data.message || 'Payment not found yet with this UTR.');
+            btn.disabled = false;
+            btn.textContent = 'Verify Now';
+        }
+    } catch(e) {
+        alert('Error connecting to verification server.');
+        btn.disabled = false;
+        btn.textContent = 'Verify Now';
+    }
+});
+
+// Status Modal Triggers
+document.getElementById('btnOpenStatusModal').addEventListener('click', () => {
+    document.getElementById('popOrderId').textContent = orderId;
+    document.getElementById('popAmount').textContent = '₹' + amount;
+    document.getElementById('popStatus').textContent = 'CHECKING...';
+    document.getElementById('popUtr').textContent = orderId;
+    document.getElementById('overlayStatusModal').classList.add('active');
+});
+
+document.getElementById('btnCloseStatusModal').addEventListener('click', () => {
+    document.getElementById('overlayStatusModal').classList.remove('active');
+});
+
+// Cancel / Close Button Triggers (Fixed)
+document.getElementById('btnShowCancel').addEventListener('click', () => {
+    document.getElementById('cancelModalAmount').textContent = '₹' + parseFloat(amount).toFixed(2);
+    document.getElementById('cancelModalOrderId').textContent = orderId;
+    document.getElementById('overlayCancelConfirm').classList.add('active');
+});
+
+document.getElementById('btnResume').addEventListener('click', () => {
+    document.getElementById('overlayCancelConfirm').classList.remove('active');
+});
+
+// Cancel confirm ab sirf UI overlay nahi dikhata — backend ko actually
+// call karta hai taaki order DB mein bhi 'cancelled' mark ho jaaye.
+// Isse pehle sirf doRedirect('failed') chalta tha, matlab UI mein
+// "Cancelling..." dikh jaata tha lekin order hamesha 'pending' hi
+// reh jaata tha (koi backend call hoti hi nahi thi).
+document.getElementById('btnConfirmCancel').addEventListener('click', async () => {
+    document.getElementById('overlayCancelConfirm').classList.remove('active');
+    document.getElementById('cancelLoadingOverlay').classList.add('active');
+    clearInterval(pollInterval);
+    clearInterval(countdownTimer);
+    localStorage.removeItem(TIMER_KEY);
+
+    try {
+        const res = await fetch(`${API_BASE}/api/developer/cancel-order`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId })
+        });
+        const data = await res.json();
+
+        // Agar order already 'success' ho chuka hai (customer ne cancel
+        // dabane se pehle hi payment complete kar diya), toh 'failed' pe
+        // le jaane ke bajaye seedha success flow dikhao — order ka asli
+        // status yahi hai, isko galat 'failed' na dikhayein.
+        if (!data.success && data.data && data.data.status === 'success') {
+            isPaymentComplete = true;
+            document.getElementById('cancelLoadingOverlay').classList.remove('active');
+            handleSuccess();
+            return;
+        }
+        // success:true (freshly cancelled) ya already-cancelled dono cases
+        // mein failed/cancelled screen dikhana sahi hai; server error/network
+        // error mein bhi UI ko stuck nahi chhodte — usi redirect pe bhej dete
+        // hain kyunki local state (timer/poll) already clear ho chuka hai.
+    } catch (e) {
+        // Network error — phir bhi aage badhte hain taaki customer UI mein
+        // atka na rahe; order backend mein 'pending' hi rahega is case mein,
+        // par usse merchant-side reconciliation/timeout handle kar lega.
+    }
+
+    setTimeout(() => {
+        doRedirect('failed');
+    }, 2500);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Store | ZapPay</title>
+<meta name="description" content="Shop digital products — secured by ZapPay."/>
+<meta name="robots" content="index, follow"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<link rel="apple-touch-icon" href="/favicon.png"/>
+<meta name="theme-color" content="#151221"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+
+<!-- ============================================================
+  ⚙️  CONFIG
+     API_URL: Tera Vercel backend ka URL
+================================================================ -->
+<script>
+  window.API_URL = "https://paymentbackend-ruby.vercel.app";
+</script>
+
+<style>
+/* ============================================================
+   COMMON — shared reset, spinner, fatal-error state. Every theme
+   below only ever adds to this, never fights it.
+================================================================ */
+*,*::before,*::after{box-sizing:border-box;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#151221;margin:0;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+img{max-width:100%;}
+.d-none{display:none!important;}
+.zp-spinner{width:38px;height:38px;border:3px solid #EFEAF0;border-top-color:#8A8296;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes popScale{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.14);}100%{transform:scale(1);opacity:1;}}
+.zp-fatal{text-align:center;padding:70px 24px;max-width:340px;margin:0 auto;}
+.zp-fatal-icon{width:64px;height:64px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#DC2626;font-size:26px;}
+.zp-fatal h5{font-weight:800;margin-bottom:8px;}
+.zp-fatal p{color:#8A8296;font-size:13.5px;line-height:1.6;margin:0;}
+@media (prefers-reduced-motion:reduce){ *{animation-duration:.001ms !important;transition-duration:.001ms !important;} }
+
+/* ============================================================
+   THEME 1 — BOUTIQUE. White, soft, pink accents. The original
+   default theme. Special feature: a persistent Wishlist (saved
+   locally to this device) with its own filtered view in the drawer.
+================================================================ */
+body[data-theme="boutique"]{background:var(--bq-page-bg);color:var(--bq-ink);}
+:root{
+  --bq-ink:#151221; --bq-muted:#8A8296; --bq-text-secondary:#4B4560;
+  --bq-brand:#DB2777; --bq-brand-dark:#9D174D; --bq-brand-light:#FDF2F8; --bq-brand-border:#FBCFE8;
+  --bq-border:#EFEAF0; --bq-surface:#fff; --bq-page-bg:#FAF9FB;
+}
+.store-header{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--bq-border);position:sticky;top:0;z-index:100;}
+.store-header-inner{max-width:1080px;margin:0 auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.store-icon-btn{width:38px;height:38px;border-radius:11px;border:1.5px solid var(--bq-border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:var(--bq-ink);flex-shrink:0;transition:border-color .15s;}
+.store-icon-btn:hover{border-color:var(--bq-brand-border);}
+.store-name{font-weight:800;font-size:16.5px;text-align:center;flex-grow:1;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px;}
+.store-logo{width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid var(--bq-border);flex-shrink:0;background:var(--bq-brand-light);}
+.store-search-wrap{max-width:1080px;margin:0 auto;padding:16px 18px 6px;}
+.store-search{position:relative;}
+.store-search input{width:100%;padding:12px 16px 12px 42px;border-radius:14px;border:1.5px solid var(--bq-border);font-size:14px;background:#fff;font-family:inherit;color:var(--bq-ink);}
+.store-search input:focus{outline:none;border-color:var(--bq-brand);box-shadow:0 0 0 3px var(--bq-brand-light);}
+.store-search i{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--bq-muted);font-size:15px;}
+.store-grid-wrap{max-width:1080px;margin:0 auto;padding:10px 18px 70px;}
+.store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:16px;}
+.store-product-card{background:#fff;border-radius:16px;border:1px solid var(--bq-border);overflow:hidden;transition:transform .18s ease,box-shadow .18s ease;}
+.store-product-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px -12px rgba(219,39,119,.22);border-color:var(--bq-brand-border);}
+.store-product-img-wrap{position:relative;aspect-ratio:1/1;background:var(--bq-brand-light);overflow:hidden;cursor:pointer;}
+.store-product-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.store-product-body{padding:11px 12px 12px;cursor:pointer;}
+.store-product-title{font-weight:650;font-size:12.5px;line-height:1.35;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em;color:var(--bq-ink);}
+.store-price-row{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.store-price-now{font-weight:800;font-size:14.5px;letter-spacing:-.2px;}
+.store-price-was{font-size:11px;color:var(--bq-muted);text-decoration:line-through;}
+.store-discount-tag{display:inline-block;font-size:9.5px;font-weight:700;color:#16A34A;background:#EEFCF3;padding:2px 7px;border-radius:20px;margin-bottom:8px;}
+.store-buy-btn{width:100%;border:none;border-radius:10px;padding:9px;font-weight:700;font-size:12px;background:linear-gradient(135deg,var(--bq-brand),var(--bq-brand-dark));color:#fff;cursor:pointer;font-family:inherit;}
+.store-buy-btn:active{opacity:.85;}
+.store-wish-btn{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);border:1px solid var(--bq-border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--bq-muted);cursor:pointer;z-index:2;transition:color .15s,border-color .15s;}
+.store-wish-btn.active{color:var(--bq-brand);border-color:var(--bq-brand-border);}
+.store-wish-count{margin-left:auto;background:var(--bq-brand-light);color:var(--bq-brand-dark);font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:20px;}
+.store-drawer-overlay{position:fixed;inset:0;background:rgba(20,15,25,.45);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;}
+.store-drawer-overlay.open{opacity:1;pointer-events:auto;}
+.store-drawer{position:fixed;top:0;left:0;bottom:0;width:275px;max-width:82vw;background:#fff;z-index:201;transform:translateX(-100%);transition:transform .32s cubic-bezier(.16,1,.3,1);padding:20px;overflow-y:auto;}
+.store-drawer.open{transform:translateX(0);}
+.store-drawer-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--bq-border);}
+.store-drawer-logo{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--bq-brand-light);}
+.store-drawer-storename{font-weight:800;font-size:14.5px;}
+.store-drawer-link{display:flex;align-items:center;gap:12px;padding:12px 8px;border-radius:12px;color:var(--bq-ink);text-decoration:none;font-weight:600;font-size:13.5px;margin-bottom:2px;transition:background .15s;}
+.store-drawer-link:hover{background:var(--bq-brand-light);}
+.store-drawer-link i{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:#fff;}
+.pd-topbar{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);z-index:60;padding:12px 18px;border-bottom:1px solid var(--bq-border);}
+.pd-hero{position:relative;width:100%;aspect-ratio:16/9;background:var(--bq-brand-light);overflow:hidden;}
+.pd-hero img{width:100%;height:100%;object-fit:cover;display:block;}
+.pd-body{max-width:720px;margin:0 auto;padding:22px 18px 110px;}
+.pd-title{font-size:21px;font-weight:800;margin-bottom:10px;letter-spacing:-.3px;line-height:1.3;}
+.pd-price-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.pd-price-now{font-size:22px;font-weight:800;letter-spacing:-.3px;}
+.pd-price-was{font-size:14px;color:var(--bq-muted);text-decoration:line-through;}
+.pd-section-label{font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--bq-muted);margin-bottom:10px;}
+.pd-desc{font-size:14.5px;line-height:1.75;color:var(--bq-text-secondary);white-space:pre-wrap;margin-bottom:28px;}
+.pd-shots-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+.pd-shot{flex:0 0 auto;width:150px;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:var(--bq-brand-light);border:1px solid var(--bq-border);}
+.pd-shot img{width:100%;height:100%;object-fit:cover;display:block;}
+.pd-sticky-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bq-border);padding:13px 18px;z-index:55;}
+.pd-sticky-footer-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+.pd-continue-btn{flex-grow:1;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:14.5px;background:linear-gradient(135deg,var(--bq-brand),var(--bq-brand-dark));color:#fff;cursor:pointer;box-shadow:0 12px 26px -8px rgba(219,39,119,.45);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
+.pd-continue-btn:disabled{opacity:.6;cursor:not-allowed;}
+.pd-back-btn{width:42px;height:42px;border-radius:12px;border:1.5px solid var(--bq-border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;cursor:pointer;}
+.s-halo{width:92px;height:92px;border-radius:50%;background:var(--bq-brand-light);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.s-check{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--bq-brand),var(--bq-brand-dark));display:flex;align-items:center;justify-content:center;box-shadow:0 14px 28px -6px rgba(219,39,119,.45);animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.s-check i{font-size:30px;color:#fff;}
+.err-halo{width:92px;height:92px;border-radius:50%;background:#FEF2F2;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.err-icon{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,#DC2626,#EF4444);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 28px -6px rgba(220,38,38,.4);animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.err-icon i{font-size:28px;color:#fff;}
+.store-empty{text-align:center;padding:60px 20px;color:var(--bq-muted);}
+.store-empty i{font-size:38px;margin-bottom:12px;display:block;color:var(--bq-brand-border);}
+@media (max-width:380px){ .pd-title{font-size:18px;} .pd-price-now{font-size:19px;} }
+
+/* ============================================================
+   THEME 2 — EDITORIAL. Warm cream, serif magazine layout, single
+   list instead of a grid. Special feature: an auto-curated "Editor's
+   Pick" spotlight — the biggest real discount in the catalog (or the
+   newest arrival) is pulled out and featured above the fold.
+================================================================ */
+body[data-theme="editorial"]{background:var(--ed-page-bg);color:var(--ed-ink);}
+:root{
+  --ed-ink:#1C1810; --ed-muted:#978D77; --ed-text-secondary:#5C5443;
+  --ed-accent:#92400E; --ed-accent-dark:#6B2F09; --ed-accent-light:#FBF3E9; --ed-accent-border:#E8D9C0;
+  --ed-border:#E9E2D3; --ed-surface:#fff; --ed-page-bg:#FAF8F3;
+}
+.ed-topline{height:3px;background:linear-gradient(90deg,var(--ed-accent),var(--ed-accent-light));}
+.ed-header-inner{max-width:900px;margin:0 auto;padding:22px 20px 16px;text-align:center;position:relative;}
+.ed-menu-btn{position:absolute;left:20px;top:24px;background:none;border:none;font-family:'Inter';font-weight:700;font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ed-ink);cursor:pointer;padding:6px 4px;}
+.ed-logo{position:absolute;right:20px;top:18px;width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--ed-border);background:var(--ed-accent-light);}
+.ed-wordmark{font-family:'Playfair Display',serif;font-weight:800;font-size:26px;letter-spacing:.3px;margin:0;}
+.ed-tagline{font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ed-muted);margin-top:5px;}
+.ed-rule{border:none;border-top:1px solid var(--ed-border);max-width:900px;margin:0 auto;}
+.ed-search-wrap{max-width:640px;margin:22px auto 6px;padding:0 20px;}
+.ed-search{position:relative;}
+.ed-search input{width:100%;border:none;border-bottom:1.5px solid var(--ed-border);background:transparent;padding:8px 30px 10px 4px;font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:var(--ed-ink);}
+.ed-search input::placeholder{color:var(--ed-muted);}
+.ed-search input:focus{outline:none;border-color:var(--ed-accent);}
+.ed-search i{position:absolute;right:4px;top:10px;color:var(--ed-muted);}
+.ed-spotlight{max-width:900px;margin:30px auto 6px;padding:0 20px;cursor:pointer;}
+.ed-spotlight-eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--ed-accent);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.ed-spotlight-img{width:100%;aspect-ratio:16/9;border-radius:3px;overflow:hidden;background:var(--ed-accent-light);margin-bottom:16px;}
+.ed-spotlight-img img{width:100%;height:100%;object-fit:cover;}
+.ed-spotlight-title{font-family:'Playfair Display',serif;font-size:25px;font-weight:800;line-height:1.28;margin-bottom:9px;}
+.ed-spotlight-excerpt{color:var(--ed-text-secondary);font-size:14px;line-height:1.7;margin-bottom:11px;max-width:560px;}
+.ed-spotlight-price{font-weight:700;font-size:15px;}
+.ed-section-head{max-width:900px;margin:38px auto 4px;padding:0 20px;display:flex;align-items:baseline;justify-content:space-between;}
+.ed-section-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:800;}
+.ed-section-count{font-size:11.5px;color:var(--ed-muted);}
+.ed-list{max-width:900px;margin:0 auto;padding:10px 20px 90px;}
+.ed-row{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--ed-border);cursor:pointer;}
+.ed-row-num{font-family:'Playfair Display',serif;font-size:13px;color:var(--ed-muted);width:22px;flex-shrink:0;}
+.ed-row-img{width:66px;height:66px;border-radius:3px;overflow:hidden;background:var(--ed-accent-light);flex-shrink:0;}
+.ed-row-img img{width:100%;height:100%;object-fit:cover;}
+.ed-row-body{flex-grow:1;min-width:0;}
+.ed-row-title{font-weight:650;font-size:14.5px;margin-bottom:4px;line-height:1.35;}
+.ed-row:hover .ed-row-title{text-decoration:underline;text-decoration-color:var(--ed-accent-border);}
+.ed-row-price-row{display:flex;align-items:baseline;gap:8px;font-size:13px;}
+.ed-row-price-now{font-weight:700;}
+.ed-row-price-was{color:var(--ed-muted);text-decoration:line-through;font-size:11.5px;}
+.ed-row-off{font-size:10px;font-weight:700;color:var(--ed-accent);}
+.ed-row-arrow{color:var(--ed-muted);font-size:14px;flex-shrink:0;}
+.ed-empty{text-align:center;padding:70px 20px;color:var(--ed-muted);}
+.ed-empty i{font-size:34px;margin-bottom:12px;display:block;color:var(--ed-accent-border);}
+.ed-empty-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ed-ink);margin-bottom:4px;}
+.ed-drawer-overlay{position:fixed;inset:0;background:rgba(28,24,16,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;}
+.ed-drawer-overlay.open{opacity:1;pointer-events:auto;}
+.ed-drawer{position:fixed;top:0;left:0;bottom:0;width:280px;max-width:82vw;background:var(--ed-surface);z-index:201;transform:translateX(-100%);transition:transform .32s cubic-bezier(.16,1,.3,1);padding:26px 24px;overflow-y:auto;}
+.ed-drawer.open{transform:translateX(0);}
+.ed-drawer-title{font-family:'Playfair Display',serif;font-weight:800;font-size:18px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--ed-border);}
+.ed-drawer-link{display:block;padding:12px 0;border-bottom:1px solid var(--ed-border);color:var(--ed-ink);text-decoration:none;font-weight:600;font-size:13.5px;letter-spacing:.2px;}
+.ed-drawer-link i{margin-right:10px;color:var(--ed-accent);}
+.ed-article-top{position:sticky;top:0;background:rgba(250,248,243,.92);backdrop-filter:blur(10px);z-index:60;padding:14px 20px;border-bottom:1px solid var(--ed-border);}
+.ed-back-link{background:none;border:none;font-weight:700;font-size:12px;letter-spacing:.5px;color:var(--ed-ink);cursor:pointer;text-transform:uppercase;padding:0;font-family:'Inter';}
+.ed-article-hero{width:100%;aspect-ratio:16/10;background:var(--ed-accent-light);overflow:hidden;}
+.ed-article-hero img{width:100%;height:100%;object-fit:cover;}
+.ed-article-body{max-width:680px;margin:0 auto;padding:26px 20px 130px;}
+.ed-article-eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--ed-accent);margin-bottom:10px;}
+.ed-article-title{font-family:'Playfair Display',serif;font-size:27px;font-weight:800;line-height:1.28;margin-bottom:16px;}
+.ed-article-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--ed-border);flex-wrap:wrap;}
+.ed-article-price-now{font-size:22px;font-weight:800;}
+.ed-article-price-was{font-size:14px;color:var(--ed-muted);text-decoration:line-through;}
+.ed-article-off{font-size:11px;font-weight:700;color:#fff;background:var(--ed-accent);padding:3px 9px;border-radius:2px;}
+.ed-article-label{font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ed-muted);margin-bottom:12px;}
+.ed-article-desc{font-size:15px;line-height:1.85;color:var(--ed-text-secondary);white-space:pre-wrap;margin-bottom:34px;}
+.ed-article-desc::first-letter{font-family:'Playfair Display',serif;font-size:52px;font-weight:800;float:left;line-height:.8;padding:6px 8px 0 0;color:var(--ed-accent);}
+.ed-photostory-item{margin-bottom:14px;}
+.ed-photostory-item img{width:100%;border-radius:3px;}
+.ed-drawer-overlay + .ed-drawer{} /* noop guard for future edits */
+.ed-sticky-footer{position:fixed;bottom:0;left:0;right:0;background:var(--ed-surface);border-top:1px solid var(--ed-border);padding:14px 20px;z-index:55;}
+.ed-sticky-footer-inner{max-width:680px;margin:0 auto;}
+.ed-continue-btn{width:100%;border:none;border-radius:2px;padding:16px;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;background:var(--ed-accent);color:#fff;cursor:pointer;font-family:'Inter';text-align:center;}
+.ed-continue-btn:disabled{opacity:.6;cursor:not-allowed;}
+.ed-halo{width:88px;height:88px;border-radius:50%;background:var(--ed-accent-light);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.ed-check{width:62px;height:62px;border-radius:50%;background:var(--ed-accent);display:flex;align-items:center;justify-content:center;animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ed-check i{font-size:28px;color:#fff;}
+.ed-err-halo{width:88px;height:88px;border-radius:50%;background:#FBEAE4;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.ed-err-icon{width:62px;height:62px;border-radius:50%;background:#9A3412;display:flex;align-items:center;justify-content:center;animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ed-err-icon i{font-size:26px;color:#fff;}
+.ed-result-title{font-family:'Playfair Display',serif;font-weight:800;font-size:19px;margin:16px 0 6px;}
+.ed-result-text{color:var(--ed-muted);font-size:13.5px;max-width:300px;margin:0 auto 20px;line-height:1.6;}
+.ed-link-btn{background:none;border:none;font-weight:700;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--ed-accent);cursor:pointer;font-family:'Inter';}
+@media (max-width:380px){ .ed-article-title{font-size:22px;} .ed-wordmark{font-size:22px;} }
+
+/* ============================================================
+   THEME 3 — MARKET. Cool white, dense marketplace grid, blue
+   accents. Special feature: a live Sort & Filter toolbar (Newest /
+   Price / Biggest Discount + On-Sale toggle) with a running result
+   count — real functionality, no fake urgency or invented data.
+================================================================ */
+body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
+:root{
+  --mk-ink:#0F172A; --mk-muted:#64748B; --mk-text-secondary:#334155;
+  --mk-accent:#2563EB; --mk-accent-dark:#1D4ED8; --mk-accent-light:#EFF6FF; --mk-accent-border:#BFDBFE;
+  --mk-border:#E2E8F0; --mk-surface:#fff; --mk-page-bg:#F8FAFC;
+  --mk-success:#059669; --mk-off:#DC2626; --mk-new:#059669;
+}
+.mk-header{background:var(--mk-surface);border-bottom:2px solid var(--mk-ink);position:sticky;top:0;z-index:100;}
+.mk-header-inner{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:11px;}
+.mk-menu-btn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--mk-border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--mk-ink);flex-shrink:0;}
+.mk-logo{width:34px;height:34px;border-radius:8px;object-fit:cover;border:1.5px solid var(--mk-border);flex-shrink:0;background:var(--mk-accent-light);}
+.mk-name{font-weight:800;font-size:15.5px;letter-spacing:-.2px;flex-grow:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mk-badge{font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;background:var(--mk-accent-light);color:var(--mk-accent-dark);padding:4px 9px;border-radius:5px;flex-shrink:0;}
+.mk-search-wrap{max-width:1100px;margin:0 auto;padding:12px 16px 0;}
+.mk-search{position:relative;}
+.mk-search input{width:100%;padding:11px 14px 11px 38px;border-radius:8px;border:1.5px solid var(--mk-border);font-size:13.5px;background:var(--mk-page-bg);font-family:inherit;color:var(--mk-ink);}
+.mk-search input:focus{outline:none;border-color:var(--mk-accent);background:#fff;box-shadow:0 0 0 3px var(--mk-accent-light);}
+.mk-search i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mk-muted);font-size:14px;}
+.mk-toolbar{max-width:1100px;margin:0 auto;padding:10px 16px 4px;display:flex;align-items:center;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.mk-chip{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--mk-border);background:#fff;font-size:12px;font-weight:600;color:var(--mk-text-secondary);cursor:pointer;white-space:nowrap;}
+.mk-chip.active{background:var(--mk-ink);border-color:var(--mk-ink);color:#fff;}
+.mk-chip select{border:none;background:transparent;font:inherit;color:inherit;cursor:pointer;}
+.mk-chip select:focus{outline:none;}
+.mk-count{margin-left:auto;font-size:11.5px;color:var(--mk-muted);flex-shrink:0;padding-left:6px;}
+.mk-grid-wrap{max-width:1100px;margin:0 auto;padding:10px 16px 70px;}
+.mk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+.mk-card{background:#fff;border-radius:10px;border:1px solid var(--mk-border);overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.mk-card:hover{border-color:var(--mk-accent);}
+.mk-img-wrap{position:relative;aspect-ratio:1/1;background:var(--mk-page-bg);overflow:hidden;}
+.mk-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.mk-tag-off{position:absolute;top:0;left:0;background:var(--mk-off);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:0 0 8px 0;}
+.mk-tag-new{position:absolute;top:8px;right:8px;background:var(--mk-new);color:#fff;font-size:9px;font-weight:800;letter-spacing:.3px;padding:2px 7px;border-radius:4px;}
+.mk-body{padding:10px 11px 11px;}
+.mk-title{font-weight:600;font-size:12.5px;line-height:1.35;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em;color:var(--mk-ink);}
+.mk-price-row{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:2px;}
+.mk-price-now{font-weight:800;font-size:14.5px;color:var(--mk-ink);}
+.mk-price-was{font-size:11px;color:var(--mk-muted);text-decoration:line-through;}
+.mk-off-pct{font-size:11px;font-weight:700;color:var(--mk-success);margin-bottom:8px;}
+.mk-buy-btn{width:100%;border:none;border-radius:6px;padding:9px;font-weight:700;font-size:12px;background:var(--mk-accent);color:#fff;cursor:pointer;margin-top:6px;font-family:inherit;}
+.mk-empty{text-align:center;padding:60px 20px;color:var(--mk-muted);}
+.mk-empty i{font-size:36px;margin-bottom:10px;display:block;color:var(--mk-accent-border);}
+.mk-drawer-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;}
+.mk-drawer-overlay.open{opacity:1;pointer-events:auto;}
+.mk-drawer{position:fixed;top:0;left:0;bottom:0;width:275px;max-width:82vw;background:#fff;z-index:201;transform:translateX(-100%);transition:transform .3s cubic-bezier(.16,1,.3,1);padding:20px;overflow-y:auto;}
+.mk-drawer.open{transform:translateX(0);}
+.mk-drawer-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid var(--mk-ink);}
+.mk-drawer-logo{width:38px;height:38px;border-radius:8px;object-fit:cover;background:var(--mk-accent-light);}
+.mk-drawer-name{font-weight:800;font-size:14px;}
+.mk-drawer-link{display:flex;align-items:center;gap:10px;padding:11px 8px;border-radius:8px;color:var(--mk-ink);text-decoration:none;font-weight:600;font-size:13px;}
+.mk-drawer-link:hover{background:var(--mk-page-bg);}
+.mk-drawer-link i{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;flex-shrink:0;}
+.mk-pd-top{position:sticky;top:0;background:#fff;z-index:60;padding:12px 16px;border-bottom:1px solid var(--mk-border);display:flex;align-items:center;gap:10px;}
+.mk-pd-back{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--mk-border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0;}
+.mk-pd-hero{width:100%;aspect-ratio:1/1;max-height:360px;background:var(--mk-page-bg);overflow:hidden;}
+.mk-pd-hero img{width:100%;height:100%;object-fit:contain;}
+.mk-pd-body{max-width:720px;margin:0 auto;padding:18px 16px 130px;}
+.mk-pd-title{font-size:17px;font-weight:700;margin-bottom:12px;line-height:1.4;}
+.mk-pd-price-block{background:var(--mk-page-bg);border-radius:10px;padding:14px;margin-bottom:20px;}
+.mk-pd-price-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.mk-pd-price-now{font-size:23px;font-weight:800;}
+.mk-pd-price-was{font-size:14px;color:var(--mk-muted);text-decoration:line-through;}
+.mk-pd-off{font-size:12px;font-weight:800;color:var(--mk-off);}
+.mk-pd-label{font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--mk-muted);margin-bottom:10px;padding-top:16px;border-top:1px solid var(--mk-border);}
+.mk-pd-label:first-of-type{border-top:none;padding-top:0;}
+.mk-pd-desc{font-size:13.5px;line-height:1.75;color:var(--mk-text-secondary);white-space:pre-wrap;margin-bottom:6px;}
+.mk-shots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.mk-shot{aspect-ratio:9/16;border-radius:8px;overflow:hidden;background:var(--mk-page-bg);border:1px solid var(--mk-border);}
+.mk-shot img{width:100%;height:100%;object-fit:cover;}
+.mk-sticky-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--mk-border);padding:12px 16px;z-index:55;box-shadow:0 -4px 16px rgba(0,0,0,.04);}
+.mk-sticky-inner{max-width:720px;margin:0 auto;}
+.mk-continue-btn{width:100%;border:none;border-radius:8px;padding:15px;font-weight:800;font-size:14px;background:var(--mk-accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;}
+.mk-continue-btn:disabled{opacity:.6;cursor:not-allowed;}
+.mk-halo{width:80px;height:80px;border-radius:16px;background:#ECFDF5;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.mk-check{width:56px;height:56px;border-radius:12px;background:var(--mk-new);display:flex;align-items:center;justify-content:center;animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.mk-check i{font-size:26px;color:#fff;}
+.mk-err-halo{width:80px;height:80px;border-radius:16px;background:#FEF2F2;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.mk-err-icon{width:56px;height:56px;border-radius:12px;background:var(--mk-off);display:flex;align-items:center;justify-content:center;animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.mk-err-icon i{font-size:24px;color:#fff;}
+.mk-result-title{font-weight:800;font-size:18px;margin:14px 0 6px;}
+.mk-result-text{color:var(--mk-muted);font-size:13px;max-width:290px;margin:0 auto 18px;line-height:1.6;}
+.mk-link-btn{background:none;border:none;font-weight:700;font-size:12.5px;color:var(--mk-accent);cursor:pointer;font-family:inherit;}
+@media (max-width:380px){ .mk-pd-price-now{font-size:20px;} }
+</style>
+</head>
+<body>
+
+<div id="storeHeader"></div>
+<div id="drawerOverlay"></div>
+<div id="storeDrawer"></div>
+
+<!-- ======= VIEW: LOADING (initial) ======= -->
+<div id="viewLoading" class="text-center py-5">
+  <div class="zp-spinner mx-auto mt-5"></div>
+  <p class="text-muted mt-3">Loading store...</p>
+</div>
+
+<!-- ======= VIEW: STORE HOME ======= -->
+<div id="viewHome" class="d-none"></div>
+
+<!-- ======= VIEW: PRODUCT DETAIL ======= -->
+<div id="viewDetail" class="d-none"></div>
+
+<!-- ======= VIEW: ORDER RESULT / ERROR ======= -->
+<div id="viewResult" class="d-none"></div>
+
+<script>
+(function () {
+  const params   = new URLSearchParams(window.location.search);
+  // New URL scheme: zappay.shop/store=<storeId>  (storeId lives in the path,
+  // not the query string). Old links using ?id=<storeId> still work as a
+  // fallback so anything already shared before this change doesn't break.
+  function extractStoreId() {
+    const m = window.location.pathname.match(/\/store=([^\/?#]+)/);
+    if (m && m[1]) return decodeURIComponent(m[1]).trim();
+    return (params.get('id') || '').trim();
+  }
+  const storeId  = extractStoreId();
+  let storeData  = null;
+  let activeTheme = 'boutique';
+  let homeFilterMode = 'all';  // boutique: 'all' | 'wishlist'
+  let mkSort = 'newest';
+  let mkOnSaleOnly = false;
+  // NEW: category filter state (for all themes)
+  let activeCategory = 'all';
+
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+  function money(n) {
+    return '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function priceInfo(p) {
+    const hasDiscount = p.discountPrice != null && p.discountPrice > 0 && p.discountPrice < p.originalPrice;
+    const shown = hasDiscount ? p.discountPrice : p.originalPrice;
+    const pct = hasDiscount ? Math.round((1 - p.discountPrice / p.originalPrice) * 100) : 0;
+    return { hasDiscount, shown, pct };
+  }
+  function isNewProduct(p) {
+    const t = Number(p.createdAt);
+    if (!t) return false;
+    return (Date.now() - t) < 7 * 24 * 60 * 60 * 1000;
+  }
+  function hideAllViews() {
+    ['viewLoading', 'viewHome', 'viewDetail', 'viewResult'].forEach((id) => document.getElementById(id).classList.add('d-none'));
+  }
+  function showFatalError(title, msg) {
+    hideAllViews();
+    document.getElementById('viewResult').classList.remove('d-none');
+    document.getElementById('viewResult').innerHTML = `
+      <div class="zp-fatal">
+        <div class="zp-fatal-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <h5>${esc(title)}</h5>
+        <p>${esc(msg)}</p>
+      </div>`;
+  }
+
+  /* ================= WISHLIST ================= */
+  function wishKey() { return `zp_wishlist_${storeId}`; }
+  function getWishlist() { try { return JSON.parse(localStorage.getItem(wishKey()) || '[]'); } catch (e) { return []; } }
+  function isWished(id) { return getWishlist().includes(id); }
+  function toggleWishlist(id) {
+    let list = getWishlist();
+    let nowWished;
+    if (list.includes(id)) { list = list.filter((x) => x !== id); nowWished = false; }
+    else { list.push(id); nowWished = true; }
+    localStorage.setItem(wishKey(), JSON.stringify(list));
+    return nowWished;
+  }
+  window.handleWishClick = function (id, btnEl) {
+    const nowWished = toggleWishlist(id);
+    btnEl.classList.toggle('active', nowWished);
+    btnEl.innerHTML = `<i class="bi ${nowWished ? 'bi-heart-fill' : 'bi-heart'}"></i>`;
+    if (homeFilterMode === 'wishlist' && !nowWished) {
+      const si = document.getElementById('searchInput');
+      if (si) paintBoutiqueGrid(si.value);
+    }
+  };
+
+  /* ================= THEME BOOT ================= */
+  function applyTheme(theme) {
+    activeTheme = ['boutique', 'editorial', 'market'].includes(theme) ? theme : 'boutique';
+    document.body.setAttribute('data-theme', activeTheme);
+    const colors = { boutique: '#DB2777', editorial: '#92400E', market: '#2563EB' };
+    const mc = document.querySelector('meta[name="theme-color"]');
+    if (mc) mc.setAttribute('content', colors[activeTheme]);
+  }
+
+  /* ================= HEADER + DRAWER ================= */
+  function renderHeader() {
+    if (activeTheme === 'editorial') return renderHeaderEditorial();
+    if (activeTheme === 'market') return renderHeaderMarket();
+    return renderHeaderBoutique();
+  }
+  function openDrawer() {
+    document.getElementById('storeDrawer').classList.add('open');
+    document.getElementById('drawerOverlay').classList.add('open');
+  }
+  function closeDrawer() {
+    document.getElementById('storeDrawer').classList.remove('open');
+    document.getElementById('drawerOverlay').classList.remove('open');
+  }
+  document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+
+  function socialLinksList() {
+    const links = storeData.socialLinks || {};
+    return [
+      { key: 'telegram',  label: 'Join Telegram',       icon: 'bi-telegram',  bg: '#229ED9' },
+      { key: 'whatsapp',  label: 'Join WhatsApp',        icon: 'bi-whatsapp',  bg: '#25D366' },
+      { key: 'youtube',   label: 'Subscribe on YouTube', icon: 'bi-youtube',   bg: '#FF0000' },
+      { key: 'instagram', label: 'Follow on Instagram',  icon: 'bi-instagram', bg: '#E1306C' },
+    ].filter((it) => links[it.key]);
+  }
+
+  function renderHeaderBoutique() {
+    document.title = `${storeData.storeName} | ZapPay Store`;
+    document.getElementById('storeHeader').innerHTML = `
+      <header class="store-header">
+        <div class="store-header-inner">
+          <button class="store-icon-btn" id="drawerBtn" aria-label="Menu"><i class="bi bi-list"></i></button>
+          <div class="store-name">${esc(storeData.storeName)}</div>
+          <img class="store-logo" src="${esc(storeData.logoUrl)}" alt="" onerror="this.src='https://res.cloudinary.com/dihj6dmbb/image/upload/v1782028733/quickurl/20260621132708_1782028720083.png'"/>
+        </div>
+      </header>`;
+    document.getElementById('drawerBtn').addEventListener('click', openDrawer);
+    renderDrawerBoutique();
+  }
+  function renderDrawerBoutique() {
+    const overlay = document.getElementById('drawerOverlay'); overlay.className = 'store-drawer-overlay';
+    const el = document.getElementById('storeDrawer'); el.className = 'store-drawer';
+    const social = socialLinksList();
+    const wcount = getWishlist().length;
+    el.innerHTML = `
+      <div class="store-drawer-head">
+        <img class="store-drawer-logo" src="${esc(storeData.logoUrl)}" alt=""/>
+        <div class="store-drawer-storename">${esc(storeData.storeName)}</div>
+      </div>
+      <a class="store-drawer-link" href="#" id="wishlistLink">
+        <i class="bi bi-heart-fill" style="background:${wcount ? '#DB2777' : '#C9C2CF'}"></i><span>Wishlist</span>
+        ${wcount ? `<span class="store-wish-count">${wcount}</span>` : ''}
+      </a>
+      ${social.map((it) => `<a class="store-drawer-link" href="${esc(storeData.socialLinks[it.key])}" target="_blank" rel="noopener"><i class="bi ${it.icon}" style="background:${it.bg}"></i><span>${it.label}</span></a>`).join('')}
+      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZapPay</div>`;
+    document.getElementById('wishlistLink').addEventListener('click', (e) => {
+      e.preventDefault(); closeDrawer(); homeFilterMode = 'wishlist'; showStoreHome(true);
+    });
+  }
+
+  function renderHeaderEditorial() {
+    document.title = `${storeData.storeName} | ZapPay Store`;
+    document.getElementById('storeHeader').innerHTML = `
+      <div class="ed-topline"></div>
+      <div class="ed-header-inner">
+        <button class="ed-menu-btn" id="drawerBtn">Menu</button>
+        <img class="ed-logo" src="${esc(storeData.logoUrl)}" alt="" onerror="this.src='https://res.cloudinary.com/dihj6dmbb/image/upload/v1782028733/quickurl/20260621132708_1782028720083.png'"/>
+        <h1 class="ed-wordmark">${esc(storeData.storeName)}</h1>
+        <div class="ed-tagline">Curated Digital Goods</div>
+      </div>
+      <hr class="ed-rule"/>`;
+    document.getElementById('drawerBtn').addEventListener('click', openDrawer);
+    renderDrawerEditorial();
+  }
+  function renderDrawerEditorial() {
+    const overlay = document.getElementById('drawerOverlay'); overlay.className = 'ed-drawer-overlay';
+    const el = document.getElementById('storeDrawer'); el.className = 'ed-drawer';
+    const social = socialLinksList();
+    el.innerHTML = `
+      <div class="ed-drawer-title">${esc(storeData.storeName)}</div>
+      <a class="ed-drawer-link" href="#" id="homeLink"><i class="bi bi-house"></i>All Products</a>
+      ${social.map((it) => `<a class="ed-drawer-link" href="${esc(storeData.socialLinks[it.key])}" target="_blank" rel="noopener"><i class="bi ${it.icon}"></i>${it.label}</a>`).join('')}
+      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZapPay</div>`;
+    document.getElementById('homeLink').addEventListener('click', (e) => { e.preventDefault(); closeDrawer(); showStoreHome(true); });
+  }
+
+  function renderHeaderMarket() {
+    document.title = `${storeData.storeName} | ZapPay Store`;
+    document.getElementById('storeHeader').innerHTML = `
+      <header class="mk-header">
+        <div class="mk-header-inner">
+          <button class="mk-menu-btn" id="drawerBtn" aria-label="Menu"><i class="bi bi-list"></i></button>
+          <img class="mk-logo" src="${esc(storeData.logoUrl)}" alt="" onerror="this.src='https://res.cloudinary.com/dihj6dmbb/image/upload/v1782028733/quickurl/20260621132708_1782028720083.png'"/>
+          <div class="mk-name">${esc(storeData.storeName)}</div>
+          <span class="mk-badge">Store</span>
+        </div>
+      </header>`;
+    document.getElementById('drawerBtn').addEventListener('click', openDrawer);
+    renderDrawerMarket();
+  }
+  function renderDrawerMarket() {
+    const overlay = document.getElementById('drawerOverlay'); overlay.className = 'mk-drawer-overlay';
+    const el = document.getElementById('storeDrawer'); el.className = 'mk-drawer';
+    const social = socialLinksList();
+    el.innerHTML = `
+      <div class="mk-drawer-head">
+        <img class="mk-drawer-logo" src="${esc(storeData.logoUrl)}" alt=""/>
+        <div class="mk-drawer-name">${esc(storeData.storeName)}</div>
+      </div>
+      ${social.map((it) => `<a class="mk-drawer-link" href="${esc(storeData.socialLinks[it.key])}" target="_blank" rel="noopener"><i class="bi ${it.icon}" style="background:${it.bg}"></i><span>${it.label}</span></a>`).join('')}
+      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZapPay</div>`;
+  }
+
+  /* ================= STORE HOME ================= */
+  function showStoreHome(pushUrl) {
+    hideAllViews();
+    document.getElementById('viewHome').classList.remove('d-none');
+    renderHome();
+    if (pushUrl) history.pushState({ view: 'home' }, '', `/store=${encodeURIComponent(storeId)}`);
+  }
+  function renderHome() {
+    if (activeTheme === 'editorial') return renderHomeEditorial();
+    if (activeTheme === 'market') return renderHomeMarket();
+    return renderHomeBoutique();
+  }
+
+  /* ---- Boutique home (grid + categories + sort) ---- */
+  function renderHomeBoutique() {
+    const cats = storeData.categories || [];
+    const showSort = storeData.showSortButton || false;
+    const catButtons = cats.map(c => `<button class="cat-filter-btn" data-cat="${c.id}">${c.icon ? `<i class="bi ${c.icon}"></i> ` : ''}${esc(c.name)}</button>`).join('');
+    const sortDropdown = showSort ? `
+      <div class="sort-wrap" style="display:inline-block; margin-left:8px;">
+        <select id="bqSortSelect" class="sort-select" style="padding:6px 12px; border-radius:14px; border:1.5px solid var(--bq-border); background:#fff; font-size:12px; font-weight:600;">
+          <option value="newest">Newest</option>
+          <option value="price_asc">Price: Low → High</option>
+          <option value="price_desc">Price: High → Low</option>
+          <option value="discount">Biggest Discount</option>
+        </select>
+      </div>` : '';
+
+    document.getElementById('viewHome').innerHTML = `
+      <div class="store-search-wrap">
+        <div class="store-search">
+          <i class="bi bi-search"></i>
+          <input type="text" id="searchInput" placeholder="Search products..."/>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-2" style="font-size:12.5px">
+          <div class="category-wrap" id="bqCategoryWrap">
+            <button class="cat-filter-btn active" data-cat="all">All</button>
+            ${catButtons}
+          </div>
+          ${sortDropdown}
+        </div>
+        ${homeFilterMode === 'wishlist' ? `<div class="mt-2 d-flex align-items-center gap-2" style="font-size:12.5px"><i class="bi bi-heart-fill" style="color:var(--bq-brand)"></i><span class="fw-semibold">Your Wishlist</span><button class="btn btn-link btn-sm p-0 ms-auto" style="font-size:12px" id="clearWishFilter">Show All</button></div>` : ''}
+      </div>
+      <div class="store-grid-wrap">
+        <div id="gridEmpty" class="store-empty d-none"></div>
+        <div class="store-grid" id="productGrid"></div>
+      </div>`;
+    document.getElementById('searchInput').addEventListener('input', (e) => paintBoutiqueGrid(e.target.value));
+    if (homeFilterMode === 'wishlist') {
+      document.getElementById('clearWishFilter').addEventListener('click', () => { homeFilterMode = 'all'; showStoreHome(true); });
+    }
+    // Category filter
+    document.querySelectorAll('#bqCategoryWrap .cat-filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#bqCategoryWrap .cat-filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        activeCategory = this.dataset.cat;
+        paintBoutiqueGrid(document.getElementById('searchInput').value);
+      });
+    });
+    // Sort
+    const sortSel = document.getElementById('bqSortSelect');
+    if (sortSel) {
+      sortSel.addEventListener('change', () => paintBoutiqueGrid(document.getElementById('searchInput').value));
+    }
+    paintBoutiqueGrid('');
+  }
+  function paintBoutiqueGrid(searchTerm) {
+    const term = (searchTerm || '').toLowerCase().trim();
+    let list = storeData.products || [];
+    if (homeFilterMode === 'wishlist') {
+      const w = getWishlist();
+      list = list.filter((p) => w.includes(p.id));
+    }
+    if (activeCategory !== 'all') {
+      list = list.filter(p => p.categoryId === activeCategory);
+    }
+    // Apply sort
+    const sortSel = document.getElementById('bqSortSelect');
+    const sort = sortSel ? sortSel.value : 'newest';
+    if (sort === 'price_asc') list.sort((a,b) => priceInfo(a).shown - priceInfo(b).shown);
+    else if (sort === 'price_desc') list.sort((a,b) => priceInfo(b).shown - priceInfo(a).shown);
+    else if (sort === 'discount') list.sort((a,b) => priceInfo(b).pct - priceInfo(a).pct);
+    else list.sort((a,b) => b.createdAt - a.createdAt);
+
+    const filtered = term ? list.filter((p) => (p.title || '').toLowerCase().includes(term)) : list;
+    const grid = document.getElementById('productGrid');
+    const empty = document.getElementById('gridEmpty');
+    if (list.length === 0) {
+      grid.innerHTML = ''; empty.classList.remove('d-none');
+      empty.innerHTML = homeFilterMode === 'wishlist'
+        ? `<i class="bi bi-heart"></i><div class="fw-semibold">No wishlist items yet</div><div style="font-size:13px">Tap the heart on a product to save it here.</div>`
+        : `<i class="bi bi-bag"></i><div class="fw-semibold">No products yet</div><div style="font-size:13px">Check back soon.</div>`;
+      return;
+    }
+    if (filtered.length === 0) {
+      grid.innerHTML = ''; empty.classList.remove('d-none');
+      empty.innerHTML = `<i class="bi bi-search"></i><div class="fw-semibold">No matches</div><div style="font-size:13px">Try a different search term.</div>`;
+      return;
+    }
+    empty.classList.add('d-none');
+    grid.innerHTML = filtered.map(boutiqueCardHTML).join('');
+  }
+  function boutiqueCardHTML(p) {
+    const { hasDiscount, shown, pct } = priceInfo(p);
+    const wished = isWished(p.id);
+    return `<div class="store-product-card">
+      <div class="store-product-img-wrap" onclick="goToProduct('${p.id}')">
+        <img src="${esc(p.imageUrl)}" loading="lazy" alt="" onerror="this.style.opacity='.15'"/>
+        <button class="store-wish-btn ${wished ? 'active' : ''}" onclick="event.stopPropagation();handleWishClick('${p.id}', this)"><i class="bi ${wished ? 'bi-heart-fill' : 'bi-heart'}"></i></button>
+      </div>
+      <div class="store-product-body" onclick="goToProduct('${p.id}')">
+        <div class="store-product-title">${esc(p.title)}</div>
+        <div class="store-price-row">
+          <span class="store-price-now">${money(shown)}</span>
+          ${hasDiscount ? `<span class="store-price-was">${money(p.originalPrice)}</span>` : ''}
+        </div>
+        ${hasDiscount ? `<span class="store-discount-tag">${pct}% OFF</span>` : ''}
+        <button class="store-buy-btn" onclick="event.stopPropagation();goToProduct('${p.id}')">Buy Now</button>
+      </div>
+    </div>`;
+  }
+
+  /* ---- Editorial home (spotlight + list + categories + sort) ---- */
+  function renderHomeEditorial() {
+    const cats = storeData.categories || [];
+    const showSort = storeData.showSortButton || false;
+    const catButtons = cats.map(c => `<button class="ed-cat-filter" data-cat="${c.id}">${c.icon ? `<i class="bi ${c.icon}"></i> ` : ''}${esc(c.name)}</button>`).join('');
+    const sortDropdown = showSort ? `
+      <div style="display:inline-block; margin-left:8px;">
+        <select id="edSortSelect" style="border:none; background:var(--ed-surface); padding:4px 8px; font-weight:600; font-size:12px; border-bottom:1px solid var(--ed-border);">
+          <option value="newest">Newest</option>
+          <option value="price_asc">Price: Low → High</option>
+          <option value="price_desc">Price: High → Low</option>
+          <option value="discount">Biggest Discount</option>
+        </select>
+      </div>` : '';
+
+    document.getElementById('viewHome').innerHTML = `
+      <div class="ed-search-wrap">
+        <div class="ed-search">
+          <input type="text" id="searchInput" placeholder="Search the collection…"/>
+          <i class="bi bi-search"></i>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-2" style="font-size:12px">
+          <button class="ed-cat-filter active" data-cat="all">All</button>
+          ${catButtons}
+          ${sortDropdown}
+        </div>
+      </div>
+      <div id="edSpotlightWrap"></div>
+      <div class="ed-section-head">
+        <div class="ed-section-title">The Full Edit</div>
+        <div class="ed-section-count" id="edCount"></div>
+      </div>
+      <div id="edEmpty" class="ed-empty d-none"></div>
+      <div class="ed-list" id="edList"></div>`;
+    document.getElementById('searchInput').addEventListener('input', (e) => paintEditorial(e.target.value));
+    // Category filter
+    document.querySelectorAll('.ed-cat-filter').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.ed-cat-filter').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        activeCategory = this.dataset.cat;
+        paintEditorial(document.getElementById('searchInput').value);
+      });
+    });
+    // Sort
+    const sortSel = document.getElementById('edSortSelect');
+    if (sortSel) {
+      sortSel.addEventListener('change', () => paintEditorial(document.getElementById('searchInput').value));
+    }
+    paintEditorial('');
+  }
+  function getEditorialSpotlight(list) {
+    if (!list.length) return null;
+    let best = null, bestPct = 0;
+    list.forEach((p) => { const { hasDiscount, pct } = priceInfo(p); if (hasDiscount && pct > bestPct) { bestPct = pct; best = p; } });
+    if (best) return { product: best, reason: 'pick', pct: bestPct };
+    return { product: list[0], reason: 'new' };
+  }
+  function paintEditorial(searchTerm) {
+    const term = (searchTerm || '').toLowerCase().trim();
+    let all = storeData.products || [];
+    if (activeCategory !== 'all') {
+      all = all.filter(p => p.categoryId === activeCategory);
+    }
+    const sortSel = document.getElementById('edSortSelect');
+    const sort = sortSel ? sortSel.value : 'newest';
+    if (sort === 'price_asc') all.sort((a,b) => priceInfo(a).shown - priceInfo(b).shown);
+    else if (sort === 'price_desc') all.sort((a,b) => priceInfo(b).shown - priceInfo(a).shown);
+    else if (sort === 'discount') all.sort((a,b) => priceInfo(b).pct - priceInfo(a).pct);
+    else all.sort((a,b) => b.createdAt - a.createdAt);
+
+    const filtered = term ? all.filter((p) => (p.title || '').toLowerCase().includes(term)) : all;
+    const list = document.getElementById('edList');
+    const empty = document.getElementById('edEmpty');
+    const spotWrap = document.getElementById('edSpotlightWrap');
+    document.getElementById('edCount').textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
+
+    if (all.length === 0) {
+      spotWrap.innerHTML = ''; list.innerHTML = ''; empty.classList.remove('d-none');
+      empty.innerHTML = `<i class="bi bi-journal-richtext"></i><div class="ed-empty-title">No products yet</div><div>Check back soon.</div>`;
+      return;
+    }
+    if (filtered.length === 0) {
+      spotWrap.innerHTML = ''; list.innerHTML = ''; empty.classList.remove('d-none');
+      empty.innerHTML = `<i class="bi bi-search"></i><div class="ed-empty-title">No matches</div><div>Try a different search term.</div>`;
+      return;
+    }
+    empty.classList.add('d-none');
+    const spot = (!term && activeCategory === 'all') ? getEditorialSpotlight(all) : null;
+    spotWrap.innerHTML = spot ? editorialSpotlightHTML(spot) : '';
+    const rest = spot ? filtered.filter((p) => p.id !== spot.product.id) : filtered;
+    list.innerHTML = rest.map((p, i) => editorialRowHTML(p, i)).join('');
+  }
+  function editorialSpotlightHTML(spot) {
+    const p = spot.product;
+    const { hasDiscount, shown } = priceInfo(p);
+    const raw = p.description || '';
+    const excerpt = esc(raw.slice(0, 110)) + (raw.length > 110 ? '…' : '');
+    return `<div class="ed-spotlight" onclick="goToProduct('${p.id}')">
+      <div class="ed-spotlight-eyebrow"><i class="bi bi-stars"></i>${spot.reason === 'pick' ? `Editor's Pick — ${spot.pct}% Off` : 'Just Added'}</div>
+      <div class="ed-spotlight-img"><img src="${esc(p.imageUrl)}" alt="" onerror="this.style.opacity='.15'"/></div>
+      <div class="ed-spotlight-title">${esc(p.title)}</div>
+      <div class="ed-spotlight-excerpt">${excerpt}</div>
+      <div class="ed-spotlight-price">${money(shown)}${hasDiscount ? ` <span style="color:var(--ed-muted);text-decoration:line-through;font-weight:500;font-size:13px">${money(p.originalPrice)}</span>` : ''}</div>
+    </div>`;
+  }
+  function editorialRowHTML(p, i) {
+    const { hasDiscount, shown, pct } = priceInfo(p);
+    const num = String(i + 1).padStart(2, '0');
+    return `<div class="ed-row" onclick="goToProduct('${p.id}')">
+      <div class="ed-row-num">${num}</div>
+      <div class="ed-row-img"><img src="${esc(p.imageUrl)}" loading="lazy" alt="" onerror="this.style.opacity='.15'"/></div>
+      <div class="ed-row-body">
+        <div class="ed-row-title">${esc(p.title)}</div>
+        <div class="ed-row-price-row">
+          <span class="ed-row-price-now">${money(shown)}</span>
+          ${hasDiscount ? `<span class="ed-row-price-was">${money(p.originalPrice)}</span><span class="ed-row-off">${pct}% off</span>` : ''}
+        </div>
+      </div>
+      <div class="ed-row-arrow"><i class="bi bi-arrow-right"></i></div>
+    </div>`;
+  }
+
+  /* ---- Market home (grid + sort/filter toolbar + categories) ---- */
+  function renderHomeMarket() {
+    const showSort = storeData.showSortButton || false;
+    const cats = storeData.categories || [];
+    const catButtons = cats.map(c => `<button class="mk-chip mk-cat-filter" data-cat="${c.id}" style="margin-right:4px;">${c.icon ? `<i class="bi ${c.icon}"></i> ` : ''}${esc(c.name)}</button>`).join('');
+    // Sort chip visibility
+    const sortChipStyle = showSort ? '' : 'display:none;';
+
+    document.getElementById('viewHome').innerHTML = `
+      <div class="mk-search-wrap">
+        <div class="mk-search">
+          <i class="bi bi-search"></i>
+          <input type="text" id="searchInput" placeholder="Search products..."/>
+        </div>
+      </div>
+      <div class="mk-toolbar">
+        <button class="mk-chip mk-cat-filter active" data-cat="all">All</button>
+        ${catButtons}
+        <span style="flex:1;"></span>
+        <label class="mk-chip" style="${sortChipStyle}" id="mkSortChip">Sort:
+          <select id="mkSortSel">
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="discount">Biggest Discount</option>
+          </select>
+        </label>
+        <button class="mk-chip" id="mkOnSaleChip"><i class="bi bi-tag"></i> On Sale</button>
+        <span class="mk-count" id="mkCount"></span>
+      </div>
+      <div class="mk-grid-wrap">
+        <div id="mkEmpty" class="mk-empty d-none"></div>
+        <div class="mk-grid" id="mkGrid"></div>
+      </div>`;
+    document.getElementById('searchInput').addEventListener('input', () => paintMarket());
+    const sel = document.getElementById('mkSortSel'); sel.value = mkSort;
+    sel.addEventListener('change', (e) => { mkSort = e.target.value; paintMarket(); });
+    const chip = document.getElementById('mkOnSaleChip');
+    chip.classList.toggle('active', mkOnSaleOnly);
+    chip.addEventListener('click', () => {
+      mkOnSaleOnly = !mkOnSaleOnly;
+      chip.classList.toggle('active', mkOnSaleOnly);
+      chip.innerHTML = `<i class="bi bi-tag${mkOnSaleOnly ? '-fill' : ''}"></i> On Sale`;
+      paintMarket();
+    });
+    // Category filter
+    document.querySelectorAll('.mk-cat-filter').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.mk-cat-filter').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        activeCategory = this.dataset.cat;
+        paintMarket();
+      });
+    });
+    paintMarket();
+  }
+  function paintMarket() {
+    const si = document.getElementById('searchInput');
+    const term = (si ? si.value : '').toLowerCase().trim();
+    let list = storeData.products || [];
+    if (activeCategory !== 'all') {
+      list = list.filter(p => p.categoryId === activeCategory);
+    }
+    if (term) list = list.filter((p) => (p.title || '').toLowerCase().includes(term));
+    if (mkOnSaleOnly) list = list.filter((p) => priceInfo(p).hasDiscount);
+    list = list.slice();
+    if (mkSort === 'price_asc') list.sort((a, b) => priceInfo(a).shown - priceInfo(b).shown);
+    else if (mkSort === 'price_desc') list.sort((a, b) => priceInfo(b).shown - priceInfo(a).shown);
+    else if (mkSort === 'discount') list.sort((a, b) => priceInfo(b).pct - priceInfo(a).pct);
+
+    document.getElementById('mkCount').textContent = `${list.length} product${list.length === 1 ? '' : 's'}`;
+    const grid = document.getElementById('mkGrid');
+    const empty = document.getElementById('mkEmpty');
+    const total = (storeData.products || []).length;
+    if (total === 0) {
+      grid.innerHTML = ''; empty.classList.remove('d-none');
+      empty.innerHTML = `<i class="bi bi-shop"></i><div class="fw-semibold">No products yet</div><div style="font-size:13px">Check back soon.</div>`;
+      return;
+    }
+    if (list.length === 0) {
+      grid.innerHTML = ''; empty.classList.remove('d-none');
+      empty.innerHTML = `<i class="bi bi-search"></i><div class="fw-semibold">No matches</div><div style="font-size:13px">Try different filters.</div>`;
+      return;
+    }
+    empty.classList.add('d-none');
+    grid.innerHTML = list.map(marketCardHTML).join('');
+  }
+  function marketCardHTML(p) {
+    const { hasDiscount, shown, pct } = priceInfo(p);
+    const fresh = isNewProduct(p);
+    return `<div class="mk-card" onclick="goToProduct('${p.id}')">
+      <div class="mk-img-wrap">
+        <img src="${esc(p.imageUrl)}" loading="lazy" alt="" onerror="this.style.opacity='.15'"/>
+        ${hasDiscount ? `<span class="mk-tag-off">${pct}% OFF</span>` : ''}
+        ${fresh ? `<span class="mk-tag-new">NEW</span>` : ''}
+      </div>
+      <div class="mk-body">
+        <div class="mk-title">${esc(p.title)}</div>
+        <div class="mk-price-row">
+          <span class="mk-price-now">${money(shown)}</span>
+          ${hasDiscount ? `<span class="mk-price-was">${money(p.originalPrice)}</span>` : ''}
+        </div>
+        ${hasDiscount ? `<div class="mk-off-pct">You save ${money(p.originalPrice - shown)}</div>` : ''}
+        <button class="mk-buy-btn" onclick="event.stopPropagation();goToProduct('${p.id}')">Buy Now</button>
+      </div>
+    </div>`;
+  }
+
+  /* ================= PRODUCT DETAIL ================= */
+  window.goToProduct = function (productId) {
+    history.pushState({ view: 'product', productId }, '', `/store=${encodeURIComponent(storeId)}?product=${productId}`);
+    showProductDetail(productId);
+  };
+  window.goBackToHome = function () { showStoreHome(true); };
+
+  async function showProductDetail(productId) {
+    hideAllViews();
+    document.getElementById('viewDetail').classList.remove('d-none');
+    document.getElementById('viewDetail').innerHTML = `<div class="text-center py-5"><div class="zp-spinner mx-auto mt-5"></div></div>`;
+    let product = (storeData.products || []).find((p) => p.id === productId);
+    if (!product) {
+      try {
+        const res = await fetch(`${window.API_URL}/api/store-public/${storeId}/product/${productId}`);
+        const data = await res.json();
+        if (!data.success) { showFatalError('Product Not Found', data.message || 'This product may have been removed.'); return; }
+        product = data.data.product;
+      } catch (err) {
+        showFatalError('Network Error', 'Could not reach the store. Please check your connection.');
+        return;
+      }
+    }
+    renderProductDetail(product);
+  }
+  function renderProductDetail(p) {
+    if (activeTheme === 'editorial') return renderDetailEditorial(p);
+    if (activeTheme === 'market') return renderDetailMarket(p);
+    return renderDetailBoutique(p);
+  }
+  function renderDetailBoutique(p) {
+    const { hasDiscount, shown, pct } = priceInfo(p);
+    const shots = p.screenshotUrls || [];
+    const wished = isWished(p.id);
+    document.getElementById('viewDetail').innerHTML = `
+      <div class="pd-topbar"><button class="pd-back-btn" onclick="goBackToHome()"><i class="bi bi-arrow-left"></i></button></div>
+      <div class="pd-hero">
+        <img src="${esc(p.imageUrl)}" alt="" onerror="this.style.opacity='.15'"/>
+        <button class="store-wish-btn ${wished ? 'active' : ''}" style="top:12px;right:12px" onclick="handleWishClick('${p.id}', this)"><i class="bi ${wished ? 'bi-heart-fill' : 'bi-heart'}"></i></button>
+      </div>
+      <div class="pd-body">
+        <div class="pd-title">${esc(p.title)}</div>
+        <div class="pd-price-row">
+          <span class="pd-price-now">${money(shown)}</span>
+          ${hasDiscount ? `<span class="pd-price-was">${money(p.originalPrice)}</span><span class="store-discount-tag">${pct}% OFF</span>` : ''}
+        </div>
+        <div class="pd-section-label">Description</div>
+        <div class="pd-desc">${esc(p.description)}</div>
+        ${shots.length ? `<div class="pd-section-label">Screenshots</div><div class="pd-shots-scroll">${shots.map((s) => `<div class="pd-shot"><img src="${esc(s)}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"/></div>`).join('')}</div>` : ''}
+      </div>
+      <div class="pd-sticky-footer"><div class="pd-sticky-footer-inner">
+        <button class="pd-continue-btn" id="continueBtn" onclick="initiatePurchase('${p.id}')"><i class="bi bi-lock-fill"></i> Continue To Purchase</button>
+      </div></div>`;
+  }
+  function renderDetailEditorial(p) {
+    const { hasDiscount, shown, pct } = priceInfo(p);
+    const shots = p.screenshotUrls || [];
+    document.getElementById('viewDetail').innerHTML = `
+      <div class="ed-article-top"><button class="ed-back-link" onclick="goBackToHome()">← Back to The Edit</button></div>
+      <div class="ed-article-hero"><img src="${esc(p.imageUrl)}" alt="" onerror="this.style.opacity='.15'"/></div>
+      <div class="ed-article-body">
+        <div class="ed-article-eyebrow">Digital Product</div>
+        <div class="ed-article-title">${esc(p.title)}</div>
+        <div class="ed-article-price-row">
+          <span class="ed-article-price-now">${money(shown)}</span>
+          ${hasDiscount ? `<span class="ed-article-price-was">${money(p.originalPrice)}</span><span class="ed-article-off">${pct}% OFF</span>` : ''}
+        </div>
+        <div class="ed-article-label">The Story</div>
+        <div class="ed-article-desc">${esc(p.description)}</div>
+        ${shots.length ? `<div class="ed-article-label">Photo Story</div><div class="ed-photostory">${shots.map((s) => `<div class="ed-photostory-item"><img src="${esc(s)}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"/></div>`).join('')}</div>` : ''}
+      </div>
+      <div class="ed-sticky-footer"><div class="ed-sticky-footer-inner">
+        <button class="ed-continue-btn" id="continueBtn" onclick="initiatePurchase('${p.id}')">Continue To Purchase</button>
+      </div></div>`;
+  }
+  function renderDetailMarket(p) {
+    const { hasDiscount, shown, pct } = priceInfo(p);
+    const shots = p.screenshotUrls || [];
+    document.getElementById('viewDetail').innerHTML = `
+      <div class="mk-pd-top"><button class="mk-pd-back" onclick="goBackToHome()"><i class="bi bi-arrow-left"></i></button></div>
+      <div class="mk-pd-hero"><img src="${esc(p.imageUrl)}" alt="" onerror="this.style.opacity='.15'"/></div>
+      <div class="mk-pd-body">
+        <div class="mk-pd-title">${esc(p.title)}</div>
+        <div class="mk-pd-price-block">
+          <div class="mk-pd-price-row">
+            <span class="mk-pd-price-now">${money(shown)}</span>
+            ${hasDiscount ? `<span class="mk-pd-price-was">${money(p.originalPrice)}</span><span class="mk-pd-off">${pct}% OFF</span>` : ''}
+          </div>
+          ${hasDiscount ? `<div style="font-size:12px;color:var(--mk-success);font-weight:700;margin-top:4px">You save ${money(p.originalPrice - shown)}</div>` : ''}
+        </div>
+        <div class="mk-pd-label">Product Details</div>
+        <div class="mk-pd-desc">${esc(p.description)}</div>
+        ${shots.length ? `<div class="mk-pd-label">Screenshots</div><div class="mk-shots-grid">${shots.map((s) => `<div class="mk-shot"><img src="${esc(s)}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"/></div>`).join('')}</div>` : ''}
+      </div>
+      <div class="mk-sticky-footer"><div class="mk-sticky-inner">
+        <button class="mk-continue-btn" id="continueBtn" onclick="initiatePurchase('${p.id}')"><i class="bi bi-lock-fill"></i> Buy Now — ${money(shown)}</button>
+      </div></div>`;
+  }
+
+  /* ================= PURCHASE ================= */
+  window.initiatePurchase = async function (productId) {
+    const btn = document.getElementById('continueBtn');
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Processing...`;
+    try {
+      const res = await fetch(`${window.API_URL}/api/store-public/${storeId}/product/${productId}/purchase`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (!data.success || !data.data?.paymentUrl) {
+        btn.disabled = false; btn.innerHTML = originalHTML;
+        alert(data.message || 'Could not start your purchase. Please try again.');
+        return;
+      }
+      window.location.href = data.data.paymentUrl;
+    } catch (err) {
+      btn.disabled = false; btn.innerHTML = originalHTML;
+      alert('Network error — please check your connection and try again.');
+    }
+  };
+
+  /* ================= ORDER RESULT ================= */
+  async function showOrderResult(orderId) {
+    hideAllViews();
+    document.getElementById('viewResult').classList.remove('d-none');
+    renderResultLoading();
+    for (let attempt = 0; attempt < 8; attempt++) {
+      try {
+        const res = await fetch(`${window.API_URL}/api/store-public/order/${orderId}/status`);
+        const data = await res.json();
+        if (data.success) {
+          if (data.data.status === 'success') { renderOrderSuccess(data.data); return; }
+          if (data.data.status === 'failed')  { renderOrderFailed(); return; }
+        }
+      } catch (err) { /* keep retrying */ }
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+    renderOrderPending();
+  }
+  function renderResultLoading() {
+    let extra = '';
+    if (activeTheme === 'editorial') extra = 'border-color:var(--ed-accent-light);border-top-color:var(--ed-accent)';
+    if (activeTheme === 'market') extra = 'border-color:var(--mk-accent-light);border-top-color:var(--mk-accent)';
+    document.getElementById('viewResult').innerHTML = `<div class="text-center py-5"><div class="zp-spinner mx-auto mt-5" style="${extra}"></div><p class="text-muted mt-3">Confirming your payment...</p></div>`;
+  }
+  function renderOrderSuccess(data) {
+    if (activeTheme === 'editorial') {
+      document.getElementById('viewResult').innerHTML = `
+        <div class="text-center py-5 px-4">
+          <div class="ed-halo"><div class="ed-check"><i class="bi bi-check-lg"></i></div></div>
+          <div class="ed-result-title">Purchase Successful</div>
+          <p class="ed-result-text">${esc(data.productTitle || 'Your product')} is ready.</p>
+          ${data.productLink ? `<a href="${esc(data.productLink)}" target="_blank" rel="noopener" class="ed-continue-btn d-inline-block" style="text-decoration:none;max-width:280px">Get Your Product</a>` : `<p class="ed-result-text">The seller will be in touch with your product shortly.</p>`}
+          <div class="mt-4"><button class="ed-link-btn" onclick="goBackToHome()">← Back to The Edit</button></div>
+        </div>`;
+      return;
+    }
+    if (activeTheme === 'market') {
+      document.getElementById('viewResult').innerHTML = `
+        <div class="text-center py-5 px-4">
+          <div class="mk-halo"><div class="mk-check"><i class="bi bi-check-lg"></i></div></div>
+          <div class="mk-result-title">Purchase Successful!</div>
+          <p class="mk-result-text">${esc(data.productTitle || 'Your product')} is ready.</p>
+          ${data.productLink ? `<a href="${esc(data.productLink)}" target="_blank" rel="noopener" class="mk-continue-btn d-inline-flex mx-auto" style="text-decoration:none;max-width:280px">Get Your Product <i class="bi bi-box-arrow-up-right ms-1"></i></a>` : `<p class="mk-result-text">The seller will be in touch with your product shortly.</p>`}
+          <div class="mt-4"><button class="mk-link-btn" onclick="goBackToHome()">← Back to Store</button></div>
+        </div>`;
+      return;
+    }
+    document.getElementById('viewResult').innerHTML = `
+      <div class="text-center py-5 px-4">
+        <div class="s-halo"><div class="s-check"><i class="bi bi-check-lg"></i></div></div>
+        <h4 class="fw-bold mt-3 mb-1">Purchase Successful!</h4>
+        <p class="text-muted mb-4">${esc(data.productTitle || 'Your product')} is ready.</p>
+        ${data.productLink ? `<a href="${esc(data.productLink)}" target="_blank" rel="noopener" class="pd-continue-btn d-inline-flex mx-auto" style="text-decoration:none;max-width:280px">Get Your Product <i class="bi bi-box-arrow-up-right ms-1"></i></a>` : `<p class="text-muted small" style="max-width:280px;margin-inline:auto">The seller will be in touch with your product shortly.</p>`}
+        <div class="mt-4"><button class="btn btn-link text-decoration-none" style="color:var(--bq-brand)" onclick="goBackToHome()">← Back to Store</button></div>
+      </div>`;
+  }
+  function renderOrderFailed() {
+    if (activeTheme === 'editorial') {
+      document.getElementById('viewResult').innerHTML = `
+        <div class="text-center py-5 px-4">
+          <div class="ed-err-halo"><div class="ed-err-icon"><i class="bi bi-x-lg"></i></div></div>
+          <div class="ed-result-title">Payment Failed</div>
+          <p class="ed-result-text">Your payment didn't go through. No amount was charged.</p>
+          <button class="ed-link-btn" onclick="goBackToHome()">← Back to The Edit</button>
+        </div>`;
+      return;
+    }
+    if (activeTheme === 'market') {
+      document.getElementById('viewResult').innerHTML = `
+        <div class="text-center py-5 px-4">
+          <div class="mk-err-halo"><div class="mk-err-icon"><i class="bi bi-x-lg"></i></div></div>
+          <div class="mk-result-title">Payment Failed</div>
+          <p class="mk-result-text">Your payment didn't go through. No amount was charged.</p>
+          <button class="mk-link-btn" onclick="goBackToHome()">← Back to Store</button>
+        </div>`;
+      return;
+    }
+    document.getElementById('viewResult').innerHTML = `
+      <div class="text-center py-5 px-4">
+        <div class="err-halo"><div class="err-icon"><i class="bi bi-x-lg"></i></div></div>
+        <h4 class="fw-bold mt-3 mb-1">Payment Failed</h4>
+        <p class="text-muted mb-4" style="max-width:280px;margin-inline:auto">Your payment didn't go through. No amount was charged.</p>
+        <button class="btn btn-link text-decoration-none" style="color:var(--bq-brand)" onclick="goBackToHome()">← Back to Store</button>
+      </div>`;
+  }
+  function renderOrderPending() {
+    if (activeTheme === 'editorial') {
+      document.getElementById('viewResult').innerHTML = `
+        <div class="text-center py-5 px-4">
+          <div class="ed-halo"><div class="zp-spinner" style="margin:auto;border-color:var(--ed-accent-light);border-top-color:var(--ed-accent)"></div></div>
+          <div class="ed-result-title">Still Confirming...</div>
+          <p class="ed-result-text">This is taking longer than usual. Check back in a moment — you'll be notified once it's confirmed.</p>
+          <button class="ed-link-btn" onclick="goBackToHome()">← Back to The Edit</button>
+        </div>`;
+      return;
+    }
+    if (activeTheme === 'market') {
+      document.getElementById('viewResult').innerHTML = `
+        <div class="text-center py-5 px-4">
+          <div class="mk-halo"><div class="zp-spinner" style="margin:auto;border-color:var(--mk-accent-light);border-top-color:var(--mk-accent)"></div></div>
+          <div class="mk-result-title">Still Confirming...</div>
+          <p class="mk-result-text">This is taking longer than usual. Check back in a moment — you'll be notified once it's confirmed.</p>
+          <button class="mk-link-btn" onclick="goBackToHome()">← Back to Store</button>
+        </div>`;
+      return;
+    }
+    document.getElementById('viewResult').innerHTML = `
+      <div class="text-center py-5 px-4">
+        <div class="s-halo"><div class="zp-spinner" style="margin:auto"></div></div>
+        <h4 class="fw-bold mt-3 mb-1">Still Confirming...</h4>
+        <p class="text-muted mb-4" style="max-width:280px;margin-inline:auto">This is taking longer than usual. Check back in a moment — you'll be notified once it's confirmed.</p>
+        <button class="btn btn-link text-decoration-none" style="color:var(--bq-brand)" onclick="goBackToHome()">← Back to Store</button>
+      </div>`;
+  }
+
+  /* ---------- browser back/forward ---------- */
+  window.addEventListener('popstate', () => {
+    const p = new URLSearchParams(window.location.search);
+    const pid = p.get('product');
+    if (pid) showProductDetail(pid); else showStoreHome(false);
+  });
+
+  /* ---------- boot ---------- */
+  async function init() {
+    if (!storeId) { showFatalError('Store Not Found', 'No store ID was provided in this link.'); return; }
+    try {
+      const res = await fetch(`${window.API_URL}/api/store-public/${storeId}`);
+      const data = await res.json();
+      if (!data.success) { showFatalError('Store Not Found', data.message || 'This store link is invalid or no longer available.'); return; }
+      storeData = data.data;
+      // Ensure categories and showSortButton exist
+      storeData.categories = storeData.categories || [];
+      storeData.showSortButton = storeData.showSortButton || false;
+    } catch (err) {
+      showFatalError('Network Error', `Backend server se connect nahi ho pa raha. API URL: ${window.API_URL}`);
+      return;
+    }
+
+    applyTheme(storeData.theme);
+    renderHeader();
+
+    const orderId   = params.get('order');
+    const productId = params.get('product');
+    if (orderId) showOrderResult(orderId);
+    else if (productId) showProductDetail(productId);
+    else showStoreHome(false);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

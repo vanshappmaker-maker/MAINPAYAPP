@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Template Preview | ZapPay</title>
+<meta name="description" content="Preview ZapPay's payment page templates and design layouts."/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta property="og:title" content="Template Preview | ZapPay"/>
+<meta property="og:description" content="Preview ZapPay's payment page templates and design layouts."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<link rel="apple-touch-icon" href="/favicon.png"/>
+<meta name="theme-color" content="#2563EB"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+<style>
+/* ============================================================
+   THEME SYSTEM — kept byte-identical to pay.html / link.html so
+   the preview always looks exactly like the real live pages.
+================================================================ */
+:root{--ink:#1C1530;--muted:#6B7280;--green:#16A34A;--green-bg:#EEFCF3;--green-text:#15803D;--surface:#fff;--text-secondary:#4B4560;--text-muted:#9C93B5;--page-bg:linear-gradient(160deg,var(--brand-50) 0%,#F7FAFC 60%);}
+[data-theme="default"]{--brand-rgb:37,99,235;--brand-700:#1D4ED8;--brand-600:#2563EB;--brand-500:#3B82F6;--brand-300:#93C5FD;--brand-200:#BFDBFE;--brand-100:#DBEAFE;--brand-50:#EFF6FF;--brand-border:#DBEAFE;--brand-cloud:#E3EDFC;--brand-muted:#8CA0C2;--brand-grad:linear-gradient(135deg,#1D4ED8 0%,#3B82F6 100%);}
+[data-theme="nova"]{--brand-rgb:124,58,237;--brand-700:#6D28D9;--brand-600:#7C3AED;--brand-500:#8B5CF6;--brand-300:#C4B5FD;--brand-200:#DDD6FE;--brand-100:#EDE9FE;--brand-50:#F5F3FF;--brand-border:#E6DEFB;--brand-cloud:#EDE7FB;--brand-muted:#9C93B5;--brand-grad:linear-gradient(135deg,#6D28D9 0%,#8B5CF6 100%);}
+[data-theme="ember"]{--brand-rgb:242,96,12;--brand-700:#C2410C;--brand-600:#F2600C;--brand-500:#FF8A3D;--brand-300:#FDBA8C;--brand-200:#FED7AA;--brand-100:#FFE9D6;--brand-50:#FFF6EE;--brand-border:#FBD7B5;--brand-cloud:#F2E6DA;--brand-muted:#B0A89F;--brand-grad:linear-gradient(135deg,#F2600C 0%,#FF8A3D 100%);}
+[data-theme="emerald"]{--brand-rgb:22,163,74;--brand-700:#15803D;--brand-600:#16A34A;--brand-500:#22C55E;--brand-300:#86EFAC;--brand-200:#BBF7D0;--brand-100:#DCFCE7;--brand-50:#F0FDF4;--brand-border:#BBF0CC;--brand-cloud:#E3F6E9;--brand-muted:#7C9C87;--brand-grad:linear-gradient(135deg,#16A34A 0%,#22C55E 100%);}
+/* ---- PREMIUM (Silver+ only) ---- */
+[data-theme="aurora"]{--brand-rgb:162,28,175;--brand-700:#4C1D95;--brand-600:#A21CAF;--brand-500:#C026D3;--brand-300:#F0ABFC;--brand-200:#F5D0FE;--brand-100:#FAE8FF;--brand-50:#FDF4FF;--brand-border:#F5D0FE;--brand-cloud:#F6E6FA;--brand-muted:#C9A3D6;--brand-grad:linear-gradient(120deg,#4338CA 0%,#A21CAF 55%,#EC4899 100%);}
+[data-theme="obsidian"]{--brand-rgb:201,162,39;--brand-700:#8A6D1A;--brand-600:#C9A227;--brand-500:#E8C874;--brand-300:#F0DDA0;--brand-200:#F5E8C8;--brand-100:#FAF3E0;--brand-50:#FDFAF0;--brand-border:#3A3628;--brand-cloud:#1C1A22;--brand-muted:#8A8598;--brand-grad:linear-gradient(135deg,#8A6D1A 0%,#E8C874 100%);--surface:#15131C;--text-secondary:#D8D3E8;--text-muted:#8A8598;--ink:#F5F3FF;--page-bg:radial-gradient(circle at 30% -10%,#241F2E 0%,#0A090D 60%);}
+[data-theme="obsidian"] .pay-card{box-shadow:0 30px 70px -14px rgba(0,0,0,.6),0 0 0 1px rgba(201,162,39,.25),0 0 40px -8px rgba(201,162,39,.25);}
+.pv-color-picker{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:60;background:var(--surface);border:1.5px solid var(--brand-border);border-radius:99px;padding:8px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);}
+.pv-color-picker input[type=color]{width:34px;height:34px;border:none;border-radius:50%;padding:0;cursor:pointer;background:none;}
+.pv-color-picker span{font-size:12px;font-weight:700;color:var(--ink);}
+
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--page-bg);color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:transparent;transition:background .3s;}
+button{font-family:inherit;}
+.screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:22px 18px 40px;}
+
+/* Top bar */
+.pv-top{width:100%;max-width:400px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pv-back-link{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--muted);text-decoration:none;cursor:pointer;background:none;border:none;padding:6px 2px;}
+.pv-back-link:hover{color:var(--brand-600);}
+.pv-badge{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--brand-border);color:var(--brand-700);font-size:12px;font-weight:700;padding:6px 13px;border-radius:99px;box-shadow:0 2px 8px rgba(var(--brand-rgb),.1);}
+.pv-badge i{color:var(--brand-600);}
+
+.flow-top{width:100%;max-width:400px;display:flex;align-items:center;justify-content:center;position:relative;margin:10px 0 18px;}
+.step-header{display:flex;align-items:center;gap:9px;}
+.step-badge{width:22px;height:22px;border-radius:7px;background:var(--brand-600);color:#fff;font-weight:700;font-size:12.5px;display:flex;align-items:center;justify-content:center;}
+.step-title{font-weight:700;font-size:15.5px;}
+
+.stage{width:100%;max-width:400px;position:relative;}
+.panel{display:none;}
+.panel.active{display:block;animation:panelIn .32s ease;}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---- Pay card ---- */
+.pay-card{background:var(--surface);border-radius:26px;width:100%;overflow:hidden;position:relative;box-shadow:0 30px 60px -14px rgba(var(--brand-rgb),.28),0 6px 18px rgba(var(--brand-rgb),.08);}
+.top-banner{height:118px;background:var(--brand-grad);position:relative;}
+.top-banner svg{position:absolute;bottom:-1px;left:0;width:100%;height:32px;display:block;}
+.avatar-wrap{position:absolute;left:50%;top:78px;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;background:var(--surface);padding:4px;box-shadow:0 10px 22px -4px rgba(var(--brand-rgb),.4);z-index:5;}
+.avatar-wrap img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;}
+.card-body{padding:40px 26px 26px;text-align:center;}
+.merchant-name{font-weight:700;font-size:16.5px;margin-bottom:18px;}
+.divider-label{display:flex;align-items:center;gap:10px;color:var(--brand-muted);font-size:12px;margin-bottom:6px;}
+.divider-label::before,.divider-label::after{content:'';flex:1;height:1px;background:var(--brand-border);}
+.amount{font-size:38px;font-weight:800;letter-spacing:-.5px;margin:2px 0 4px;}
+.amount .rupee{color:var(--brand-600);margin-right:1px;}
+.amount-sub{font-weight:600;color:#4B4560;font-size:14px;margin-bottom:16px;}
+.secure-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);color:var(--green-text);font-size:12.5px;font-weight:700;padding:7px 16px;border-radius:30px;margin-bottom:20px;}
+.btn-pay{width:100%;border:none;border-radius:15px;padding:15px;font-size:15.5px;font-weight:700;color:#fff;background:var(--brand-grad);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 14px 26px -8px rgba(var(--brand-rgb),.5);transition:transform .15s;}
+.btn-pay:hover{transform:translateY(-2px);}
+.footer-note{margin-top:18px;font-size:11.5px;color:#9C93B5;line-height:1.7;}
+.footer-note i{color:var(--brand-600);margin-right:3px;}
+.footer-note .powered b{color:var(--brand-600);}
+
+/* ---- Success card ---- */
+.success-top{height:230px;background:var(--brand-grad);position:relative;overflow:hidden;}
+.success-top svg{position:absolute;bottom:-1px;left:0;width:100%;height:34px;display:block;}
+.deco{position:absolute;opacity:.6;}
+.deco.dm{width:9px;height:9px;background:rgba(255,255,255,.85);transform:rotate(45deg);border-radius:2px;}
+.deco.dm.sm{width:6px;height:6px;}
+.deco.dt{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.75);}
+.deco.dt.sm{width:4px;height:4px;}
+.s-halo{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:132px;height:132px;border-radius:50%;background:rgba(255,255,255,.16);}
+.s-check{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 16px 32px rgba(0,0,0,.2);animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
+.s-check i{font-size:36px;color:var(--brand-600);}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(0);opacity:0;}60%{transform:translate(-50%,-50%) scale(1.14);}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.title-lg{font-size:19px;font-weight:800;margin:14px 0 4px;}
+.subtitle{color:var(--muted);font-size:13.5px;margin-bottom:16px;}
+.progress-wrap{margin-bottom:18px;}
+.progress-track{position:relative;width:100%;height:8px;border-radius:8px;background:var(--brand-100);overflow:hidden;}
+.progress-fill{position:absolute;left:0;top:0;height:100%;border-radius:8px;background:var(--brand-grad);width:0%;transition:width .38s linear;}
+.progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 1.4s linear infinite;}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.progress-label{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:12px;font-weight:700;color:var(--brand-600);}
+.info-box{display:flex;align-items:center;gap:12px;background:var(--brand-50);border:1px solid var(--brand-100);border-radius:15px;padding:14px 15px;text-align:left;font-size:13.5px;color:var(--brand-700);font-weight:600;}
+.info-box .ico{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--brand-600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;}
+
+/* ---- Link card ---- */
+.deco-area{position:relative;height:104px;display:flex;align-items:center;justify-content:center;}
+.deco-area .cloud{position:absolute;color:var(--brand-cloud);}
+.l-halo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:94px;height:94px;border-radius:50%;background:var(--brand-100);}
+.l-icon{position:relative;width:66px;height:66px;border-radius:50%;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 24px -6px rgba(var(--brand-rgb),.4);z-index:1;animation:popScale .5s cubic-bezier(.34,1.56,.64,1) both;}
+.l-icon i{color:#fff;font-size:27px;}
+@keyframes popScale{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.14);}100%{transform:scale(1);opacity:1;}}
+.label-caps{font-size:11.5px;font-weight:700;color:var(--brand-muted);letter-spacing:.6px;text-transform:uppercase;text-align:left;margin:8px 0 8px;}
+.link-box{display:flex;align-items:flex-start;gap:10px;background:var(--brand-50);border:1.5px solid var(--brand-border);border-radius:15px;padding:14px 15px;font-size:13px;text-align:left;word-break:break-all;margin-bottom:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.link-box i{color:var(--brand-600);margin-top:2px;flex-shrink:0;}
+.btn-row{display:flex;gap:8px;margin-bottom:16px;}
+.btn-action{flex:1;border-radius:13px;padding:11px 6px;font-size:12.5px;font-weight:700;border:1.5px solid var(--brand-border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s;color:var(--ink);}
+.btn-action:hover{background:var(--brand-50);}
+.btn-action.primary{background:var(--brand-grad);color:#fff;border:none;box-shadow:0 10px 20px -5px rgba(var(--brand-rgb),.45);}
+.btn-action.copied{background:var(--green-bg);border-color:var(--green);color:var(--green-text);}
+.green-box{display:flex;align-items:center;gap:12px;background:var(--green-bg);border-radius:15px;padding:13px 15px;text-align:left;font-size:13px;color:var(--green-text);font-weight:600;margin-bottom:14px;}
+.green-box .ico{flex-shrink:0;width:27px;height:27px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.order-id{font-size:11.5px;color:var(--muted);text-align:center;}
+.order-id b{color:var(--ink);font-family:ui-monospace,monospace;}
+
+/* Confetti burst */
+.confetti-burst{position:absolute;inset:0;pointer-events:none;overflow:visible;}
+.confetti-piece{position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:2px;opacity:0;animation:confettiBurst .9s cubic-bezier(.2,.8,.3,1) forwards;}
+.confetti-piece.round{border-radius:50%;}
+@keyframes confettiBurst{0%{transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) translate(var(--tx),var(--ty)) rotate(var(--tr)) scale(.4);opacity:0;}}
+
+/* Nav bar */
+.nav-bar{width:100%;max-width:400px;display:flex;align-items:center;justify-content:space-between;margin-top:18px;gap:10px;}
+.nav-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--brand-border);background:#fff;color:var(--ink);font-weight:700;font-size:13.5px;border-radius:13px;padding:11px 18px;cursor:pointer;transition:.15s;}
+.nav-btn:hover{background:var(--brand-50);}
+.nav-btn.primary{background:var(--brand-grad);color:#fff;border:none;box-shadow:0 10px 20px -6px rgba(var(--brand-rgb),.5);}
+.nav-dots{display:flex;gap:6px;}
+.nav-dots span{width:6px;height:6px;border-radius:50%;background:var(--brand-200);display:block;}
+.nav-dots span.done{background:var(--brand-600);}
+
+@media (max-width:380px){ .amount{font-size:32px;} .card-body{padding-left:20px;padding-right:20px;} }
+@media (prefers-reduced-motion:reduce){ *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;} }
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <div class="pv-top">
+    <button class="pv-back-link" id="backToCustomizeBtn"><i class="bi bi-arrow-left"></i> Back to Customize</button>
+    <span class="pv-badge"><i class="bi bi-eye-fill"></i> <span id="previewingLabel">Previewing</span></span>
+  </div>
+
+  <div class="flow-top">
+    <div class="step-header">
+      <span class="step-badge" id="stepNum">1</span>
+      <span class="step-title" id="stepTitleText">Pay Page</span>
+    </div>
+  </div>
+
+  <div class="stage">
+
+    <!-- Step 1: Pay Page -->
+    <div class="panel active" id="panel1">
+      <div class="pay-card">
+        <div class="top-banner">
+          <svg viewBox="0 0 600 60" preserveAspectRatio="none"><path d="M0,28 C100,58 200,2 300,24 C400,46 500,4 600,26 L600,60 L0,60 Z" fill="#fff"/></svg>
+        </div>
+        <div class="avatar-wrap"><img src="https://res.cloudinary.com/dihj6dmbb/image/upload/v1782028733/quickurl/20260621132708_1782028720083.png" alt="ZapPay"/></div>
+        <div class="card-body">
+          <div class="merchant-name">Sample Merchant</div>
+          <div class="divider-label"><span>Amount to Pay</span></div>
+          <div class="amount"><span class="rupee">₹</span>499.00</div>
+          <div class="amount-sub">Product Purchase</div>
+          <div><span class="secure-badge"><i class="bi bi-shield-fill-check"></i> 100% Secure Payment via UPI</span></div>
+          <button class="btn-pay" id="payNowBtn"><i class="bi bi-lightning-charge-fill"></i> Pay Now</button>
+          <div class="footer-note">
+            <i class="bi bi-lock-fill"></i>Payment processed securely<br/>by Zap UPI Gateway.
+            <div class="powered">Powered by <b>ZapPay</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Payment Successful -->
+    <div class="panel" id="panel2">
+      <div class="pay-card">
+        <div class="success-top">
+          <span class="deco dm" style="top:30px;left:54px;"></span>
+          <span class="deco dm sm" style="top:22px;right:60px;"></span>
+          <span class="deco dt" style="top:76px;left:28px;"></span>
+          <span class="deco dt sm" style="top:106px;right:24px;"></span>
+          <span class="deco dm sm" style="bottom:52px;left:40px;"></span>
+          <span class="deco dt" style="bottom:38px;right:46px;"></span>
+          <div class="s-halo"></div>
+          <div class="s-check"><i class="bi bi-check-lg"></i></div>
+          <svg viewBox="0 0 600 60" preserveAspectRatio="none"><path d="M0,28 C100,58 200,2 300,24 C400,46 500,4 600,26 L600,60 L0,60 Z" fill="#fff"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="title-lg">Payment Successful!</div>
+          <div class="subtitle">Redirecting you securely...</div>
+          <div class="progress-wrap">
+            <div class="progress-track"><div class="progress-fill" id="cdBar"></div></div>
+            <div class="progress-label"><span>Redirecting…</span><span id="cdText">0%</span></div>
+          </div>
+          <div class="info-box"><span class="ico"><i class="bi bi-shield-fill-check"></i></span><span>Your payment is secure and completed.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Link Page -->
+    <div class="panel" id="panel3">
+      <div class="pay-card">
+        <div class="card-body">
+          <div class="deco-area">
+            <i class="bi bi-cloud-fill cloud" style="top:2px;left:14px;font-size:28px;"></i>
+            <i class="bi bi-cloud-fill cloud" style="top:30px;right:20px;font-size:18px;"></i>
+            <span class="deco dm" style="top:0;right:56px;background:var(--brand-500);"></span>
+            <span class="deco dm sm" style="top:46px;left:46px;background:var(--brand-300);"></span>
+            <div class="l-halo"></div>
+            <div class="l-icon"><i class="bi bi-link-45deg"></i></div>
+            <div class="confetti-burst" id="confettiBurst"></div>
+          </div>
+          <div class="title-lg" style="margin-top:0;">Payment Successful!</div>
+          <div class="subtitle">Here's your link</div>
+          <div class="label-caps">Your Link</div>
+          <div class="link-box"><i class="bi bi-link-45deg"></i><span id="linkText">https://zappay.page.gd/l/sample123xyz</span></div>
+          <div class="btn-row">
+            <button class="btn-action primary" id="openBtn"><i class="bi bi-box-arrow-up-right"></i>Open</button>
+            <button class="btn-action" id="copyBtn"><i class="bi bi-clipboard"></i>Copy</button>
+            <button class="btn-action" id="shareBtn"><i class="bi bi-share"></i>Share</button>
+          </div>
+          <div class="green-box"><span class="ico"><i class="bi bi-shield-fill-check"></i></span><span>Payment completed successfully. Thank you!</span></div>
+          <div class="order-id">Order ID: <b>ZP1782801598540SMPL</b></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="backBtn"><i class="bi bi-arrow-left"></i> Back</button>
+    <div class="nav-dots"><span class="nd" data-i="1"></span><span class="nd" data-i="2"></span><span class="nd" data-i="3"></span></div>
+    <button class="nav-btn primary" id="forwardBtn">Forward <i class="bi bi-arrow-right"></i></button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const THEMES = {
+    default: { name: 'Classic',  colors: ['#2563EB','#3B82F6','#93C5FD','#FACC15'] },
+    nova:    { name: 'Nova',     colors: ['#7C3AED','#A78BFA','#C4B5FD','#F472B6'] },
+    ember:   { name: 'Ember',    colors: ['#F2600C','#FF8A3D','#FDBA8C','#FACC15'] },
+    emerald: { name: 'Emerald',  colors: ['#16A34A','#22C55E','#86EFAC','#60A5FA'] },
+    aurora:  { name: 'Aurora',   colors: ['#4338CA','#A21CAF','#EC4899','#F0ABFC'], premium: true, defaultColor: '#A21CAF' },
+    obsidian:{ name: 'Obsidian', colors: ['#C9A227','#E8C874','#F5E8C8','#FFFFFF'], premium: true, defaultColor: '#C9A227' },
+  };
+
+  function deriveThemeVars(hex) {
+    hex = (hex || '').trim();
+    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return null;
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    let h=0, s=0; const l=(max+min)/2;
+    if (max !== min) {
+      const d = max-min;
+      s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+      if (max===r) h = ((g-b)/d + (g<b?6:0));
+      else if (max===g) h = (b-r)/d + 2;
+      else h = (r-g)/d + 4;
+      h *= 60;
+    }
+    s = Math.min(s*100, 88);
+    const hslToHex = (H,S,L) => {
+      S/=100; L/=100;
+      const k = n => (n + H/30) % 12;
+      const a = S * Math.min(L, 1-L);
+      const f = n => L - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+      const toHex = x => Math.round(x*255).toString(16).padStart(2,'0');
+      return '#'+toHex(f(0))+toHex(f(8))+toHex(f(4));
+    };
+    return {
+      rgb: `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`,
+      700: hslToHex(h,s,30), 600: hex, 500: hslToHex(h,s,58),
+      300: hslToHex(h,s,78), 200: hslToHex(h,s,86), 100: hslToHex(h,s,92), 50: hslToHex(h,s,96),
+    };
+  }
+  let currentConfettiColors = null;
+  function applyCustomThemeColor(themeKey, color) {
+    const vars = deriveThemeVars(color);
+    if (!vars) return;
+    const root = document.documentElement.style;
+    root.setProperty('--brand-rgb', vars.rgb);
+    root.setProperty('--brand-700', vars[700]);
+    root.setProperty('--brand-600', vars[600]);
+    root.setProperty('--brand-500', vars[500]);
+    root.setProperty('--brand-300', vars[300]);
+    root.setProperty('--brand-200', vars[200]);
+    root.setProperty('--brand-100', vars[100]);
+    root.setProperty('--brand-50', vars[50]);
+    root.setProperty('--brand-border', themeKey === 'obsidian' ? '#3A3628' : vars[200]);
+    root.setProperty('--brand-grad', `linear-gradient(135deg, ${vars[700]} 0%, ${vars[500]} 100%)`);
+    currentConfettiColors = [vars[700], vars[600], vars[500], vars[300]];
+  }
+  function playSuccessChime() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new Ctx();
+      [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = 'sine'; osc.frequency.value = freq;
+        const start = ctx.currentTime + i * 0.09;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.18, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(start); osc.stop(start + 0.55);
+      });
+    } catch (e) {}
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const theme = THEMES[params.get('theme')] ? params.get('theme') : 'default';
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('previewingLabel').textContent = 'Previewing: ' + THEMES[theme].name + (THEMES[theme].premium ? ' ✨ Premium' : '');
+  document.title = 'ZapPay — ' + THEMES[theme].name + ' Preview';
+
+  // Premium themes (aurora/obsidian): let ANYONE play with the accent color
+  // right here — no login, no save. Saving it to your live pages needs
+  // Silver plan or above, from the Customize page.
+  if (THEMES[theme].premium) {
+    const initialColor = /^#[0-9A-Fa-f]{6}$/.test(params.get('color') || '') ? params.get('color') : THEMES[theme].defaultColor;
+    applyCustomThemeColor(theme, initialColor);
+    const picker = document.createElement('div');
+    picker.className = 'pv-color-picker';
+    picker.innerHTML = `<span>🎨 Try a color</span><input type="color" id="pvColorInput" value="${initialColor}"/>`;
+    document.body.appendChild(picker);
+    document.getElementById('pvColorInput').addEventListener('input', (e) => applyCustomThemeColor(theme, e.target.value));
+  }
+
+  document.getElementById('backToCustomizeBtn').addEventListener('click', function () {
+    // Opened as a new tab from the Customize page — close it if we can,
+    // otherwise fall back to browser history / the app itself.
+    window.close();
+    setTimeout(function () {
+      if (!document.hidden) window.location.href = 'https://panel.zappay.shop/#customize';
+    }, 250);
+  });
+
+  function burstConfetti(colors) {
+    const container = document.getElementById('confettiBurst');
+    if (!container) return;
+    container.innerHTML = '';
+    const count = 22;
+    for (let i = 0; i < count; i++) {
+      const piece = document.createElement('span');
+      const isRound = Math.random() > 0.5;
+      piece.className = 'confetti-piece' + (isRound ? ' round' : '');
+      const angle = (Math.PI * 2 * i / count) + (Math.random() * 0.5 - 0.25);
+      const dist = 70 + Math.random() * 60;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist;
+      const rot = (Math.random() * 720 - 360);
+      const size = 5 + Math.random() * 5;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.setProperty('--tx', tx.toFixed(1) + 'px');
+      piece.style.setProperty('--ty', ty.toFixed(1) + 'px');
+      piece.style.setProperty('--tr', rot.toFixed(0) + 'deg');
+      piece.style.width = size + 'px';
+      piece.style.height = (isRound ? size : size * 1.6) + 'px';
+      piece.style.background = color;
+      piece.style.animationDelay = (Math.random() * 0.08) + 's';
+      container.appendChild(piece);
+    }
+  }
+
+  const panels = ['panel1', 'panel2', 'panel3'];
+  const stepTitles = ['Pay Page', 'Payment Successful', 'Your Link'];
+  let current = 1;
+  let cdInterval = null;
+
+  function stopCountdown() { if (cdInterval) { clearInterval(cdInterval); cdInterval = null; } }
+
+  function startCountdown() {
+    stopCountdown();
+    const steps = [0, 28, 56, 78, 92, 100];
+    let i = 0;
+    const bar = document.getElementById('cdBar');
+    const text = document.getElementById('cdText');
+    function render() { bar.style.width = steps[i] + '%'; text.textContent = steps[i] + '%'; }
+    render();
+    cdInterval = setInterval(function () {
+      i++;
+      if (i >= steps.length) i = steps.length - 1;
+      render();
+      if (i === steps.length - 1) stopCountdown();
+    }, 380);
+  }
+
+  function goToStep(n) {
+    current = n;
+    panels.forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById(panels[n - 1]).classList.add('active');
+    document.getElementById('stepNum').textContent = n;
+    document.getElementById('stepTitleText').textContent = stepTitles[n - 1];
+
+    document.querySelectorAll('.nd').forEach(dot => {
+      const di = parseInt(dot.getAttribute('data-i'), 10);
+      dot.classList.toggle('done', di <= n);
+    });
+
+    document.getElementById('forwardBtn').innerHTML = (n === 3) ? 'Restart <i class="bi bi-arrow-counterclockwise"></i>' : 'Forward <i class="bi bi-arrow-right"></i>';
+
+    if (n === 2) startCountdown(); else stopCountdown();
+    if (n === 3) {
+      burstConfetti(currentConfettiColors || THEMES[theme].colors);
+      if (THEMES[theme].premium) playSuccessChime();
+    }
+  }
+
+  document.getElementById('backBtn').addEventListener('click', function () {
+    if (current > 1) goToStep(current - 1);
+  });
+  document.getElementById('forwardBtn').addEventListener('click', function () {
+    if (current === 3) { goToStep(1); return; }
+    goToStep(current + 1);
+  });
+  document.getElementById('payNowBtn').addEventListener('click', function () { goToStep(2); });
+
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    const txt = document.getElementById('linkText').textContent.trim();
+    const btn = this, original = btn.innerHTML;
+    function done() {
+      btn.innerHTML = '<i class="bi bi-check2"></i>Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(done);
+    else done();
+  });
+  document.getElementById('openBtn').addEventListener('click', function () {
+    window.open(document.getElementById('linkText').textContent.trim(), '_blank');
+  });
+  document.getElementById('shareBtn').addEventListener('click', function () {
+    const url = document.getElementById('linkText').textContent.trim();
+    if (navigator.share) navigator.share({ url }).catch(() => {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url);
+  });
+
+  goToStep(1);
+})();
+</script>
+</body>
+</html>

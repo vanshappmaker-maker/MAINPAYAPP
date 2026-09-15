@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ZapPay Support | Help Center & Customer Care</title>
+<meta name="description" content="Get help with ZapPay UPI payments, wallet issues, and transactions. Contact our support team for quick assistance."/>
+<meta name="keywords" content="ZapPay support, ZapPay help, ZapPay customer care, UPI payment help"/>
+<meta name="robots" content="index, follow"/>
+<meta property="og:title" content="ZapPay Support | Help Center & Customer Care"/>
+<meta property="og:description" content="Get help with ZapPay UPI payments, wallet issues, and transactions. Contact our support team for quick assistance."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<link rel="apple-touch-icon" href="/favicon.png"/>
+<meta name="theme-color" content="#2563EB"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+
+<!-- ============================================================
+  ⚙️  CONFIG — sirf yahan changes karo (index.html jaisa hi)
+================================================================ -->
+<script>
+  window.API_URL   = "https://paymentbackend-ruby.vercel.app";
+  window.SITE_NAME = "ZapPay";
+</script>
+
+<style>
+:root{--zp-primary:#2563EB;--zp-primary-light:#EFF6FF;--zp-primary-dark:#1D4ED8;--zp-text:#111827;--zp-text-muted:#6B7280;--zp-border:#E5E7EB;--zp-bg:#F9FAFB;}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--zp-bg);color:var(--zp-text);margin:0;font-size:14px;display:flex;flex-direction:column;}
+
+.sp-header{background:linear-gradient(135deg,#1D4ED8,#2563EB);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);position:sticky;top:0;z-index:10;}
+.sp-header .sp-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.sp-header h1{font-size:15.5px;font-weight:700;margin:0;}
+.sp-header p{font-size:11.5px;margin:0;opacity:.85;}
+.sp-status-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;display:inline-block;margin-right:5px;}
+
+.sp-body{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px;max-width:640px;width:100%;margin:0 auto;}
+.sp-empty{margin:auto;text-align:center;color:var(--zp-text-muted);padding:30px 20px;}
+.sp-empty i{font-size:34px;color:var(--zp-primary);opacity:.5;margin-bottom:10px;display:block;}
+
+.sp-bubble{max-width:78%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;word-wrap:break-word;white-space:pre-wrap;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.sp-row{display:flex;flex-direction:column;}
+.sp-row.user{align-items:flex-end;}
+.sp-row.admin{align-items:flex-start;}
+.sp-row.user .sp-bubble{background:var(--zp-primary);color:#fff;border-bottom-right-radius:4px;}
+.sp-row.admin .sp-bubble{background:#fff;border:1px solid var(--zp-border);color:var(--zp-text);border-bottom-left-radius:4px;}
+.sp-label{font-size:10.5px;color:var(--zp-text-muted);margin:0 4px 3px;font-weight:600;}
+.sp-time{font-size:10px;color:var(--zp-text-muted);margin:3px 4px 0;}
+
+.sp-inputbar{background:#fff;border-top:1px solid var(--zp-border);padding:10px 14px;display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:0;}
+.sp-inputbar textarea{flex:1;border:1px solid var(--zp-border);border-radius:20px;padding:10px 16px;font-size:13.5px;font-family:inherit;resize:none;max-height:100px;outline:none;}
+.sp-inputbar textarea:focus{border-color:var(--zp-primary);}
+.sp-send{width:42px;height:42px;border-radius:50%;background:var(--zp-primary);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;cursor:pointer;transition:transform .15s,opacity .15s;}
+.sp-send:hover{transform:scale(1.05);}
+.sp-send:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+.sp-gate{flex:1;display:flex;align-items:center;justify-content:center;padding:30px;}
+.sp-gate-card{text-align:center;max-width:340px;}
+.sp-gate-card i{font-size:40px;color:var(--zp-primary);opacity:.6;margin-bottom:14px;display:block;}
+.sp-gate-card h2{font-size:16px;margin:0 0 8px;}
+.sp-gate-card p{font-size:13px;color:var(--zp-text-muted);margin:0 0 16px;}
+.sp-gate-card a{display:inline-block;background:var(--zp-primary);color:#fff;text-decoration:none;padding:10px 20px;border-radius:10px;font-size:13.5px;font-weight:600;}
+
+.sp-spinner{width:26px;height:26px;border:3px solid var(--zp-primary-light);border-top-color:var(--zp-primary);border-radius:50%;animation:spin .7s linear infinite;margin:auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="sp-header">
+  <div class="sp-avatar"><i class="bi bi-headset"></i></div>
+  <div>
+    <h1>ZapPay Support</h1>
+    <p><span class="sp-status-dot"></span>We usually reply within a few hours</p>
+  </div>
+</div>
+
+<div id="gateView" class="sp-gate" style="display:none">
+  <div class="sp-gate-card">
+    <i class="bi bi-box-arrow-in-right"></i>
+    <h2>Please Sign In</h2>
+    <p>Sign in to your ZapPay account first, then open Support again to chat with our team.</p>
+    <a href="https://panel.zappay.shop/">Go to ZapPay</a>
+  </div>
+</div>
+
+<div id="loadingView" class="sp-body" style="justify-content:center">
+  <div class="sp-spinner"></div>
+</div>
+
+<div id="chatView" style="display:none;flex:1;flex-direction:column;min-height:0;">
+  <div class="sp-body" id="msgList"></div>
+  <div class="sp-inputbar">
+    <textarea id="msgInput" rows="1" placeholder="Type your message..." maxlength="1000"></textarea>
+    <button class="sp-send" id="sendBtn"><i class="bi bi-send-fill"></i></button>
+  </div>
+</div>
+
+<script>
+const TOKEN_KEY = 'zp_token';
+let POLL_TIMER = null;
+let LAST_COUNT = 0;
+
+function getToken() { return localStorage.getItem(TOKEN_KEY); }
+
+async function apiGet(path) {
+  const res = await fetch(window.API_URL + '/api' + path, { headers: authHeaders(), cache: 'no-store' });
+  return res.json();
+}
+async function apiPost(path, body) {
+  const res = await fetch(window.API_URL + '/api' + path, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) });
+  return res.json();
+}
+function authHeaders() {
+  const h = { 'Content-Type': 'application/json' };
+  const t = getToken();
+  if (t) h['Authorization'] = 'Bearer ' + t;
+  return h;
+}
+
+function fmtTime(ts) {
+  if (!ts) return '';
+  const d = new Date(Number(ts));
+  return d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderMessages(messages) {
+  const list = document.getElementById('msgList');
+  if (!messages.length) {
+    list.innerHTML = `<div class="sp-empty"><i class="bi bi-chat-dots"></i><div>No messages yet. Send us a message and our team will get back to you.</div></div>`;
+    return;
+  }
+  const wasAtBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 40;
+  list.innerHTML = messages.map(m => `
+    <div class="sp-row ${m.sender === 'admin' ? 'admin' : 'user'}">
+      ${m.sender === 'admin' ? '<div class="sp-label"><i class="bi bi-patch-check-fill" style="color:#2563EB"></i> Support Team</div>' : ''}
+      <div class="sp-bubble">${escapeHtml(m.message)}</div>
+      <div class="sp-time">${fmtTime(m.createdAt)}</div>
+    </div>
+  `).join('');
+  if (wasAtBottom || messages.length !== LAST_COUNT) list.scrollTop = list.scrollHeight;
+  LAST_COUNT = messages.length;
+}
+
+async function loadMessages(scroll) {
+  try {
+    const res = await apiGet('/support/messages');
+    if (res && res.success) {
+      renderMessages(res.data.messages || []);
+      if (scroll) document.getElementById('msgList').scrollTop = document.getElementById('msgList').scrollHeight;
+    }
+  } catch (e) { /* silent — polling retries anyway */ }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+  try {
+    const res = await apiPost('/support/messages', { message: text });
+    if (res && res.success) {
+      renderMessages(res.data.messages || []);
+      document.getElementById('msgList').scrollTop = document.getElementById('msgList').scrollHeight;
+    } else {
+      input.value = text; // restore on failure
+      alert(res?.message || 'Could not send message. Please try again.');
+    }
+  } catch (e) {
+    input.value = text;
+  }
+  btn.disabled = false;
+  input.focus();
+}
+
+function init() {
+  if (!getToken()) {
+    document.getElementById('loadingView').style.display = 'none';
+    document.getElementById('gateView').style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('loadingView').style.display = 'none';
+  const chatView = document.getElementById('chatView');
+  chatView.style.display = 'flex';
+
+  loadMessages(true);
+  POLL_TIMER = setInterval(() => loadMessages(false), 5000);
+
+  document.getElementById('sendBtn').addEventListener('click', sendMessage);
+  const input = document.getElementById('msgInput');
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+  });
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { clearInterval(POLL_TIMER); }
+  else if (getToken()) { loadMessages(false); POLL_TIMER = setInterval(() => loadMessages(false), 5000); }
+});
+
+init();
+</script>
+</body>
+</html>

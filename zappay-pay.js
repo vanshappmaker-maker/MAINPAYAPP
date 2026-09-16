@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * ZapPay.js — embed ZapPay checkout on your own website
  * Full docs: Developer Portal -> API Integration (api.html) in your ZapPay dashboard.
  *
@@ -127,7 +127,7 @@
      * handling, but it never told the backend where the customer should
      * land after paying. Without a redirect_url, the backend/gateway
      * fell back to ZapPay's OWN site as the redirect target — so a paid
-     * customer could end up bounced to zappay.shop instead of back to
+     * customer could end up bounced to zetpay.online instead of back to
      * this merchant's page. Pass redirect_url (defaults to the current
      * page) so the customer always comes back here.
      */

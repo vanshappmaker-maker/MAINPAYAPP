@@ -1,7 +1,7 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
 Disallow: /ad/
 Disallow: /preview/
 Disallow: /main/
 
-Sitemap: https://zappay.shop/sitemap.xml
+Sitemap: https://zetpay.online/sitemap.xml

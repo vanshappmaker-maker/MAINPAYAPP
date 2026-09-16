@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -84,8 +84,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 <div class="mnt-wrap">
 
   <div class="mnt-brand">
-    <img src="https://res.cloudinary.com/dihj6dmbb/image/upload/v1782028733/quickurl/20260621132708_1782028720083.png" alt="ZapPay"/>
-    <span id="mntSiteName">ZapPay</span>
+    <img src="https://res.cloudinary.com/dihj6dmbb/image/upload/v1782028733/quickurl/20260621132708_1782028720083.png" alt="ZetPay"/>
+    <span id="mntSiteName">ZetPay</span>
   </div>
 
   <div style="text-align:center">
@@ -173,7 +173,7 @@ async function loadContactInfo() {
     if (!res.data.maintenanceMode) {
       const banner = document.createElement('div');
       banner.style.cssText = 'background:var(--zp-primary-light);border:1px solid #BFDBFE;border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#1D4ED8';
-      banner.innerHTML = `<i class="bi bi-check-circle-fill"></i>We're back online! <a href="https://panel.zappay.shop/" style="color:#1D4ED8;text-decoration:underline;margin-left:auto">Return to ZapPay →</a>`;
+      banner.innerHTML = `<i class="bi bi-check-circle-fill"></i>We're back online! <a href="https://panel.zetpay.online/" style="color:#1D4ED8;text-decoration:underline;margin-left:auto">Return to ZapPay →</a>`;
       document.querySelector('.mnt-card').before(banner);
     }
   } catch (e) {

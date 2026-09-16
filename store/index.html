@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -322,7 +322,7 @@ body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
 <script>
 (function () {
   const params   = new URLSearchParams(window.location.search);
-  // New URL scheme: zappay.shop/store=<storeId>  (storeId lives in the path,
+  // New URL scheme: zetpay.online/store=<storeId>  (storeId lives in the path,
   // not the query string). Old links using ?id=<storeId> still work as a
   // fallback so anything already shared before this change doesn't break.
   function extractStoreId() {
@@ -428,7 +428,7 @@ body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
   }
 
   function renderHeaderBoutique() {
-    document.title = `${storeData.storeName} | ZapPay Store`;
+    document.title = `${storeData.storeName} | ZetPay Store`;
     document.getElementById('storeHeader').innerHTML = `
       <header class="store-header">
         <div class="store-header-inner">
@@ -462,7 +462,7 @@ body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
   }
 
   function renderHeaderEditorial() {
-    document.title = `${storeData.storeName} | ZapPay Store`;
+    document.title = `${storeData.storeName} | ZetPay Store`;
     document.getElementById('storeHeader').innerHTML = `
       <div class="ed-topline"></div>
       <div class="ed-header-inner">
@@ -488,7 +488,7 @@ body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
   }
 
   function renderHeaderMarket() {
-    document.title = `${storeData.storeName} | ZapPay Store`;
+    document.title = `${storeData.storeName} | ZetPay Store`;
     document.getElementById('storeHeader').innerHTML = `
       <header class="mk-header">
         <div class="mk-header-inner">

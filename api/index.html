@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -830,7 +830,7 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
     </div>
   </div>
   <div class="brand-mark">
-    <div class="brand-glyph"><img src="/favicon.png" alt="ZapPay" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=&quot;bi bi-lightning-charge-fill&quot;></i>';"></div>
+    <div class="brand-glyph"><img src="/favicon.png" alt="ZetPay" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=&quot;bi bi-lightning-charge-fill&quot;></i>';"></div>
     <div class="brand-text">
       <strong>ZapAPI</strong>
       <span>Developer Documentation</span>
@@ -1072,7 +1072,7 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
 
           <div class="code-block">
             <div class="code-block-head"><span class="code-block-label">index.html</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
-            <pre><code>&lt;script src="https://zappay.shop/zappay-pay.js"&gt;&lt;/script&gt;
+            <pre><code>&lt;script src="https://zetpay.online/zappay-pay.js"&gt;&lt;/script&gt;
 
 &lt;button onclick="payNow()"&gt;Pay ₹100&lt;/button&gt;
 
@@ -1483,7 +1483,7 @@ module.exports = router;</code></pre>
 
           <div class="code-block">
             <div class="code-block-head"><span class="code-block-label">checkout.js</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
-            <pre><code>// &lt;script src="https://zappay.shop/zappay-pay.js"&gt;&lt;\/script&gt; must already be on the page
+            <pre><code>// &lt;script src="https://zetpay.online/zappay-pay.js"&gt;&lt;\/script&gt; must already be on the page
 
 ZapPay.setCallbacks({
     onSuccess: function (order) {
@@ -1674,7 +1674,7 @@ if __name__ == '__main__':
               </div>
               <div class="err-block">
                 <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
-                <p>This isn't something you can fix in code. Contact ZapPay support to find out why the account was suspended and resolve it — the API will keep returning this on every request until the suspension is lifted on ZapPay's side.</p>
+                <p>This isn't something you can fix in code. Contact ZetPay Support to find out why the account was suspended and resolve it — the API will keep returning this on every request until the suspension is lifted on ZapPay's side.</p>
               </div>
             </div></div>
           </div>
@@ -1824,7 +1824,7 @@ if __name__ == '__main__':
               </div>
               <div class="err-block">
                 <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
-                <p>Re-copy the <code>&lt;script src="https://zappay.shop/zappay-pay.js"&gt;</code> tag fresh from Section 3 and hard-refresh the page (clear cache). If you're loading the script from your own CDN/proxy, confirm it's actually serving the latest file content, not a stale cached copy.</p>
+                <p>Re-copy the <code>&lt;script src="https://zetpay.online/zappay-pay.js"&gt;</code> tag fresh from Section 3 and hard-refresh the page (clear cache). If you're loading the script from your own CDN/proxy, confirm it's actually serving the latest file content, not a stale cached copy.</p>
               </div>
             </div></div>
           </div>
@@ -1888,7 +1888,7 @@ if __name__ == '__main__':
 
     <div class="footer">
       ZapPay · ZapAPI Developer Documentation<br>
-      Need help? <a href="https://zappay.shop/support/">Visit Support</a>
+      Need help? <a href="https://zetpay.online/support/">Visit Support</a>
     </div>
 
   </main>
@@ -2293,8 +2293,8 @@ before you fulfill the order.
 
 BASE URLS
 - API calls:           https://paymentbackend-ruby.vercel.app
-- Widget script host:   https://zappay.shop
-  (widget tag: <script src="https://zappay.shop/zappay-pay.js"><\/script>)
+- Widget script host:   https://zetpay.online
+  (widget tag: <script src="https://zetpay.online/zappay-pay.js"><\/script>)
 
 AUTHENTICATION
 Every request needs your ZapAPI key (one per account, from Dashboard -> Developer
@@ -2389,7 +2389,7 @@ function errorReferenceBlock(){
 [403] Account suspended
   Message: "This account has been suspended." (banned: true)
   WHY: The key is valid but the account owning it has been suspended. Checked on every request.
-  FIX: Not fixable in code — contact ZapPay support to resolve the suspension.
+  FIX: Not fixable in code — contact ZetPay Support to resolve the suspension.
 
 [400] Validation failed
   Message: "Validation failed" (+ errors array)
@@ -2442,7 +2442,7 @@ function errorReferenceBlock(){
   WHY: The widget's backend URL is hardcoded inside zappay-pay.js — independent of which
        domain serves the script file, so this is NOT a hosting/CORS issue on your end. Almost
        always an old/incomplete cached copy of the script.
-  FIX: Re-copy the <script src="https://zappay.shop/zappay-pay.js"> tag fresh and hard-refresh
+  FIX: Re-copy the <script src="https://zetpay.online/zappay-pay.js"> tag fresh and hard-refresh
        (clear cache). If self-hosting/proxying the script, confirm it serves the latest content.`;
 }
 
@@ -2464,7 +2464,7 @@ HOW THE WIDGET BEHAVES INTERNALLY
 
 CODE
 
-<script src="https://zappay.shop/zappay-pay.js"><\/script>
+<script src="https://zetpay.online/zappay-pay.js"><\/script>
 
 <button onclick="payNow()">Pay ₹100</button>
 
@@ -2784,7 +2784,7 @@ zappay-pay.js itself is hosted from.
 
 CODE — checkout.js (load after the widget script tag has loaded)
 
-// <script src="https://zappay.shop/zappay-pay.js"><\/script> must already be on the page
+// <script src="https://zetpay.online/zappay-pay.js"><\/script> must already be on the page
 
 ZapPay.setCallbacks({
     onSuccess: function (order) {
@@ -3020,7 +3020,7 @@ function htmlPromptBody(){
 === WHAT TO BUILD (HTML/JS — widget flow) ===
 Use the official widget script, which wraps both endpoints and handles the popup + polling for you:
 
-<script src="https://zappay.shop/zappay-pay.js"><\/script>
+<script src="https://zetpay.online/zappay-pay.js"><\/script>
 
 Then, in my actual checkout code:
 
@@ -3339,7 +3339,7 @@ function jsPromptBody(){
 Use the official widget script (same mechanism as the HTML/JS flow), wired up as external/bundled JS instead of an inline block — appropriate for a bundler, a CMS custom-JS block, or a site where inline scripts aren't used.
 
 Make sure this tag is present once on the page (add it if it isn't already):
-<script src="https://zappay.shop/zappay-pay.js"><\/script>
+<script src="https://zetpay.online/zappay-pay.js"><\/script>
 
 Then in my checkout.js (or wherever my buy-button logic lives):
 
@@ -3503,7 +3503,7 @@ YOUR_ZAPAPI_KEY</code></pre>
       <div style="font-size:12.5px; color:var(--ink-faint); line-height:1.7; margin-bottom:10px;">Our developer support team is here to help.</div>
       <span class="rail-toc-item" style="padding-left:0;" onclick="jumpTo('sec-reference')"><i class="bi bi-file-earmark-text" style="margin-right:6px;"></i>API Reference</span>
       <span class="rail-toc-item" style="padding-left:0;" onclick="jumpTo('sec-errors')"><i class="bi bi-bug" style="margin-right:6px;"></i>Error Reference</span>
-      <a class="rail-toc-item" style="padding-left:0; display:block;" href="https://zappay.shop/support/"><i class="bi bi-life-preserver" style="margin-right:6px;"></i>Visit Support</a>
+      <a class="rail-toc-item" style="padding-left:0; display:block;" href="https://zetpay.online/support/"><i class="bi bi-life-preserver" style="margin-right:6px;"></i>Visit Support</a>
       <button class="rail-cta" onclick="openPromptDrawer()"><i class="bi bi-stars"></i> AI prompts</button>
     </div>
   </aside>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>ZapAPI — Developer Documentation | ZapPay</title>
-<meta name="description" content="Integrate ZapPay's UPI payment gateway into your website or app. Create orders, verify payments, and handle errors — HTML/JS, PHP and Java, with full error reference.">
+<title>ZapAPI — Developer Documentation | ZetPay</title>
+<meta name="description" content="Integrate ZetPay's UPI payment gateway into your website or app. Create orders, verify payments, and handle errors — HTML/JS, PHP and Java, with full error reference.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -871,7 +871,7 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
     <!-- ===== Hero ===== -->
     <div class="hero" id="sec-overview">
       <div class="eyebrow"><i class="bi bi-lightning-charge-fill"></i> API Integration</div>
-      <h1>ZapPay <span class="accent">API Integration</span></h1>
+      <h1>ZetPay <span class="accent">API Integration</span></h1>
       <p>Accept UPI payments with three API calls. Create a payment order, send your customer to pay, and confirm the result server-side — built for developers shipping fast.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="jumpTo('sec-reference')"><i class="bi bi-code-slash"></i> View API Reference</button>
@@ -903,18 +903,18 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
     <section class="sec" id="sec-key">
       <div class="sec-head"><div class="sec-num">01</div><h2>Overview & getting your key</h2></div>
       <div class="sec-body">
-        <p>Every ZapPay account has exactly <strong>one ZapAPI key</strong> — a 32-character secret that authenticates every request you make to ZapAPI. It's the only credential you need.</p>
+        <p>Every ZetPay account has exactly <strong>one ZapAPI key</strong> — a 32-character secret that authenticates every request you make to ZapAPI. It's the only credential you need.</p>
 
         <h3>Where to find it</h3>
         <ol>
-          <li>Log in to your ZapPay dashboard.</li>
+          <li>Log in to your ZetPay dashboard.</li>
           <li>Go to <strong>Developer Portal → Zap API</strong>.</li>
           <li>Your key is generated automatically on first visit and shown there — copy it from that screen.</li>
         </ol>
 
         <h3>Treat it like a password</h3>
         <ul>
-          <li>Never expose it in client-side code that ships to end users — the one exception is the JS widget flow (Section 3), where the key runs from your own page directly against ZapPay's API, not a third party's.</li>
+          <li>Never expose it in client-side code that ships to end users — the one exception is the JS widget flow (Section 3), where the key runs from your own page directly against ZetPay's API, not a third party's.</li>
           <li>Never commit it to a public repository.</li>
           <li>If it leaks, regenerate it immediately from your dashboard. The old key stops working the instant you do — there's no grace period, so update every integration first if you can.</li>
         </ul>
@@ -982,7 +982,7 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
             </tr>
             <tr>
               <td><code>title</code></td><td><span class="req-no">No</span></td><td>string</td>
-              <td>Max 100 chars. Shown as the payment remark. Defaults to <code>"ZapPay Payment"</code>.</td>
+              <td>Max 100 chars. Shown as the payment remark. Defaults to <code>"ZetPay Payment"</code>.</td>
             </tr>
             <tr>
               <td><code>customer_mobile</code></td><td><span class="req-no">No</span></td><td>string</td>
@@ -990,7 +990,7 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
             </tr>
             <tr>
               <td><code>redirect_url</code></td><td><span class="req-no">No</span></td><td>string</td>
-              <td>Where the customer lands after paying. ZapPay appends <code>?zp_order=&lt;id&gt;&amp;zp_result=success|failed</code>. Ignored if <code>useEmbedded: true</code>.</td>
+              <td>Where the customer lands after paying. ZetPay appends <code>?zp_order=&lt;id&gt;&amp;zp_result=success|failed</code>. Ignored if <code>useEmbedded: true</code>.</td>
             </tr>
             <tr>
               <td><code>useEmbedded</code></td><td><span class="req-no">No</span></td><td>boolean</td>
@@ -1072,12 +1072,12 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
 
           <div class="code-block">
             <div class="code-block-head"><span class="code-block-label">index.html</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
-            <pre><code>&lt;script src="https://zetpay.online/zappay-pay.js"&gt;&lt;/script&gt;
+            <pre><code>&lt;script src="https://zetpay.online/zetpay-pay.js"&gt;&lt;/script&gt;
 
 &lt;button onclick="payNow()"&gt;Pay ₹100&lt;/button&gt;
 
 &lt;script&gt;
-  ZapPay.setCallbacks({
+  ZetPay.setCallbacks({
     onSuccess: (order) => {
       // order = { order_id, amount }
       console.log('Payment successful:', order.order_id);
@@ -1095,7 +1095,7 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
   });
 
   function payNow() {
-    ZapPay.createOrder({
+    ZetPay.createOrder({
       zap_api: 'YOUR_ZAPAPI_KEY',
       amount: 100,
       title: 'Order #123',        // optional
@@ -1112,7 +1112,7 @@ h1,h2,h3,h4{font-family:'Lexend','Inter',sans-serif; letter-spacing:-0.02em;}
 
           <div class="callout warning">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <div><strong>Widget fails silently on bad input.</strong> On a missing <code>zap_api</code> or <code>amount</code>, it only logs <code>console.error</code> — no callback fires. Verify <code>typeof ZapPay !== 'undefined'</code> before calling it, and test the real click end-to-end.</div>
+            <div><strong>Widget fails silently on bad input.</strong> On a missing <code>zap_api</code> or <code>amount</code>, it only logs <code>console.error</code> — no callback fires. Verify <code>typeof ZetPay !== 'undefined'</code> before calling it, and test the real click end-to-end.</div>
           </div>
 
           <button class="lang-copy-btn" onclick="copyLangDocs('html', this)"><i class="bi bi-clipboard-plus"></i> Copy full HTML/JS integration guide</button>
@@ -1170,7 +1170,7 @@ if ($result['success']) {
             <div class="code-block-head"><span class="code-block-label">payment-return.php</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
             <pre><code>&lt;?php
 session_start();
-// $_GET['zp_order'] and $_GET['zp_result'] are appended by ZapPay automatically.
+// $_GET['zp_order'] and $_GET['zp_result'] are appended by ZetPay automatically.
 // IMPORTANT: zp_result in the query string must NEVER be trusted alone —
 // it can be spoofed. Always confirm via order-status server-side.
 
@@ -1221,7 +1221,7 @@ if ($result['success'] && $result['data']['status'] === 'success') {
           <p>OkHttp example: create the order, open <code>payment_url</code> in a Chrome Custom Tab, then poll order-status until it resolves.</p>
 
           <div class="code-block">
-            <div class="code-block-head"><span class="code-block-label">ZapPayClient.java</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <div class="code-block-head"><span class="code-block-label">ZetPayClient.java</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
             <pre><code>OkHttpClient client = new OkHttpClient();
 String ZAP_API_KEY = "YOUR_ZAPAPI_KEY";
 String BASE_URL = "https://paymentbackend-oga2.vercel.app";
@@ -1344,8 +1344,8 @@ public interface OrderCallback {
           <p>Coroutine-based OkHttp example: create the order, open <code>payment_url</code> in a Chrome Custom Tab, then suspend-poll order-status until it resolves.</p>
 
           <div class="code-block">
-            <div class="code-block-head"><span class="code-block-label">ZapPayClient.kt</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
-            <pre><code>class ZapPayClient(private val context: Context) {
+            <div class="code-block-head"><span class="code-block-label">ZetPayClient.kt</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
+            <pre><code>class ZetPayClient(private val context: Context) {
     private val client = OkHttpClient()
     private val zapApiKey = "YOUR_ZAPAPI_KEY"
     private val baseUrl = "https://paymentbackend-oga2.vercel.app"
@@ -1402,7 +1402,7 @@ public interface OrderCallback {
 }
 
 // Usage (from a coroutine scope, e.g. viewModelScope):
-// val result = zapPayClient.createOrder(100.0, "Order #123")
+// val result = zetPayClient.createOrder(100.0, "Order #123")
 // if (result.status == "success") { /* fulfill */ }</code></pre>
           </div>
 
@@ -1433,7 +1433,7 @@ router.post('/create-order', async (req, res) => {
         body: JSON.stringify({
             zap_api: ZAP_API_KEY,
             amount: req.body.amount,
-            title: req.body.title || 'ZapPay Payment',
+            title: req.body.title || 'ZetPay Payment',
             redirect_url: 'https://yourstore.com/payment-return'
         })
     });
@@ -1445,7 +1445,7 @@ router.post('/create-order', async (req, res) => {
     res.redirect(result.data.payment_url);
 });
 
-// redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+// redirect_url lands here: zp_order and zp_result are appended by ZetPay.
 // zp_result in the query string must NEVER be trusted alone — it can be
 // spoofed. Always confirm via order-status from this server.
 router.get('/payment-return', async (req, res) => {
@@ -1479,13 +1479,13 @@ module.exports = router;</code></pre>
 
         <!-- ---------- JavaScript (browser) pane ---------- -->
         <div class="lang-pane" id="pane-js">
-          <p>The ZapPay widget script, wired up as plain JS for projects without inline <code>&lt;script&gt;</code> tags — a bundled site, a CMS custom-JS block, etc. Same mechanism as the HTML/JS tab.</p>
+          <p>The ZetPay widget script, wired up as plain JS for projects without inline <code>&lt;script&gt;</code> tags — a bundled site, a CMS custom-JS block, etc. Same mechanism as the HTML/JS tab.</p>
 
           <div class="code-block">
             <div class="code-block-head"><span class="code-block-label">checkout.js</span><button class="copy-btn" onclick="copyPlain(this, this.closest('.code-block').querySelector('pre').innerText)"><i class="bi bi-clipboard"></i> Copy</button></div>
-            <pre><code>// &lt;script src="https://zetpay.online/zappay-pay.js"&gt;&lt;\/script&gt; must already be on the page
+            <pre><code>// &lt;script src="https://zetpay.online/zetpay-pay.js"&gt;&lt;\/script&gt; must already be on the page
 
-ZapPay.setCallbacks({
+ZetPay.setCallbacks({
     onSuccess: function (order) {
         console.log('Payment successful:', order.order_id);
         // UI signal only — confirm server-side via order-status before fulfilling.
@@ -1506,7 +1506,7 @@ ZapPay.setCallbacks({
 });
 
 document.getElementById('pay-button').addEventListener('click', function () {
-    ZapPay.createOrder({
+    ZetPay.createOrder({
         zap_api: 'YOUR_ZAPAPI_KEY', // for a real site, proxy this through your own
                                      // server instead of shipping the key client-side
         amount: 100,
@@ -1549,7 +1549,7 @@ def create_order():
     resp = requests.post(f'{BASE_URL}/api/developer/create-order', json={
         'zap_api': ZAP_API_KEY,
         'amount': request.json['amount'],
-        'title': request.json.get('title', 'ZapPay Payment'),
+        'title': request.json.get('title', 'ZetPay Payment'),
         'redirect_url': 'https://yourstore.com/payment-return'
     })
     result = resp.json()
@@ -1558,7 +1558,7 @@ def create_order():
         return jsonify({'error': result['message']}), 400
     return redirect(result['data']['payment_url'])
 
-# redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+# redirect_url lands here: zp_order and zp_result are appended by ZetPay.
 # zp_result in the query string must NEVER be trusted alone — it can be
 # spoofed. Always confirm via order-status from this server.
 @app.route('/payment-return')
@@ -1670,11 +1670,11 @@ if __name__ == '__main__':
 }</div>
               <div class="err-block">
                 <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
-                <p>Your key is valid and resolves correctly, but the ZapPay account that owns it has been suspended. This check runs on every single ZapAPI request — a suspended account can't create orders or check statuses even with a perfectly valid key.</p>
+                <p>Your key is valid and resolves correctly, but the ZetPay account that owns it has been suspended. This check runs on every single ZapAPI request — a suspended account can't create orders or check statuses even with a perfectly valid key.</p>
               </div>
               <div class="err-block">
                 <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
-                <p>This isn't something you can fix in code. Contact ZetPay Support to find out why the account was suspended and resolve it — the API will keep returning this on every request until the suspension is lifted on ZapPay's side.</p>
+                <p>This isn't something you can fix in code. Contact ZetPay Support to find out why the account was suspended and resolve it — the API will keep returning this on every request until the suspension is lifted on ZetPay's side.</p>
               </div>
             </div></div>
           </div>
@@ -1712,13 +1712,13 @@ if __name__ == '__main__':
           <div class="err-card" data-cat="limits" onclick="toggleErr(this)">
             <div class="err-card-head">
               <span class="err-code c400">400</span>
-              <div class="err-name"><strong>Wallet full</strong><span>"Your ZapPay wallet is full..."</span></div>
+              <div class="err-name"><strong>Wallet full</strong><span>"Your ZetPay wallet is full..."</span></div>
               <i class="bi bi-chevron-down err-chev"></i>
             </div>
             <div class="err-body"><div class="err-body-inner">
               <div class="err-payload">{
   "success": false,
-  "message": "Your ZapPay wallet is full. Upgrade your plan or withdraw first."
+  "message": "Your ZetPay wallet is full. Upgrade your plan or withdraw first."
 }</div>
               <div class="err-block">
                 <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
@@ -1742,7 +1742,7 @@ if __name__ == '__main__':
               <div class="err-payload">{ "success": false, "message": "Order not found" }</div>
               <div class="err-block">
                 <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
-                <p>Returned by <code>order-status</code> when either the <code>orderId</code> in the URL doesn't exist at all, <strong>or</strong> it exists but belongs to a different ZapPay account than the one your key resolves to. Both cases return the identical message on purpose, so a caller can never learn whether an order ID belongs to someone else.</p>
+                <p>Returned by <code>order-status</code> when either the <code>orderId</code> in the URL doesn't exist at all, <strong>or</strong> it exists but belongs to a different ZetPay account than the one your key resolves to. Both cases return the identical message on purpose, so a caller can never learn whether an order ID belongs to someone else.</p>
               </div>
               <div class="err-block">
                 <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
@@ -1782,11 +1782,11 @@ if __name__ == '__main__':
               <div class="err-payload">{ "success": false, "message": "Payment system is under maintenance." }</div>
               <div class="err-block">
                 <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
-                <p>ZapPay itself has temporarily paused new order creation platform-wide. This is unrelated to your account, key, or request — it only ever appears on <code>create-order</code> in Live Mode, never on <code>order-status</code>, and never on Test Mode orders.</p>
+                <p>ZetPay itself has temporarily paused new order creation platform-wide. This is unrelated to your account, key, or request — it only ever appears on <code>create-order</code> in Live Mode, never on <code>order-status</code>, and never on Test Mode orders.</p>
               </div>
               <div class="err-block">
                 <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
-                <p>Nothing to change in your code. Retry after a short delay — this is expected to be temporary. If it persists for an extended period, check ZapPay's status page or contact support.</p>
+                <p>Nothing to change in your code. Retry after a short delay — this is expected to be temporary. If it persists for an extended period, check ZetPay's status page or contact support.</p>
               </div>
             </div></div>
           </div>
@@ -1801,11 +1801,11 @@ if __name__ == '__main__':
             <div class="err-body"><div class="err-body-inner">
               <div class="err-block">
                 <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
-                <p>This is <strong>not an API error</strong> — it never reaches the network. The <code>zappay-pay.js</code> widget checks <code>zap_api</code> and <code>amount</code> are present before making any request, and if either is missing, it only logs to the console and returns silently. No callback fires, nothing visibly happens on the page.</p>
+                <p>This is <strong>not an API error</strong> — it never reaches the network. The <code>zetpay-pay.js</code> widget checks <code>zap_api</code> and <code>amount</code> are present before making any request, and if either is missing, it only logs to the console and returns silently. No callback fires, nothing visibly happens on the page.</p>
               </div>
               <div class="err-block">
                 <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
-                <p>Open the browser console when testing — this failure mode is invisible in the UI by design. Confirm the object passed to <code>ZapPay.createOrder({...})</code> actually contains non-empty <code>zap_api</code> and <code>amount</code> values at the moment it's called, not just in the code that looks correct on paper.</p>
+                <p>Open the browser console when testing — this failure mode is invisible in the UI by design. Confirm the object passed to <code>ZetPay.createOrder({...})</code> actually contains non-empty <code>zap_api</code> and <code>amount</code> values at the moment it's called, not just in the code that looks correct on paper.</p>
               </div>
             </div></div>
           </div>
@@ -1820,11 +1820,11 @@ if __name__ == '__main__':
             <div class="err-body"><div class="err-body-inner">
               <div class="err-block">
                 <div class="err-block-label why"><i class="bi bi-question-circle"></i> Why it happens</div>
-                <p>The widget's backend URL is hardcoded inside <code>zappay-pay.js</code> — it never depends on which domain served the script file, so this is <strong>not a hosting or CORS problem on your end</strong>. It almost always means the page loaded an old or incomplete cached copy of the script.</p>
+                <p>The widget's backend URL is hardcoded inside <code>zetpay-pay.js</code> — it never depends on which domain served the script file, so this is <strong>not a hosting or CORS problem on your end</strong>. It almost always means the page loaded an old or incomplete cached copy of the script.</p>
               </div>
               <div class="err-block">
                 <div class="err-block-label fix"><i class="bi bi-tools"></i> How to fix</div>
-                <p>Re-copy the <code>&lt;script src="https://zetpay.online/zappay-pay.js"&gt;</code> tag fresh from Section 3 and hard-refresh the page (clear cache). If you're loading the script from your own CDN/proxy, confirm it's actually serving the latest file content, not a stale cached copy.</p>
+                <p>Re-copy the <code>&lt;script src="https://zetpay.online/zetpay-pay.js"&gt;</code> tag fresh from Section 3 and hard-refresh the page (clear cache). If you're loading the script from your own CDN/proxy, confirm it's actually serving the latest file content, not a stale cached copy.</p>
               </div>
             </div></div>
           </div>
@@ -1839,10 +1839,10 @@ if __name__ == '__main__':
     <section class="sec" id="sec-testmode">
       <div class="sec-head"><div class="sec-num">05</div><h2>Test Mode & Live Mode</h2></div>
       <div class="sec-body">
-        <p>Every ZapPay account has a <strong>Gateway Mode</strong>, switchable any time from <strong>Developer Portal → Zap API</strong>. It applies account-wide — both <code>create-order</code> and every payment link — and defaults to <strong>Live</strong>, so nothing changes for an existing integration until you switch it yourself.</p>
+        <p>Every ZetPay account has a <strong>Gateway Mode</strong>, switchable any time from <strong>Developer Portal → Zap API</strong>. It applies account-wide — both <code>create-order</code> and every payment link — and defaults to <strong>Live</strong>, so nothing changes for an existing integration until you switch it yourself.</p>
         <ul>
           <li><strong>Live Mode</strong> — real UPI checkout, real money, real wallet credit.</li>
-          <li><strong>Test Mode</strong> — <code>create-order</code> returns a <code>payment_url</code> pointing at ZapPay's own simulator instead of a real UPI checkout. Opening it shows a "Test Action" button with three outcomes: <strong>Successfully</strong>, <strong>Failed</strong>, and <strong>Cancelled</strong>. Your wallet is never credited — no money moves.</li>
+          <li><strong>Test Mode</strong> — <code>create-order</code> returns a <code>payment_url</code> pointing at ZetPay's own simulator instead of a real UPI checkout. Opening it shows a "Test Action" button with three outcomes: <strong>Successfully</strong>, <strong>Failed</strong>, and <strong>Cancelled</strong>. Your wallet is never credited — no money moves.</li>
         </ul>
         <p>The important part: <strong>nothing else changes shape.</strong> <code>order-status</code> returns the exact same <code>pending</code> / <code>success</code> / <code>failed</code> values either way, so whatever polling logic you write works against Test Mode without any special-casing.</p>
         <div class="callout warning">
@@ -1860,7 +1860,7 @@ if __name__ == '__main__':
       <div class="sec-body">
         <ul>
           <li><strong>Never trust a redirect or client callback alone.</strong> Always call <code>order-status</code> from your server and check <code>status === "success"</code> before fulfilling an order.</li>
-          <li><strong>Keep your ZapAPI key server-side</strong> wherever possible. The JS widget is the one exception — there the key is used from your own page directly against ZapPay's API.</li>
+          <li><strong>Keep your ZapAPI key server-side</strong> wherever possible. The JS widget is the one exception — there the key is used from your own page directly against ZetPay's API.</li>
           <li><strong>One checkout at a time.</strong> Don't call <code>create-order</code> again for the same purchase while a previous order is still <code>pending</code> — check its status first.</li>
           <li><strong>Regenerate your key immediately</strong> if you suspect it has leaked. The old key is invalidated instantly, with no grace period.</li>
           <li><strong>Respect the amount limit.</strong> ₹1 to ₹5,000 — validate client-side too, before you ever hit the API.</li>
@@ -1887,7 +1887,7 @@ if __name__ == '__main__':
     </div>
 
     <div class="footer">
-      ZapPay · ZapAPI Developer Documentation<br>
+      ZetPay · ZapAPI Developer Documentation<br>
       Need help? <a href="https://zetpay.online/support/">Visit Support</a>
     </div>
 
@@ -1994,12 +1994,12 @@ if __name__ == '__main__':
       <div class="drawer-head-icon"><i class="bi bi-stars"></i></div>
       <div class="drawer-head-text">
         <strong>Built-in Prompts</strong>
-        <span>Give one to any AI — it integrates ZapPay for you</span>
+        <span>Give one to any AI — it integrates ZetPay for you</span>
       </div>
       <button class="modal-close" onclick="closePromptDrawer()"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="drawer-body">
-      <p class="drawer-intro">Upload your existing project to <strong>Claude, ChatGPT, or any AI assistant</strong> along with one of these prompts. The AI will read your code and wire up ZapPay checkout correctly — right endpoints, right validation, right server-side verification — without you writing it by hand. Just replace <code style="background:var(--surface-2); border:1px solid var(--border-hi); padding:1px 5px; border-radius:4px; font-size:11px;">YOUR_ZAPAPI_KEY</code> with your real key first.</p>
+      <p class="drawer-intro">Upload your existing project to <strong>Claude, ChatGPT, or any AI assistant</strong> along with one of these prompts. The AI will read your code and wire up ZetPay checkout correctly — right endpoints, right validation, right server-side verification — without you writing it by hand. Just replace <code style="background:var(--surface-2); border:1px solid var(--border-hi); padding:1px 5px; border-radius:4px; font-size:11px;">YOUR_ZAPAPI_KEY</code> with your real key first.</p>
 
       <div class="prompt-card">
         <div class="prompt-card-head">
@@ -2007,7 +2007,7 @@ if __name__ == '__main__':
           <div class="pc-text"><strong>HTML / JavaScript</strong><span>For static sites, storefronts, landing pages</span></div>
         </div>
         <div class="prompt-card-body">
-          <p>Integrates the ZapPay widget with popup checkout, callbacks, and mandatory server-side verification guidance.</p>
+          <p>Integrates the ZetPay widget with popup checkout, callbacks, and mandatory server-side verification guidance.</p>
           <div class="prompt-preview" id="preview-html-prompt"></div>
           <div class="pc-actions">
             <button class="pc-btn primary" onclick="copyPrompt('html', this)"><i class="bi bi-clipboard"></i> Copy</button>
@@ -2082,7 +2082,7 @@ if __name__ == '__main__':
           <div class="pc-text"><strong>JavaScript</strong><span>For bundled sites or CMS custom-JS blocks (no inline &lt;script&gt;)</span></div>
         </div>
         <div class="prompt-card-body">
-          <p>Wires up the ZapPay widget as external/bundled JS — popup checkout, callbacks, and mandatory server-side verification guidance.</p>
+          <p>Wires up the ZetPay widget as external/bundled JS — popup checkout, callbacks, and mandatory server-side verification guidance.</p>
           <div class="prompt-preview" id="preview-js-prompt"></div>
           <div class="pc-actions">
             <button class="pc-btn primary" onclick="copyPrompt('js', this)"><i class="bi bi-clipboard"></i> Copy</button>
@@ -2283,18 +2283,18 @@ document.addEventListener('keydown', (e)=>{
    per-language copy buttons in Section 3, so they can never drift.
    ============================================================ */
 function introBlock(){
-  return `ZapPay ZapAPI — Integration Reference
+  return `ZetPay ZapAPI — Integration Reference
 ========================================
 
 WHAT THIS IS
-ZapPay is a UPI payment-link platform. ZapAPI is its developer API: create a payment
+ZetPay is a UPI payment-link platform. ZapAPI is its developer API: create a payment
 order, send your customer to pay via any UPI app, then confirm the result server-side
 before you fulfill the order.
 
 BASE URLS
 - API calls:           https://paymentbackend-oga2.vercel.app
 - Widget script host:   https://zetpay.online
-  (widget tag: <script src="https://zetpay.online/zappay-pay.js"><\/script>)
+  (widget tag: <script src="https://zetpay.online/zetpay-pay.js"><\/script>)
 
 AUTHENTICATION
 Every request needs your ZapAPI key (one per account, from Dashboard -> Developer
@@ -2316,7 +2316,7 @@ verify via order-status from your own server before fulfilling anything.
 GATEWAY MODE — TEST vs LIVE
 Every account has a Gateway Mode toggle (Dashboard -> Developer Portal -> Zap API),
 account-wide, defaulting to Live. In Test Mode, create-order returns a payment_url
-pointing at ZapPay's own simulator (three outcomes: Successfully / Failed / Cancelled)
+pointing at ZetPay's own simulator (three outcomes: Successfully / Failed / Cancelled)
 instead of a real UPI checkout, and the wallet is never credited. order-status still
 returns the exact same pending/success/failed values, so no integration code needs to
 change between modes.`;
@@ -2335,11 +2335,11 @@ Body fields:
   amount           number   REQUIRED. Rs.1 to Rs.5000. MUST be a clean number (e.g. 499) —
                              NOT a formatted string like "Rs.499" or "1,999". Strip currency
                              symbols/commas first: Number(String(price).replace(/[^0-9.]/g,''))
-  title            string   optional. Max 100 chars. Defaults to "ZapPay Payment".
+  title            string   optional. Max 100 chars. Defaults to "ZetPay Payment".
   customer_mobile  string   optional. If provided, MUST be exactly 10 digits starting with
                              6/7/8/9, optionally preceded by 91, +91, or a leading 0 — NO
                              spaces, dashes, or brackets. Strip non-digits or omit entirely.
-  redirect_url     string   optional. Where customer lands after paying. ZapPay appends
+  redirect_url     string   optional. Where customer lands after paying. ZetPay appends
                              "?zp_order=<id>&zp_result=success|failed". Ignored if useEmbedded:true.
   useEmbedded      boolean  optional. Set true for the JS widget / in-app popup flow.
 
@@ -2403,7 +2403,7 @@ function errorReferenceBlock(){
        Log the errors array in dev to see exactly which field failed.
 
 [400] Wallet full
-  Message: "Your ZapPay wallet is full. Upgrade your plan or withdraw first."
+  Message: "Your ZetPay wallet is full. Upgrade your plan or withdraw first."
   WHY: Current wallet balance + this amount exceeds your plan's wallet limit. Live Mode only
        — this check is skipped entirely for Test Mode orders.
   FIX: Withdraw funds or upgrade your plan from the dashboard. Account-level limit, not
@@ -2425,24 +2425,24 @@ function errorReferenceBlock(){
 
 [503] Maintenance mode
   Message: "Payment system is under maintenance."
-  WHY: ZapPay has temporarily paused new order creation platform-wide. Unrelated to your
+  WHY: ZetPay has temporarily paused new order creation platform-wide. Unrelated to your
        account/key. Only on create-order in Live Mode — never on order-status or Test Mode.
   FIX: Nothing to change in your code. Retry after a short delay.
 
 [JS] Widget: nothing happens on click
-  Console: "ZapPay.js: zap_api key is required" / "amount is required"
-  WHY: NOT an API error — never reaches the network. zappay-pay.js checks zap_api/amount are
+  Console: "ZetPay.js: zap_api key is required" / "amount is required"
+  WHY: NOT an API error — never reaches the network. zetpay-pay.js checks zap_api/amount are
        present before calling; if missing, it only console.errors and returns silently — no
        callback fires.
   FIX: Open the browser console when testing (this failure is invisible in the UI by design).
-       Confirm the object passed to ZapPay.createOrder({...}) has non-empty values at call time.
+       Confirm the object passed to ZetPay.createOrder({...}) has non-empty values at call time.
 
 [JS] Widget: "Failed to fetch" / network error
   Callback: onFailed({ error: 'network_error' })
-  WHY: The widget's backend URL is hardcoded inside zappay-pay.js — independent of which
+  WHY: The widget's backend URL is hardcoded inside zetpay-pay.js — independent of which
        domain serves the script file, so this is NOT a hosting/CORS issue on your end. Almost
        always an old/incomplete cached copy of the script.
-  FIX: Re-copy the <script src="https://zetpay.online/zappay-pay.js"> tag fresh and hard-refresh
+  FIX: Re-copy the <script src="https://zetpay.online/zetpay-pay.js"> tag fresh and hard-refresh
        (clear cache). If self-hosting/proxying the script, confirm it serves the latest content.`;
 }
 
@@ -2451,7 +2451,7 @@ function htmlIntegrationBlock(){
 
 WHAT THIS FLOW USES
 Widget script (talks directly to https://paymentbackend-oga2.vercel.app, hardcoded — independent
-of whichever domain serves zappay-pay.js itself). Auth: zap_api key when creating the
+of whichever domain serves zetpay-pay.js itself). Auth: zap_api key when creating the
 order, X-ZapAPI-Key header internally while polling for status.
 
 HOW THE WIDGET BEHAVES INTERNALLY
@@ -2464,12 +2464,12 @@ HOW THE WIDGET BEHAVES INTERNALLY
 
 CODE
 
-<script src="https://zetpay.online/zappay-pay.js"><\/script>
+<script src="https://zetpay.online/zetpay-pay.js"><\/script>
 
 <button onclick="payNow()">Pay ₹100</button>
 
 <script>
-  ZapPay.setCallbacks({
+  ZetPay.setCallbacks({
     onSuccess: (order) => {
       console.log('Payment successful:', order.order_id);
       // TODO: confirm server-side via order-status before fulfilling
@@ -2479,7 +2479,7 @@ CODE
   });
 
   function payNow() {
-    ZapPay.createOrder({
+    ZetPay.createOrder({
       zap_api: 'YOUR_ZAPAPI_KEY',
       amount: 100,
       title: 'Order #123',
@@ -2563,7 +2563,7 @@ OkHttp. Auth: zap_api in the JSON body for create-order; X-ZapAPI-Key header for
 order-status polling call. payment_url opens in a Chrome Custom Tab, so you poll
 order-status yourself instead of relying on a redirect_url.
 
-CODE — ZapPayClient.java
+CODE — ZetPayClient.java
 
 OkHttpClient client = new OkHttpClient();
 String ZAP_API_KEY = "YOUR_ZAPAPI_KEY";
@@ -2643,9 +2643,9 @@ OkHttp + kotlinx.coroutines. Same shape as the Java flow: zap_api in the JSON bo
 create-order, X-ZapAPI-Key header for order-status. payment_url opens in a Chrome Custom
 Tab; you poll order-status yourself rather than relying on a redirect_url.
 
-CODE — ZapPayClient.kt
+CODE — ZetPayClient.kt
 
-class ZapPayClient(private val context: Context) {
+class ZetPayClient(private val context: Context) {
     private val client = OkHttpClient()
     private val zapApiKey = "YOUR_ZAPAPI_KEY"
     private val baseUrl = "https://paymentbackend-oga2.vercel.app"
@@ -2702,7 +2702,7 @@ class ZapPayClient(private val context: Context) {
 }
 
 // Usage (from a coroutine scope, e.g. viewModelScope):
-// val result = zapPayClient.createOrder(100.0, "Order #123")
+// val result = zetPayClient.createOrder(100.0, "Order #123")
 // if (result.status == "success") { /* fulfill */ }
 
 MANDATORY RULE
@@ -2733,7 +2733,7 @@ router.post('/create-order', async (req, res) => {
         body: JSON.stringify({
             zap_api: ZAP_API_KEY,
             amount: req.body.amount,
-            title: req.body.title || 'ZapPay Payment',
+            title: req.body.title || 'ZetPay Payment',
             redirect_url: 'https://yourstore.com/payment-return'
         })
     });
@@ -2745,7 +2745,7 @@ router.post('/create-order', async (req, res) => {
     res.redirect(result.data.payment_url);
 });
 
-// redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+// redirect_url lands here: zp_order and zp_result are appended by ZetPay.
 // zp_result in the query string must NEVER be trusted alone — it can be
 // spoofed. Always confirm via order-status from this server.
 router.get('/payment-return', async (req, res) => {
@@ -2777,16 +2777,16 @@ function jsIntegrationBlock(){
   return `## JavaScript (Browser, no framework) Integration
 
 WHAT THIS FLOW USES
-The ZapPay widget script — same mechanism as the HTML/JS tab, shown here as plain JS for
+The ZetPay widget script — same mechanism as the HTML/JS tab, shown here as plain JS for
 projects wiring it up without inline <script> tags (e.g. a bundled site, a CMS custom-JS
 block). Talks directly to https://paymentbackend-oga2.vercel.app, independent of where
-zappay-pay.js itself is hosted from.
+zetpay-pay.js itself is hosted from.
 
 CODE — checkout.js (load after the widget script tag has loaded)
 
-// <script src="https://zetpay.online/zappay-pay.js"><\/script> must already be on the page
+// <script src="https://zetpay.online/zetpay-pay.js"><\/script> must already be on the page
 
-ZapPay.setCallbacks({
+ZetPay.setCallbacks({
     onSuccess: function (order) {
         console.log('Payment successful:', order.order_id);
         // UI signal only — confirm server-side via order-status before fulfilling.
@@ -2807,7 +2807,7 @@ ZapPay.setCallbacks({
 });
 
 document.getElementById('pay-button').addEventListener('click', function () {
-    ZapPay.createOrder({
+    ZetPay.createOrder({
         zap_api: 'YOUR_ZAPAPI_KEY', // for a real site, proxy this through your own
                                      // server instead of shipping the key client-side
         amount: 100,
@@ -2851,7 +2851,7 @@ def create_order():
     resp = requests.post(f'{BASE_URL}/api/developer/create-order', json={
         'zap_api': ZAP_API_KEY,
         'amount': request.json['amount'],
-        'title': request.json.get('title', 'ZapPay Payment'),
+        'title': request.json.get('title', 'ZetPay Payment'),
         'redirect_url': 'https://yourstore.com/payment-return'
     })
     result = resp.json()
@@ -2860,7 +2860,7 @@ def create_order():
         return jsonify({'error': result['message']}), 400
     return redirect(result['data']['payment_url'])
 
-# redirect_url lands here: zp_order and zp_result are appended by ZapPay.
+# redirect_url lands here: zp_order and zp_result are appended by ZetPay.
 # zp_result in the query string must NEVER be trusted alone — it can be
 # spoofed. Always confirm via order-status from this server.
 @app.route('/payment-return')
@@ -2963,7 +2963,7 @@ function copyDocsOption(kind, btn){
    act on it correctly without this page open.
    ============================================================ */
 function promptSharedHeader(stack){
-  return `You are integrating the ZapPay UPI payment gateway (ZapAPI) into an existing ${stack} codebase that I am about to give you (or have already given you). Read my existing code first and find the right place to insert this — do NOT create a disconnected demo file and call it done. Wire it into my actual checkout/purchase flow.
+  return `You are integrating the ZetPay UPI payment gateway (ZapAPI) into an existing ${stack} codebase that I am about to give you (or have already given you). Read my existing code first and find the right place to insert this — do NOT create a disconnected demo file and call it done. Wire it into my actual checkout/purchase flow.
 
 If anything below is ambiguous for my specific codebase, ask me ONE clarifying question before writing code. Otherwise proceed and implement the full flow.
 
@@ -2984,9 +2984,9 @@ POST /api/developer/create-order
   Body: {
     zap_api: string          (required unless using the header instead)
     amount: number           (REQUIRED, ₹1-₹5000, clean number — not a formatted string)
-    title: string            (optional, max 100 chars, defaults to "ZapPay Payment")
+    title: string            (optional, max 100 chars, defaults to "ZetPay Payment")
     customer_mobile: string  (optional, exactly 10 digits per the sanitize rule above)
-    redirect_url: string     (optional — ZapPay appends ?zp_order=<id>&zp_result=success|failed)
+    redirect_url: string     (optional — ZetPay appends ?zp_order=<id>&zp_result=success|failed)
     useEmbedded: boolean     (optional — true for popup/widget flow, ignores redirect_url)
   }
   Success 200: { success: true, message: "Order created", data: { order_id, payment_url, amount, mode } }
@@ -3005,7 +3005,7 @@ Rate limit: 60 requests / 15 minutes per key. If polling manually, poll no faste
 401 "Invalid ZapAPI key"           -> key doesn't resolve. Re-copy from dashboard, don't retype.
 403 "This account has been suspended." -> account-level issue, not fixable client-side.
 400 "Validation failed"            -> almost always unsanitized amount or customer_mobile. See rules 2-3 above.
-400 "Your ZapPay wallet is full..."-> merchant's wallet limit hit (Live Mode only). Not user-fixable.
+400 "Your ZetPay wallet is full..."-> merchant's wallet limit hit (Live Mode only). Not user-fixable.
 404 "Order not found"              -> wrong orderId, or querying with a different key than created it.
 429 "Too many API requests..."     -> slow down polling, add backoff.
 503 "Payment system is under maintenance." -> temporary, retry later. create-order (Live Mode) only.
@@ -3020,12 +3020,12 @@ function htmlPromptBody(){
 === WHAT TO BUILD (HTML/JS — widget flow) ===
 Use the official widget script, which wraps both endpoints and handles the popup + polling for you:
 
-<script src="https://zetpay.online/zappay-pay.js"><\/script>
+<script src="https://zetpay.online/zetpay-pay.js"><\/script>
 
 Then, in my actual checkout code:
 
 <script>
-  ZapPay.setCallbacks({
+  ZetPay.setCallbacks({
     onSuccess: (order) => {
       // order = { order_id, amount } — client-side signal ONLY.
       // Call your OWN backend here to independently verify via
@@ -3040,7 +3040,7 @@ Then, in my actual checkout code:
   });
 
   function payNow() {
-    ZapPay.createOrder({
+    ZetPay.createOrder({
       zap_api: 'YOUR_ZAPAPI_KEY',
       amount: 499,          // sanitized clean number — see rule 2
       title: 'Order description',
@@ -3052,12 +3052,12 @@ Then, in my actual checkout code:
 WIDGET-SPECIFIC BEHAVIOR TO KNOW:
 - createOrder() always sends useEmbedded:true and opens payment_url in a 430x700 popup, falling back to a same-tab redirect if the popup is blocked.
 - If zap_api or amount is missing when you call createOrder(), the widget only logs a console.error and does NOT call any callback — this is silent by design, so double check your object has real values before calling it, and test with devtools open.
-- "Failed to fetch" from the widget is not a CORS/hosting issue on your end — the backend URL is hardcoded inside the script file. It almost always means a stale cached copy of zappay-pay.js is loaded; have me hard-refresh if I report this.
+- "Failed to fetch" from the widget is not a CORS/hosting issue on your end — the backend URL is hardcoded inside the script file. It almost always means a stale cached copy of zetpay-pay.js is loaded; have me hard-refresh if I report this.
 
 INTEGRATION STEPS FOR YOU (the AI):
 1. Find my existing "Buy" / "Checkout" / "Pay now" button(s) in the uploaded code.
 2. Add the widget script tag once, near the other script tags.
-3. Replace the button's current behavior (or add new behavior) with a call to ZapPay.createOrder() using the REAL price from my product/cart data — run it through the sanitize rule, don't assume it's already clean.
+3. Replace the button's current behavior (or add new behavior) with a call to ZetPay.createOrder() using the REAL price from my product/cart data — run it through the sanitize rule, don't assume it's already clean.
 4. Implement onSuccess to call my own backend endpoint (create one if I don't have one) that does the order-status verification server-side before showing a "Payment confirmed" state.
 5. Implement onFailed and onTimeout with visible, specific UI feedback — not a silent failure.
 6. Tell me exactly which files you changed and what I need to replace YOUR_ZAPAPI_KEY with.`;
@@ -3212,7 +3212,7 @@ function kotlinPromptBody(){
 === WHAT TO BUILD (Kotlin/Android — OkHttp + coroutines + Chrome Custom Tab) ===
 Create the order, open payment_url in a Chrome Custom Tab (not a WebView redirect), then suspend-poll order-status yourself until it resolves.
 
-class ZapPayClient(private val context: Context) {
+class ZetPayClient(private val context: Context) {
     private val client = OkHttpClient()
     private val zapApiKey = "YOUR_ZAPAPI_KEY"   // move to BuildConfig / secure storage, not a literal, if my project has a pattern for this
     private val baseUrl = "https://paymentbackend-oga2.vercel.app"
@@ -3339,11 +3339,11 @@ function jsPromptBody(){
 Use the official widget script (same mechanism as the HTML/JS flow), wired up as external/bundled JS instead of an inline block — appropriate for a bundler, a CMS custom-JS block, or a site where inline scripts aren't used.
 
 Make sure this tag is present once on the page (add it if it isn't already):
-<script src="https://zetpay.online/zappay-pay.js"><\/script>
+<script src="https://zetpay.online/zetpay-pay.js"><\/script>
 
 Then in my checkout.js (or wherever my buy-button logic lives):
 
-ZapPay.setCallbacks({
+ZetPay.setCallbacks({
     onSuccess: function (order) {
         // order = { order_id, amount } — client-side signal ONLY.
         // Call your OWN backend here to independently verify via
@@ -3358,7 +3358,7 @@ ZapPay.setCallbacks({
 });
 
 document.getElementById('pay-button').addEventListener('click', function () {
-    ZapPay.createOrder({
+    ZetPay.createOrder({
         zap_api: 'YOUR_ZAPAPI_KEY',   // for a real deployment, proxy this through your own
                                        // server instead of shipping the key client-side
         amount: sanitizedAmount,      // run through the sanitize rule — see rule 2 above
@@ -3370,12 +3370,12 @@ document.getElementById('pay-button').addEventListener('click', function () {
 WIDGET-SPECIFIC BEHAVIOR TO KNOW:
 - createOrder() always sends useEmbedded:true and opens payment_url in a 430x700 popup, falling back to a same-tab redirect if the popup is blocked.
 - If zap_api or amount is missing when you call createOrder(), the widget only logs a console.error and does NOT call any callback — this is silent by design, so double check your object has real values before calling it, and test with devtools open.
-- "Failed to fetch" from the widget is not a CORS/hosting issue on your end — the backend URL is hardcoded inside the script file. It almost always means a stale cached copy of zappay-pay.js is loaded; have me hard-refresh if I report this.
+- "Failed to fetch" from the widget is not a CORS/hosting issue on your end — the backend URL is hardcoded inside the script file. It almost always means a stale cached copy of zetpay-pay.js is loaded; have me hard-refresh if I report this.
 
 INTEGRATION STEPS FOR YOU (the AI):
 1. Find my existing "Buy" / "Checkout" / "Pay now" button(s) and their current JS in the uploaded code.
 2. Add the widget script tag once, near the other script tags, if it isn't already present.
-3. Replace the button's current behavior (or add new behavior) with a call to ZapPay.createOrder() using the REAL price from my product/cart data — run it through the sanitize rule, don't assume it's already clean.
+3. Replace the button's current behavior (or add new behavior) with a call to ZetPay.createOrder() using the REAL price from my product/cart data — run it through the sanitize rule, don't assume it's already clean.
 4. Implement onSuccess to call my own backend endpoint (create one if I don't have one) that does the order-status verification server-side before showing a "Payment confirmed" state.
 5. Implement onFailed and onTimeout with visible, specific UI feedback — not a silent failure.
 6. If my project ships this JS as a public bundle, flag that zap_api is visible in it and suggest moving order creation server-side instead.

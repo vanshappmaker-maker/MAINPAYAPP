@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Store | ZapPay</title>
-<meta name="description" content="Shop digital products — secured by ZapPay."/>
+<title>Store | ZetPay</title>
+<meta name="description" content="Shop digital products — secured by ZetPay."/>
 <meta name="robots" content="index, follow"/>
 <link rel="icon" type="image/png" href="/favicon.png"/>
 <link rel="apple-touch-icon" href="/favicon.png"/>
@@ -455,7 +455,7 @@ body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
         ${wcount ? `<span class="store-wish-count">${wcount}</span>` : ''}
       </a>
       ${social.map((it) => `<a class="store-drawer-link" href="${esc(storeData.socialLinks[it.key])}" target="_blank" rel="noopener"><i class="bi ${it.icon}" style="background:${it.bg}"></i><span>${it.label}</span></a>`).join('')}
-      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZapPay</div>`;
+      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZetPay</div>`;
     document.getElementById('wishlistLink').addEventListener('click', (e) => {
       e.preventDefault(); closeDrawer(); homeFilterMode = 'wishlist'; showStoreHome(true);
     });
@@ -483,7 +483,7 @@ body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
       <div class="ed-drawer-title">${esc(storeData.storeName)}</div>
       <a class="ed-drawer-link" href="#" id="homeLink"><i class="bi bi-house"></i>All Products</a>
       ${social.map((it) => `<a class="ed-drawer-link" href="${esc(storeData.socialLinks[it.key])}" target="_blank" rel="noopener"><i class="bi ${it.icon}"></i>${it.label}</a>`).join('')}
-      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZapPay</div>`;
+      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZetPay</div>`;
     document.getElementById('homeLink').addEventListener('click', (e) => { e.preventDefault(); closeDrawer(); showStoreHome(true); });
   }
 
@@ -511,7 +511,7 @@ body[data-theme="market"]{background:var(--mk-page-bg);color:var(--mk-ink);}
         <div class="mk-drawer-name">${esc(storeData.storeName)}</div>
       </div>
       ${social.map((it) => `<a class="mk-drawer-link" href="${esc(storeData.socialLinks[it.key])}" target="_blank" rel="noopener"><i class="bi ${it.icon}" style="background:${it.bg}"></i><span>${it.label}</span></a>`).join('')}
-      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZapPay</div>`;
+      <div class="text-muted text-center mt-4" style="font-size:11px"><i class="bi bi-shield-check me-1"></i>Payments secured by ZetPay</div>`;
   }
 
   /* ================= STORE HOME ================= */

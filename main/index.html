@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ZapPay is Under Maintenance | We'll Be Back Soon</title>
-<meta name="description" content="ZapPay is currently undergoing scheduled maintenance to improve your experience. We'll be back online shortly."/>
+<title>ZetPay is Under Maintenance | We'll Be Back Soon</title>
+<meta name="description" content="ZetPay is currently undergoing scheduled maintenance to improve your experience. We'll be back online shortly."/>
 <meta name="robots" content="noindex, follow"/>
-<meta property="og:title" content="ZapPay is Under Maintenance | We'll Be Back Soon"/>
-<meta property="og:description" content="ZapPay is currently undergoing scheduled maintenance to improve your experience. We'll be back online shortly."/>
+<meta property="og:title" content="ZetPay is Under Maintenance | We'll Be Back Soon"/>
+<meta property="og:description" content="ZetPay is currently undergoing scheduled maintenance to improve your experience. We'll be back online shortly."/>
 <meta property="og:type" content="website"/>
 <link rel="icon" type="image/png" href="/favicon.png"/>
 <link rel="apple-touch-icon" href="/favicon.png"/>
@@ -154,8 +154,8 @@ async function loadContactInfo() {
   try {
     const res = await fetch(`${API_URL}/api/config`, { cache: 'no-store' }).then(r => r.json());
     if (!res?.success) throw new Error('config fetch failed');
-    document.getElementById('mntSiteName').textContent = res.data.siteName || 'ZapPay';
-    document.title = `${res.data.siteName || 'ZapPay'} — Under Maintenance`;
+    document.getElementById('mntSiteName').textContent = res.data.siteName || 'ZetPay';
+    document.title = `${res.data.siteName || 'ZetPay'} — Under Maintenance`;
 
     const icons = { telegram:'bi-telegram', instagram:'bi-instagram', youtube:'bi-youtube', whatsapp:'bi-whatsapp' };
     const social = res.data.socialLinks || {};
@@ -173,7 +173,7 @@ async function loadContactInfo() {
     if (!res.data.maintenanceMode) {
       const banner = document.createElement('div');
       banner.style.cssText = 'background:var(--zp-primary-light);border:1px solid #BFDBFE;border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#1D4ED8';
-      banner.innerHTML = `<i class="bi bi-check-circle-fill"></i>We're back online! <a href="https://panel.zetpay.online/" style="color:#1D4ED8;text-decoration:underline;margin-left:auto">Return to ZapPay →</a>`;
+      banner.innerHTML = `<i class="bi bi-check-circle-fill"></i>We're back online! <a href="https://panel.zetpay.online/" style="color:#1D4ED8;text-decoration:underline;margin-left:auto">Return to ZetPay →</a>`;
       document.querySelector('.mnt-card').before(banner);
     }
   } catch (e) {

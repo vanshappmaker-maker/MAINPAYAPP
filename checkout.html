@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Secure UPI Checkout | ZapPay</title>
+<title>Secure UPI Checkout | ZetPay</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -323,7 +323,7 @@ if (checkoutThemeColor) applyCustomThemeColor(document.documentElement.dataset.t
 function getRedirectTarget() {
     if (redirectUrlParam) return redirectUrlParam;
     if (document.referrer) return document.referrer;
-    console.warn('ZapPay: redirect_url param nahi mila aur referrer bhi khaali hai — merchant domain par wapas nahi ja paayenge. Checkout link banate waqt &redirect_url=<aapki-site-url> zaroor add karein.');
+    console.warn('ZetPay: redirect_url param nahi mila aur referrer bhi khaali hai — merchant domain par wapas nahi ja paayenge. Checkout link banate waqt &redirect_url=<aapki-site-url> zaroor add karein.');
     return '/';
 }
 
@@ -456,11 +456,11 @@ if (!orderId || !amount) {
     document.getElementById('lblOrderId').textContent = 'ID: ' + orderId;
     document.getElementById('lblAmount').textContent = parseFloat(amount).toFixed(2);
     const fmtAmt = parseFloat(amount).toFixed(2);
-    const upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=ZapPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
+    const upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=ZetPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
     
     document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
-    document.getElementById('gpayLink').href = `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=ZapPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
-    document.getElementById('phonepeLink').href = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=ZapPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
+    document.getElementById('gpayLink').href = `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=ZetPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
+    document.getElementById('phonepeLink').href = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=ZetPay&am=${fmtAmt}&cu=INR&tn=ZPP${orderId}`;
     document.getElementById('fampayLink').href = upiUri;
 
     // The third quick-pay button defaults to "FamPay" — for a

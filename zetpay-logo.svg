@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="zpBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="45%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="zpBoltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0f9ff"/>
+    </linearGradient>
+    <filter id="zpShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Background Rounded Rect -->
+  <rect width="512" height="512" rx="120" fill="url(#zpBgGrad)"/>
+  
+  <!-- Outer glowing accent ring -->
+  <rect x="8" y="8" width="496" height="496" rx="114" fill="none" stroke="#ffffff" stroke-width="4" stroke-opacity="0.2"/>
+
+  <!-- Stylized Z Emblem with Payment Bolt Angle -->
+  <g filter="url(#zpShadow)">
+    <polygon points="110,105 402,105 402,160 230,315 402,315 402,375 110,375 110,320 282,165 110,165" fill="url(#zpBoltGrad)"/>
+    <!-- Cyan Lightning Slash -->
+    <polygon points="270,165 335,165 242,315 177,315" fill="#38bdf8"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <text x="256" y="446" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" font-weight="900" font-size="54" fill="#ffffff" letter-spacing="1.5">ZetPay</text>
+  <text x="256" y="472" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" font-weight="600" font-size="19" fill="#93c5fd" letter-spacing="3">GATEWAY</text>
+</svg>

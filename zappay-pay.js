@@ -35,7 +35,7 @@
   // ZapPay's backend. This is intentionally NOT derived from where this
   // widget file itself is hosted (that's your frontend) — the API is a
   // separate server. Update this one line if the backend domain changes.
-  const DEFAULT_API_BASE = 'https://paymentbackend-ruby.vercel.app';
+  const DEFAULT_API_BASE = 'https://paymentbackend-oga2.vercel.app';
 
   function getApiBase() {
     // Optional explicit override, e.g.:
